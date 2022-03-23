@@ -14,7 +14,6 @@ jobs:
       # uncomment both tokens for assignment 2-4
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # auto-generated
-      DOKKU_REMOTE_URL: ${{ secrets.DOKKU_REMOTE_URL }}  
       DOKKU_SSH_KEY: ${{ secrets.DOKKU_SSH_KEY }}  
 
     steps:
@@ -26,7 +25,7 @@ jobs:
       - name: Dokku
         uses: dokku/github-action@v1.0.1
         with:
-          git_remote_url: $DOKKU_REMOTE_URL
+          git_remote_url: 'ssh://dokku@oxv.io:34654/wordlepvp-frontend'
           ssh_private_key: $DOKKU_SSH_KEY
    
       # uncomment for assignment 2-4
