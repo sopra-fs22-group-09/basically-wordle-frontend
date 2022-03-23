@@ -1,0 +1,27 @@
+name: Deploy Project
+
+on: 
+  push:
+    branches: 
+      - master
+
+jobs:
+  build:
+    # runs-on: ubuntu-latest
+    env:
+      # uncomment both tokens for assignment 2-4
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # auto-generated
+      DOKKU_REMOTE_URL: ${{ secrets.DOKKU_REMOTE_URL }}  
+
+    steps:
+    # checkout repository code
+    - name: Dokku
+      uses: dokku/github-action@v1.0.1
+      git_remote_url: $DOKKU_REMOTE_URL
+   
+    # uncomment for assignment 2-4
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+    
+    # deploy code
