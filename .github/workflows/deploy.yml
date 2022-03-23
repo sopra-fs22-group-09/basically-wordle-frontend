@@ -13,15 +13,15 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # auto-generated
       DOKKU_REMOTE_URL: ${{ secrets.DOKKU_REMOTE_URL }}  
+      DOKKU_SSH_KEY: ${{ secrets.DOKKU_SSH_KEY }}  
 
     steps:
     # checkout repository code
     - name: Dokku
       uses: dokku/github-action@v1.0.1
       git_remote_url: $DOKKU_REMOTE_URL
+      ssh_private_key: $DOKKU_SSH_KEY
    
     # uncomment for assignment 2-4
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
-    
-    # deploy code
