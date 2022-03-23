@@ -4,6 +4,8 @@ on:
   push:
     branches: 
       - master
+    pull_request:
+      types: [opened, synchronize, reopened]
 
 jobs:
   build:
@@ -16,13 +18,17 @@ jobs:
       DOKKU_SSH_KEY: ${{ secrets.DOKKU_SSH_KEY }}  
 
     steps:
-    # checkout repository code
-    - name: Dokku
-      uses: dokku/github-action@v1.0.1
-      with:
-        git_remote_url: $DOKKU_REMOTE_URL
-        ssh_private_key: $DOKKU_SSH_KEY
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      # checkout repository code
+      - name: Dokku
+        uses: dokku/github-action@v1.0.1
+        with:
+          git_remote_url: $DOKKU_REMOTE_URL
+          ssh_private_key: $DOKKU_SSH_KEY
    
-    # uncomment for assignment 2-4
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
+      # uncomment for assignment 2-4
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
