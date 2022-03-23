@@ -19,8 +19,9 @@ jobs:
     # checkout repository code
     - name: Dokku
       uses: dokku/github-action@v1.0.1
-      git_remote_url: $DOKKU_REMOTE_URL
-      ssh_private_key: $DOKKU_SSH_KEY
+      with:
+        git_remote_url: $DOKKU_REMOTE_URL
+        ssh_private_key: $DOKKU_SSH_KEY
    
     # uncomment for assignment 2-4
     - name: SonarCloud Scan
