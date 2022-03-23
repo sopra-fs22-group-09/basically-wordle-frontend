@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: debian-latest
+    runs-on: ubuntu-latest
     env:
       # uncomment both tokens for assignment 2-4
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
