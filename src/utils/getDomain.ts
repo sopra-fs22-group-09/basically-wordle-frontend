@@ -7,14 +7,14 @@ import { isProduction } from './isProduction';
  * @returns {string}
  */
 export const getHttpDomain = (): string => {
-  const prodUrl = 'https://test-soprafs22-ws-prototype.oxv.io'; // TODO: insert your groups heroku prod url for server (once deployed)
+  const prodUrl = 'https://wordlepvp-backend.oxv.io'; // TODO: insert your groups heroku prod url for server (once deployed)
   const devUrl = 'http://localhost:8080';
 
   return isProduction() ? prodUrl : devUrl;
 };
 
 export const getWsDomain = (): string => {
-  const prodUrl = 'wss://test-soprafs22-ws-prototype.oxv.io'; // TODO: insert your groups heroku prod url for server (once deployed)
+  const prodUrl = 'wss://wordlepvp-backend.oxv.io'; // TODO: insert your groups heroku prod url for server (once deployed)
   const devUrl = 'ws://localhost:8080';
 
   return isProduction() ? prodUrl : devUrl;

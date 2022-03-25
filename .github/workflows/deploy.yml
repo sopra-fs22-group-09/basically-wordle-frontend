@@ -10,25 +10,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      # uncomment both tokens for assignment 2-4
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # auto-generated
-      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  
-
     steps:
       - name: Cloning repo
         uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
+      # uncomment for assignment 2-4
+      - name: SonarCloud Scan
+        with:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # auto-generated
+        uses: sonarsource/sonarcloud-github-action@master
+
       # checkout repository code
       - name: Push to Dokku
         uses: dokku/github-action@v1.0.1
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  
         with:
           git_remote_url: 'ssh://dokku@oxv.io:34654/wordlepvp-frontend'
           ssh_private_key: $SSH_PRIVATE_KEY
    
-      # uncomment for assignment 2-4
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
