@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "wordlepvp-frontend",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -8,6 +8,9 @@
     "@emotion/styled": "^11.8.1",
     "@fontsource/roboto": "^4.5.3",
     "@graphql-codegen/cli": "^2.6.2",
+    "@mantine/core": "^4.1.0",
+    "@mantine/hooks": "^4.1.0",
+    "@mantine/notifications": "^4.1.0",
     "@mui/icons-material": "^5.5.1",
     "@mui/material": "^5.5.1",
     "@reduxjs/toolkit": "^1.8.0",
