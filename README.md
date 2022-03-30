@@ -1,6 +1,8 @@
-# Getting Started with Create React App
+# Basically Wordle. - Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[![Deploy Project](https://github.com/sopra-fs22-group-09/basically-wordle-frontend/actions/workflows/deploy.yml/badge.svg)](https://github.com/sopra-fs22-group-09/basically-wordle-frontend/actions/workflows/deploy.yml)
+
+Wordle PvP frontend with React and TypeScript.
 
 ## Available Scripts
 

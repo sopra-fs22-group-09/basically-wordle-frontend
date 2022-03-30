@@ -30,7 +30,7 @@ function App() {
       <Router>
         <Layout>
           <Routes>
-            {appRoutes.map((route) => (
+            {appRoutes.filter(r => r.enabled).map((route) => (
               <Route key={route.key} path={route.path} element={<route.component />} />
             ))}
           </Routes>
