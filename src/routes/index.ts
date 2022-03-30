@@ -76,7 +76,7 @@ export const routes: Array<Route> = [
     key: 'profile-route',
     title: 'Profile',
     path: '/profile',
-    enabled: true,
+    enabled: false,
     component: Profile
   }
 ]
