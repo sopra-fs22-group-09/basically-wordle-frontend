@@ -1,6 +1,7 @@
 # Basically Wordle. - Frontend
 
 [![Deploy Project](https://github.com/sopra-fs22-group-09/basically-wordle-frontend/actions/workflows/deploy.yml/badge.svg)](https://github.com/sopra-fs22-group-09/basically-wordle-frontend/actions/workflows/deploy.yml)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=sopra-fs22-group-09_basically-wordle-frontend&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=sopra-fs22-group-09_basically-wordle-frontend)
 
 Wordle PvP frontend with React and TypeScript.
 
