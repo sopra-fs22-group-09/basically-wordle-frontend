@@ -16,7 +16,7 @@ const Login = () => {
     return <>
       <h2>Subscription answer:</h2><br/>
       <h1>
-        {!loading && data?.greetings ? data?.greetings : 'waiting to receive elements ...'}
+        {(!loading && data?.greetings) ?? 'waiting to receive elements ...'}
       </h1>
     </>;
   }
