@@ -3,31 +3,46 @@ import { Avatar, Box, Button, Container, Grid, Link, TextField, Typography } fro
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { gql, useMutation } from '@apollo/client';
 import { User } from '../models/User';
+import { useState } from 'react';
 
 const Register = () => {
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const REGISTER_MUTATION = gql`
-      mutation {
-        addUser(input: {
-          username: $username,
-          email: $email,
-          password: $password
-          }) {
+  const [formData, setFormData] = useState<FormData>();
+  const REGISTER_MUTATION = gql`
+      mutation addUser($user: RegisterInput!) {
+        addUser(input: $user) {
 		      id
 		      username
-          verified
+          email
+          #verified
 	      }
       }
     `;
+
+  interface Registration {
+    username?: FormDataEntryValue | null;
+    email?: FormDataEntryValue | null;
+    password?: FormDataEntryValue | null;
+  }
+
+  interface RegistrationData {
+    user: Registration; 
+  }
     
-    
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [addUser, { data, loading, error }] = useMutation<User>(REGISTER_MUTATION);
-    addUser({variables: { username: formData.get('username') }})
-  };
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [addUser, { data, loading, error }] = useMutation<User, RegistrationData>(
+    REGISTER_MUTATION, {
+      variables: {
+        user: {
+          username: formData?.get('username'),
+          email: formData?.get('email'),
+          password: formData?.get('password') }
+      }
+    });
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setFormData(new FormData(event.currentTarget));
+  };   
    
   return (
     <Container component="main" maxWidth="xs">
