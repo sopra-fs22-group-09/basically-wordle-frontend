@@ -4,6 +4,8 @@ import Home from '../pages/home';
 import Login from '../pages/login';
 import Profile from '../pages/profile';
 import Register from '../pages/register';
+import Reset from '../pages/reset';
+import Confirmation from '../pages/confirmation';
 
 /**
  * Main router of your application.
@@ -78,5 +80,19 @@ export const routes: Array<Route> = [
     path: '/profile',
     enabled: false,
     component: Profile
+  },
+  {
+    key: 'password-reset-route',
+    title: 'Password Reset',
+    path: '/reset',
+    enabled: true,
+    component: Reset
+  },
+  {
+    key: 'password-reset-confirmation-route',
+    title: 'Password Reset Confirmation',
+    path: '/reset/confirmation',
+    enabled: true,
+    component: Confirmation
   }
 ]

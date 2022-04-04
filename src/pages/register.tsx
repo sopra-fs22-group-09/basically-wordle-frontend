@@ -109,10 +109,14 @@ const Register = () => {
           >
         Sign Up
           </Button>
-          <Grid container justifyContent="flex-end">
+          <Grid container justifyContent="">
             <Grid item>
               <Link href="/login" variant="body2">
-            Already have an account? Sign in
+                Already have an account? Sign in
+              </Link>
+              <br></br>
+              <Link href="/reset" variant="body2">
+                Forgot your password? Reset your password
               </Link>
             </Grid>
           </Grid>
