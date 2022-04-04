@@ -25,11 +25,9 @@ const Register = () => {
   interface RegistrationData {
     user: Registration; 
   }
-   
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [addUser, { data, loading, error }] = useMutation<User, RegistrationData>(
-    ADD_USER
-  );
+  const [addUser, { data, loading, error }] = useMutation<User, RegistrationData>(ADD_USER);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -42,8 +40,8 @@ const Register = () => {
           password: formData.get('password') }
       }
     });
-  };   
-   
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -58,7 +56,7 @@ const Register = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-      Sign up
+          Sign up
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
@@ -107,12 +105,12 @@ const Register = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-        Sign Up
+            Sign Up
           </Button>
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="/login" variant="body2">
-            Already have an account? Sign in
+                Already have an account? Sign in
               </Link>
             </Grid>
           </Grid>
