@@ -7,7 +7,7 @@ import { useState } from 'react';
 
 const Register = () => {
   const [formData, setFormData] = useState<FormData>();
-  const REGISTER_MUTATION = gql`
+  const ADD_USER = gql`
       mutation addUser($user: RegisterInput!) {
         addUser(input: $user) {
 		      id
@@ -27,21 +27,23 @@ const Register = () => {
   interface RegistrationData {
     user: Registration; 
   }
-    
+   
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [addUser, { data, loading, error }] = useMutation<User, RegistrationData>(
-    REGISTER_MUTATION, {
+    ADD_USER, {
       variables: {
         user: {
           username: formData?.get('username'),
           email: formData?.get('email'),
           password: formData?.get('password') }
       }
-    });
+    }
+  );
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFormData(new FormData(event.currentTarget));
+    addUser();
   };   
    
   return (
