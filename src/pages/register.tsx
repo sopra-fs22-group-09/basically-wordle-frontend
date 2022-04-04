@@ -6,8 +6,8 @@ import { User } from '../models/User';
 
 const Register = () => {
   const ADD_USER = gql`
-      mutation addUser($user: RegisterInput!) {
-        addUser(input: $user) {
+      mutation signUp($user: RegisterInput!) {
+        register(input: $user) {
 		      id
 		      username
           email
@@ -27,9 +27,7 @@ const Register = () => {
   }
    
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [addUser, { data, loading, error }] = useMutation<User, RegistrationData>(
-    ADD_USER
-  );
+  const [addUser, { data, loading, error }] = useMutation<User, RegistrationData>(ADD_USER);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -112,11 +110,7 @@ const Register = () => {
           <Grid container justifyContent="">
             <Grid item>
               <Link href="/login" variant="body2">
-                Already have an account? Sign in
-              </Link>
-              <br></br>
-              <Link href="/reset" variant="body2">
-                Forgot your password? Reset your password
+                Already have an account? Sign In
               </Link>
             </Grid>
           </Grid>

@@ -16,31 +16,6 @@ import Confirmation from '../pages/confirmation';
  * /game renders a Router that contains other sub-routes that render in turn other react components
  * Documentation about routing in React: https://reacttraining.com/react-router/web/guides/quick-start
  */
-/*
-const AppRouter = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path={'/login'} element={
-          <Login />
-        } />
-        <Route path={'/register'} element={<Register />} />
-        <Route path={'/game/dashboard'} element={
-          <Home />
-        } />
-        <Route path={'/game'} element={
-          <Navigate to={'/game/dashboard'} />
-        } />
-        <Route path={'/profile/*'} element={
-          <Profile />
-        } />
-        <Route index element={<Navigate to={'/game'} />} />
-        <Route path={'*'} element={<Navigate to={'/game'} />} />
-      </Routes>
-    </BrowserRouter>
-  );
-};
-*/
 
 // interface
 interface Route {
