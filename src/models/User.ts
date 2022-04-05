@@ -4,7 +4,7 @@ export class User {
     public username: string,
     public avatarID: string,
     public token: string,
-    //TODO: bruchts glaub eher im backend ..
+    //TODO: settings? as own model or part here?
     public creationDate: Date,
     public status: 'Online' | 'Creating Lobby' | 'InGame' | 'Away' | 'Offline'
   ) {}
