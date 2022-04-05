@@ -21,6 +21,7 @@ function App() {
         dark: '#00867d',
         contrastText: '#000',
       },
+      mode: 'dark'
     },
   });
 

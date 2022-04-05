@@ -8,8 +8,8 @@ import { getHttpDomain, getWsDomain } from '../utils/getDomain'
 
 const commonHeaders = {
   'Content-Type': 'application/json;charset=utf-8',
-  Accept: 'application/json',
-  'Content-Encoding': 'deflate, gzip'
+  Accept: 'application/graphql+json',
+  'Content-Encoding': 'deflate, gzip',
 }
 
 function getSession() {
@@ -23,7 +23,7 @@ const httpApi = new HttpLink({
   headers: () => {
     const session = getSession()
     if (!session) {
-      return {}
+      return commonHeaders;
     }
     return {
       Authorization: `Bearer ${session.token}`,
@@ -38,7 +38,7 @@ const wsApi = new GraphQLWsLink(
     connectionParams: () => {
       const session = getSession()
       if (!session) {
-        return {}
+        return commonHeaders;
       }
       return {
         Authorization: `Bearer ${session.token}`,

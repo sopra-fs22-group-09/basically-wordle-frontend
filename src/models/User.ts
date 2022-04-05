@@ -1,7 +1,8 @@
 export class User {
   constructor(
-    private id: string,
+    public id: string,
     public username: string,
+    public token: string,
     public creationDate: Date,
     public status: 'online' | 'offline' | 'creating lobby'
   ) {}

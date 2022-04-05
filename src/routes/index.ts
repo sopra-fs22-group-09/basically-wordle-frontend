@@ -4,6 +4,8 @@ import Home from '../pages/home';
 import Login from '../pages/login';
 import Profile from '../pages/profile';
 import Register from '../pages/register';
+import Reset from '../pages/reset';
+import Confirmation from '../pages/confirmation';
 
 /**
  * Main router of your application.
@@ -14,31 +16,6 @@ import Register from '../pages/register';
  * /game renders a Router that contains other sub-routes that render in turn other react components
  * Documentation about routing in React: https://reacttraining.com/react-router/web/guides/quick-start
  */
-/*
-const AppRouter = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path={'/login'} element={
-          <Login />
-        } />
-        <Route path={'/register'} element={<Register />} />
-        <Route path={'/game/dashboard'} element={
-          <Home />
-        } />
-        <Route path={'/game'} element={
-          <Navigate to={'/game/dashboard'} />
-        } />
-        <Route path={'/profile/*'} element={
-          <Profile />
-        } />
-        <Route index element={<Navigate to={'/game'} />} />
-        <Route path={'*'} element={<Navigate to={'/game'} />} />
-      </Routes>
-    </BrowserRouter>
-  );
-};
-*/
 
 // interface
 interface Route {
@@ -78,5 +55,19 @@ export const routes: Array<Route> = [
     path: '/profile',
     enabled: false,
     component: Profile
+  },
+  {
+    key: 'password-reset-route',
+    title: 'Password Reset',
+    path: '/reset',
+    enabled: true,
+    component: Reset
+  },
+  {
+    key: 'password-reset-confirmation-route',
+    title: 'Password Reset Confirmation',
+    path: '/reset/confirmation',
+    enabled: true,
+    component: Confirmation
   }
 ]

@@ -6,6 +6,7 @@ module.exports = {
     '@typescript-eslint',
     //'jest',
     'import',
+    'react-hooks',
     //'prettier',
   ],
   extends: [
@@ -35,6 +36,8 @@ module.exports = {
     'no-empty': 'warn',
     'import/no-unresolved': 'error',
     //'prettier/prettier': 'error',
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn'
   },
   'settings': {
     'react': {
