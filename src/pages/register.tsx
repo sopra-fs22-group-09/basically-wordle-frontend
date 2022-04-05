@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { Avatar, Box, Button, Container, Grid, Link, TextField, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Button, Container, Grid, Link, TextField, Typography } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { gql, useMutation } from '@apollo/client';
 import { User } from '../models/User';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const ADD_USER = gql`
@@ -25,7 +26,8 @@ const Register = () => {
   interface RegistrationData {
     user: Registration; 
   }
-   
+ 
+  const navigate = useNavigate(); 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [addUser, { data, loading, error }] = useMutation<User, RegistrationData>(ADD_USER);
 
@@ -38,6 +40,13 @@ const Register = () => {
           username: formData.get('username'),
           email: formData.get('email'),
           password: formData.get('password') }
+      },
+      onCompleted(user: User) {
+        if (user) {
+          localStorage.setItem('token', user.token as string);
+          localStorage.setItem('userId', user.id as string);
+          navigate('/');
+        }
       }
     });
   };   
@@ -58,6 +67,7 @@ const Register = () => {
         <Typography component="h1" variant="h5">
       Sign up
         </Typography>
+        {(!loading && error) && <Alert sx={{ mt: 3, minWidth: 1, maxWidth: 1 }} variant="filled" severity="error">{error.message}</Alert>}
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
