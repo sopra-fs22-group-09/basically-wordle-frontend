@@ -18,6 +18,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import { WithChildren } from '../../utils/utils';
 import { Navigation } from './Navigation';
 import { Friends } from './Friends';
+import Footer from './Footer';
 
 // Do this explicitly if you need the component to have children!
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -146,8 +147,10 @@ const Layout = ({ children }: LayoutProps) => {
             {children}
           </Grid>
         </Container>
+        <Footer />
       </Box>
     </Box>
+    
 
 
 

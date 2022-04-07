@@ -13,12 +13,7 @@ import Divider from '@mui/material/Divider';
 export const Friends = () => {
 
   return (
-    <List
-      sx={{
-        width: 300,
-        bgcolor: 'background.paper',
-      }}
-    >
+    <List>
       <ListItem>
         <ListItemAvatar>
           <Avatar>
