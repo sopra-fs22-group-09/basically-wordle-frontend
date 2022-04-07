@@ -53,7 +53,7 @@ export const routes: Array<Route> = [
     key: 'profile-route',
     title: 'Profile',
     path: '/profile',
-    enabled: false,
+    enabled: true,
     component: Profile
   },
   {

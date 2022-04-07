@@ -6,7 +6,7 @@ const Home = () => {
     <Box
       sx={{
         flexGrow: 1,
-        backgroundColor: 'whitesmoke',
+        backgroundColor: 'gray',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
