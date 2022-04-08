@@ -1,24 +1,24 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import MuiDrawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
+//import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+//import MenuIcon from '@mui/icons-material/Menu';
+//import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import AddIcon from '@mui/icons-material/Add';
+import ClearIcon from '@mui/icons-material/Clear';
 
 import { WithChildren } from '../../utils/utils';
 import { Navigation } from './Navigation';
 import { Friends } from './Friends';
 import Footer from './Footer';
+import Avatar from '@mui/material/Avatar';
+import FaceIcon from '@mui/icons-material/Face';
+import Badge from '@mui/material/Badge';
 
 // Do this explicitly if you need the component to have children!
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -83,126 +83,43 @@ const Layout = ({ children }: LayoutProps) => {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
+    <Box sx={{display: 'flex'}}>
       <AppBar position="absolute" open={open}>
-        <Toolbar
-          sx={{
-            pr: '24px', // keep right padding when drawer closed
-          }}
-        >
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={toggleDrawer}
-            sx={{
-              marginRight: '36px',
-              ...(open && { display: 'none' }),
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Navigation />
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
+        <Toolbar>
+          {!open &&
+            <Badge badgeContent={''} color="secondary" sx={{m: -1}}>
+              <Avatar>
+                <FaceIcon />
+              </Avatar>
             </Badge>
-          </IconButton>
+          }
+          <Navigation/>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
-        <Toolbar
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            px: [1],
-          }}
-        >
-          <IconButton onClick={toggleDrawer}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </Toolbar>
-        <Divider />
         <List component="nav">
-          <Friends />
+          <Friends/>
         </List>
+        <IconButton onClick={toggleDrawer} sx={{position: 'fixed', bottom: '100px', left: '15px'}}>
+          {open ? <ClearIcon/> : <AddIcon/>} {/*Show / hide friends menu*/}
+        </IconButton>
       </Drawer>
       <Box
         component="main"
         sx={{
+          flexGrow: 1,
+          pt: 9.75,
+          minHeight: '100vh', //TODO: Figure out how to get windows size - footer size
           backgroundColor: (theme) =>
             theme.palette.mode === 'light'
               ? theme.palette.grey[100]
               : theme.palette.grey[900],
-          flexGrow: 1,
-          height: '100vh',
-          overflow: 'auto',
         }}
       >
-        <Toolbar />
-        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <Grid container spacing={3}>
-            {children}
-          </Grid>
-        </Container>
-        <Footer />
-      </Box>
-    </Box>
-    
-
-
-
-
-  /*<>
-      <Box
-        sx={{
-          display: 'flex',
-          minHeight: '100vh',
-        }}>
-        <CssBaseline />
-        <Box>
-          <Navigation />
-        </Box>
-        <Box>
-          <Friends />
-        </Box>
-        <Box
-          component="main"
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-start',
-            maxWidth: '100vw',
-            flexGrow: 1,
-          }}>
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            {children}
-          </Container>
-        </Box>
-      </Box>
-      <Footer />
-    </>*/
-
-  /*    <>
-      <CssBaseline />
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-start',
-          minHeight: '100vh',
-          maxWidth: '100vw',
-          flexGrow: 1,
-        }}
-      >
-        <Navigation />
-        <Friends />
         {children}
-        <Footer />
       </Box>
-    </>*/
+      <Footer/>
+    </Box>
   );
 };
 

@@ -4,6 +4,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
+import FaceIcon from '@mui/icons-material/Face';
 import PersonIcon from '@mui/icons-material/Person';
 import ImageIcon from '@mui/icons-material/Image';
 import WorkIcon from '@mui/icons-material/Work';
@@ -13,7 +14,16 @@ import Divider from '@mui/material/Divider';
 export const Friends = () => {
 
   return (
-    <List>
+    <List sx={{mt:-1.75, overflow: 'hidden'}}>
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <FaceIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Me" secondary="Online" />
+      </ListItem>
+      <Divider variant="inset" component="li" />
       <ListItem>
         <ListItemAvatar>
           <Avatar>
