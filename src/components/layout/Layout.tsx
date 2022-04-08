@@ -4,18 +4,18 @@ import MuiDrawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
 //import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 //import MenuIcon from '@mui/icons-material/Menu';
 //import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import AddIcon from '@mui/icons-material/Add';
-import ClearIcon from '@mui/icons-material/Clear';
+import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
+import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
+import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
 
 import { WithChildren } from '../../utils/utils';
 import { Navigation } from './Navigation';
 import { Friends } from './Friends';
-import Footer from './Footer';
+//import Footer from './Footer';
 import Avatar from '@mui/material/Avatar';
 import FaceIcon from '@mui/icons-material/Face';
 import Badge from '@mui/material/Badge';
@@ -87,8 +87,8 @@ const Layout = ({ children }: LayoutProps) => {
       <AppBar position="absolute" open={open}>
         <Toolbar>
           {!open &&
-            <Badge badgeContent={''} color="secondary" sx={{m: -1}}>
-              <Avatar>
+            <Badge badgeContent={''} color="secondary" sx={{ml: -1, mr: 4}}>
+              <Avatar sx={{ outline: 'white solid 5px' }}>
                 <FaceIcon />
               </Avatar>
             </Badge>
@@ -97,11 +97,26 @@ const Layout = ({ children }: LayoutProps) => {
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
-        <List component="nav">
-          <Friends/>
-        </List>
-        <IconButton onClick={toggleDrawer} sx={{position: 'fixed', bottom: '100px', left: '15px'}}>
-          {open ? <ClearIcon/> : <AddIcon/>} {/*Show / hide friends menu*/}
+        <Friends/>
+        <IconButton onClick={toggleDrawer}
+          sx={{
+            position:'absolute',
+            top:'50%',
+            right:'0px',
+            transform:'translateY(-50%)'
+          }}
+        >
+          {open ? <ArrowBackIosOutlinedIcon/> : <ArrowForwardIosOutlinedIcon />}
+        </IconButton>
+        <IconButton onClick={() => {parent.scroll(0, 10000)}}
+          sx={{
+            position:'absolute',
+            bottom:'15px',
+            left:'50%',
+            transform:'translateX(-50%)'
+          }}
+        >
+          <ArrowDropDownCircleOutlinedIcon />
         </IconButton>
       </Drawer>
       <Box
@@ -118,7 +133,6 @@ const Layout = ({ children }: LayoutProps) => {
       >
         {children}
       </Box>
-      <Footer/>
     </Box>
   );
 };

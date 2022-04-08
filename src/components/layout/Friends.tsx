@@ -10,24 +10,55 @@ import ImageIcon from '@mui/icons-material/Image';
 import WorkIcon from '@mui/icons-material/Work';
 import BeachAccessIcon from '@mui/icons-material/BeachAccess';
 import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 
 export const Friends = () => {
 
+  const myProfile = (
+    <ListItem
+      sx={{
+        position: 'sticky',
+        top: 0,
+        backgroundColor: 'primary.dark',
+        zIndex: 1,
+        height: 75
+      }}
+    >
+      <ListItemAvatar>
+        <Avatar sx={{ outline: 'green solid 5px' }}>
+          <FaceIcon />
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText primary="Me" secondary="Online" />
+      <IconButton
+        color="inherit"
+        onClick={() => {alert('Still waiting to be implemented...');}} /*TODO: Show notification menu*/
+      >
+        <Badge badgeContent={'99+'} color="primary" >
+          <NotificationsIcon />
+        </Badge>
+      </IconButton>
+    </ListItem>
+  );
+
   return (
-    <List sx={{mt:-1.75, overflow: 'hidden'}}>
+    <List
+      sx={{
+        mt: -1,
+        height: '100vh',
+        overflowY: 'scroll',
+        overflowX: 'hidden',
+        '&::-webkit-scrollbar': { display: 'none' },
+        scrollbarWidth: 'none',
+      }}
+    >
+      {myProfile}
       <ListItem>
         <ListItemAvatar>
-          <Avatar>
-            <FaceIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Me" secondary="Online" />
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <PersonIcon />
+          <Avatar sx={{ outline:'green solid 5px' }}>
+            <PersonIcon/>
           </Avatar>
         </ListItemAvatar>
         <ListItemText primary="It's Britney Bitch" secondary="Online" />
@@ -49,6 +80,96 @@ export const Friends = () => {
           </Avatar>
         </ListItemAvatar>
         <ListItemText primary="Friend2" secondary="Online" />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <BeachAccessIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Friend3" secondary="Online" />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <BeachAccessIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Friend3" secondary="Online" />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <BeachAccessIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Friend3" secondary="Online" />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <BeachAccessIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Friend3" secondary="Online" />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <BeachAccessIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Friend3" secondary="Online" />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <BeachAccessIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Friend3" secondary="Online" />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <BeachAccessIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Friend3" secondary="Online" />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <BeachAccessIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Friend3" secondary="Online" />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <BeachAccessIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Friend3" secondary="Online" />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <BeachAccessIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Friend3" secondary="Online" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>

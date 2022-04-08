@@ -1,29 +1,56 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { BottomNavigation, BottomNavigationAction, Tooltip } from '@mui/material';
+import { BottomNavigation, BottomNavigationAction, Box, Slider, Stack, Tooltip } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import HelpIcon from '@mui/icons-material/Help';
 import { Link } from 'react-router-dom';
-import Badge from '@mui/material/Badge';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import SettingsIcon from '@mui/icons-material/Settings';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import LogoutIcon from '@mui/icons-material/Logout';
 import IconButton from '@mui/material/IconButton';
+import { VolumeDown, VolumeUp } from '@mui/icons-material';
 
 export const Navigation = () => {
   
-  const [value, setValue] = useState(0);
+  const [tab, setTab] = useState(0);
+  const [volume, setVolume] = React.useState<number>(30);
+
+  const handleChange = (event: Event, newValue: number | number[]) => {
+    setVolume(newValue as number);
+  };
+
+  const toolbar = (
+    <Box sx={{ width: 300, ml: 'auto', backgroundColor: 'lightgrey', color: 'black', borderRadius: '25px' }}>
+      <Stack spacing={1} direction="row" alignItems="center" sx={{ ml: 1 }} >
+        <VolumeDown />
+        <Slider aria-label="Volume" value={volume} onChange={handleChange} />
+        <VolumeUp />
+        <Stack spacing={-1} direction="row">
+          <IconButton sx={{color: 'black'}}>
+            <SettingsIcon />
+          </IconButton>
+          <IconButton sx={{color: 'black'}}>
+            <InfoOutlinedIcon />
+          </IconButton>
+          <IconButton sx={{color: 'black'}}>
+            <LogoutIcon />
+          </IconButton>
+        </Stack>
+      </Stack>
+    </Box>
+  );
 
   return(
     <>
       <BottomNavigation
-        sx={{height: '75px', backgroundColor: 'transparent', m: 'auto'}}
+        sx={{height: '75px', backgroundColor: 'transparent' }}
         showLabels
-        value={value}
+        value={tab}
         color="secondary"
-        onChange={(event, newValue) => {
-          setValue(newValue);
-          console.log(value);
+        onChange={(event, newTab) => {
+          setTab(newTab);
         }}
       >
         <BottomNavigationAction
@@ -49,14 +76,7 @@ export const Navigation = () => {
           />
         </Tooltip>
       </BottomNavigation>
-      <IconButton
-        color="inherit"
-        onClick={() => {alert('Still waiting to be implemented...');}} /*TODO: Show notification menu*/
-      >
-        <Badge badgeContent={'99+'} color="primary" >
-          <NotificationsIcon />
-        </Badge>
-      </IconButton>
+      {toolbar}
     </>
   );
 };
