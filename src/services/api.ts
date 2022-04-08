@@ -13,8 +13,8 @@ const commonHeaders = {
 }
 
 function getSession() {
-  // TODO: Yes, to do!
-  const token = { token: null }
+  // TODO: Maybe needs selective enablement?
+  const token = { token: localStorage.getItem('token') || '' }
   return token
 }
 
