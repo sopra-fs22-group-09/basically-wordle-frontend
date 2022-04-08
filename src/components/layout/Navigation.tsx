@@ -19,6 +19,7 @@ export const Navigation = () => {
 
   const handleChange = (event: Event, newValue: number | number[]) => {
     setVolume(newValue as number);
+    localStorage.setItem('volume', String(newValue)); //TODO Necessary?
   };
 
   const toolbar = (

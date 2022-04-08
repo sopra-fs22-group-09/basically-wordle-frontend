@@ -27,7 +27,7 @@ export const Friends = () => {
       }}
     >
       <ListItemAvatar>
-        <Avatar sx={{ outline: 'green solid 5px' }}>
+        <Avatar sx={{ outline: 'white solid 5px' }}>
           <FaceIcon />
         </Avatar>
       </ListItemAvatar>
@@ -97,7 +97,7 @@ export const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend3" secondary="Online" />
+        <ListItemText primary="Friend4" secondary="Online" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -106,7 +106,7 @@ export const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend3" secondary="Online" />
+        <ListItemText primary="Friend5" secondary="Online" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -115,7 +115,7 @@ export const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend3" secondary="Online" />
+        <ListItemText primary="Friend6" secondary="Online" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -124,7 +124,7 @@ export const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend3" secondary="Online" />
+        <ListItemText primary="Friend7" secondary="Online" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -133,7 +133,7 @@ export const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend3" secondary="Online" />
+        <ListItemText primary="Friend8" secondary="Online" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -142,7 +142,7 @@ export const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend3" secondary="Online" />
+        <ListItemText primary="Friend9" secondary="Online" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -151,7 +151,7 @@ export const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend3" secondary="Online" />
+        <ListItemText primary="Friend10" secondary="Online" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -160,7 +160,7 @@ export const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend3" secondary="Online" />
+        <ListItemText primary="Friend11" secondary="Online" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -169,7 +169,7 @@ export const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend3" secondary="Online" />
+        <ListItemText primary="Friend12" secondary="Online" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -178,7 +178,25 @@ export const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend3" secondary="Online" />
+        <ListItemText primary="Friend13" secondary="Online" />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <BeachAccessIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Friend14" secondary="Online" />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <BeachAccessIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Friend15" secondary="Online" />
       </ListItem>
     </List>
   );
