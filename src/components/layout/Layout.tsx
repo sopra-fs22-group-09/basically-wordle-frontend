@@ -83,8 +83,8 @@ const Layout = ({ children }: LayoutProps) => {
   };
 
   return (
-    <Box sx={{display: 'flex'}}>
-      <AppBar position="absolute" open={open}>
+    <Box sx={{display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      <AppBar position="fixed" open={open}>
         <Toolbar>
           {!open &&
             <Badge badgeContent={''} color="secondary" sx={{ml: -1, mr: 4}}>
@@ -124,7 +124,11 @@ const Layout = ({ children }: LayoutProps) => {
         sx={{
           flexGrow: 1,
           pt: 9.75,
-          minHeight: '100vh', //TODO: Figure out how to get windows size - footer size
+          //minHeight: '100vh', //TODO: Figure out how to get windows size - footer size
+          overflowY: 'scroll',
+          overflowX: 'hidden',
+          '&::-webkit-scrollbar': {display: 'none' },
+          scrollbarWidth: 'none',
           backgroundColor: (theme) =>
             theme.palette.mode === 'light'
               ? theme.palette.grey[100]
