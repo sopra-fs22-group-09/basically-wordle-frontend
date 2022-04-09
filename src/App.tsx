@@ -1,5 +1,5 @@
 import React from 'react';
-import { createTheme, CssBaseline } from '@mui/material';
+import { createTheme, CssBaseline} from '@mui/material';
 import { routes as appRoutes } from './routes';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';

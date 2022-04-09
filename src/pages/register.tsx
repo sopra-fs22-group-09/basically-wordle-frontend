@@ -28,7 +28,7 @@ const Register = () => {
   }
  
   const navigate = useNavigate(); 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [addUser, { data, loading, error }] = useMutation<User, RegistrationData>(ADD_USER);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
