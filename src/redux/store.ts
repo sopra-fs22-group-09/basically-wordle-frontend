@@ -1,9 +1,9 @@
 import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
-import playerHudReducer from './playerHud/playerHudSlice';
+import drawerReducer from './layout/drawerSlice';
 
 export const store = configureStore({
   reducer: {
-    playerHud: playerHudReducer,
+    drawer: drawerReducer,
   },
 });
 

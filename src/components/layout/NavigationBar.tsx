@@ -12,7 +12,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import IconButton from '@mui/material/IconButton';
 import { VolumeDown, VolumeUp } from '@mui/icons-material';
 
-export const Navigation = () => {
+export const NavigationBar = () => {
   
   const [tab, setTab] = useState(0);
   const [volume, setVolume] = React.useState<number>(30);
