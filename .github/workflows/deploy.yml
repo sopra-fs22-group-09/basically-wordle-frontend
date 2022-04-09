@@ -29,4 +29,3 @@ jobs:
         with:
           git_remote_url: 'ssh://dokku@oxv.io:34654/wordlepvp-frontend'
           ssh_private_key: $SSH_PRIVATE_KEY
-   
