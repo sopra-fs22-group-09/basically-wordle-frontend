@@ -1,9 +1,11 @@
 import * as React from 'react';
-import { Box, Paper, Typography } from '@mui/material';
+import LobbyOverview from './LobbyOverview';
 
 const Home = () => {
   return (
-    <Box>
+    <LobbyOverview />
+
+  /*<Box>
       <Paper
         sx={{ padding: '1rem', backgroundColor: 'secondary.light', width: '80%', textAlign: 'center', m: 'auto', mb: '100px' }}
       >
@@ -28,7 +30,7 @@ const Home = () => {
         <Typography variant='h4' color={'secondary.dark'}>Home</Typography>
         <Typography paragraph={true} color={'secondary.dark'}>This is a {process.env.NODE_ENV} environment.</Typography>
       </Paper>
-    </Box>
+    </Box>*/
   );
 };
 

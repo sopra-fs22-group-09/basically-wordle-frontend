@@ -21,8 +21,7 @@ const Layout = ({ children }: LayoutProps) => {
         component="main"
         sx={{
           flexGrow: 1,
-          pt: 9.75,
-          //minHeight: '100vh', //TODO: Figure out how to get windows size - footer size
+          pt: 12.5,
           overflowY: 'scroll',
           overflowX: 'hidden',
           '&::-webkit-scrollbar': {display: 'none' },

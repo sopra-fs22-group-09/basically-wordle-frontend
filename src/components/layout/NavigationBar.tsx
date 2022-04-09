@@ -17,7 +17,7 @@ export const NavigationBar = () => {
   const [tab, setTab] = useState(0);
   const [volume, setVolume] = React.useState<number>(30);
 
-  const handleChange = (event: Event, newValue: number | number[]) => {
+  const handleVolumeChange = (event: Event, newValue: number | number[]) => {
     setVolume(newValue as number);
     localStorage.setItem('volume', String(newValue)); //TODO Necessary?
   };
@@ -26,7 +26,7 @@ export const NavigationBar = () => {
     <Box sx={{ width: 300, ml: 'auto', backgroundColor: 'lightgrey', color: 'black', borderRadius: '25px' }}>
       <Stack spacing={1} direction="row" alignItems="center" sx={{ ml: 1 }} >
         <VolumeDown />
-        <Slider aria-label="Volume" value={volume} onChange={handleChange} />
+        <Slider value={volume} onChange={handleVolumeChange} />
         <VolumeUp />
         <Stack spacing={-1} direction="row">
           <IconButton sx={{color: 'black'}}>
