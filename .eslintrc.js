@@ -7,6 +7,7 @@ module.exports = {
     //'jest',
     'import',
     'react-hooks',
+    'unused-imports',
     //'prettier',
   ],
   extends: [
@@ -24,13 +25,14 @@ module.exports = {
     indent: ['error', 2],
     'linebreak-style': ['error', 'unix'],
     quotes: ['error', 'single'],
+    semi: ['error', 'always'],
     'no-console': 'warn',
-    'no-unused-vars': 'off',
-    //'no-use-before-define': 'off',
-    //'@typescript-eslint/no-use-before-define': 'error',
-    '@typescript-eslint/no-unused-vars': [
-      'error',
-      { vars: 'all', args: 'after-used', ignoreRestSiblings: false },
+    '@typescript-eslint/no-use-before-define': 'warn',
+    '@typescript-eslint/no-unused-vars': 'off',
+    'unused-imports/no-unused-imports': 'warn',
+    'unused-imports/no-unused-vars': [
+      'warn',
+      { 'vars': 'all', 'varsIgnorePattern': '^_', 'args': 'after-used', 'argsIgnorePattern': '^_' }
     ],
     //'@typescript-eslint/explicit-function-return-type': 'warn', // Consider using explicit annotations for object literals and function return types even when they can be inferred.
     'no-empty': 'warn',

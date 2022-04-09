@@ -39,12 +39,12 @@ const Drawer = styled(MuiDrawer, {
 );
 
 const FriendsList = () => {
-  const open = useAppSelector(state => state.drawer.isOpen)
-  const dispatch = useAppDispatch()
+  const open = useAppSelector(state => state.drawer.isOpen);
+  const dispatch = useAppDispatch();
 
   const toggleDrawer = () => {
     // Use Redux state for this.
-    dispatch({ type: 'drawer/toggle' })
+    dispatch({ type: 'drawer/toggle' });
   };
 
   return (

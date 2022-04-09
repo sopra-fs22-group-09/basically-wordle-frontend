@@ -27,7 +27,7 @@ const Login = () => {
     user: Login;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [loginUser, { data, loading, error }] = useMutation<User, LoginData>(LOGIN_USER);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

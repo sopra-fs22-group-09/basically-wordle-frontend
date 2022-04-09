@@ -70,4 +70,4 @@ export const routes: Array<Route> = [
     enabled: true,
     component: Confirmation
   }
-]
+];
