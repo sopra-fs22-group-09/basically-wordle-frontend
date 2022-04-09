@@ -200,4 +200,4 @@ export const Friends = () => {
       </ListItem>
     </List>
   );
-}
+};

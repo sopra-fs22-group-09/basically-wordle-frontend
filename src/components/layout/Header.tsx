@@ -31,7 +31,7 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const Header = () => {
-  const open = useAppSelector(state => state.drawer.isOpen)
+  const open = useAppSelector(state => state.drawer.isOpen);
 
   return (
     <AppBar position="fixed" open={open}>
