@@ -87,11 +87,13 @@ const Layout = ({ children }: LayoutProps) => {
       <AppBar position="fixed" open={open}>
         <Toolbar>
           {!open &&
-            <Badge badgeContent={''} color="secondary" sx={{ml: -1, mr: 4}}>
-              <Avatar sx={{ outline: 'white solid 5px' }}>
-                <FaceIcon />
-              </Avatar>
-            </Badge>
+            <IconButton onClick={toggleDrawer} sx={{ml: -2, mr: 4}}>
+              <Badge badgeContent={'99+'} color="primary">
+                <Avatar sx={{ outline: 'white solid 5px' }}>
+                  <FaceIcon />
+                </Avatar>
+              </Badge>
+            </IconButton>
           }
           <Navigation/>
         </Toolbar>
@@ -108,7 +110,7 @@ const Layout = ({ children }: LayoutProps) => {
         >
           {open ? <ArrowBackIosOutlinedIcon/> : <ArrowForwardIosOutlinedIcon />}
         </IconButton>
-        <IconButton onClick={() => {parent.scroll(0, 10000)}}
+        <IconButton onClick={() => {alert('They see me scrollin\'')}} // TODO: Scroll feature
           sx={{
             position:'absolute',
             bottom:'15px',
