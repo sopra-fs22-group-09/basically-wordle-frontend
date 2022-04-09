@@ -5,6 +5,7 @@ import { HttpLink } from '@apollo/client/link/http';
 import { ApolloClient, InMemoryCache, split } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { getHttpDomain, getWsDomain } from '../utils/getDomain';
+import { onError } from '@apollo/client/link/error';
 
 const commonHeaders = {
   'Content-Type': 'application/json;charset=utf-8',
@@ -14,8 +15,13 @@ const commonHeaders = {
 
 function getSession() {
   // TODO: Maybe needs selective enablement?
-  const token = { token: localStorage.getItem('token') || '' }
+  const token = { token: localStorage.getItem('token') || '' };
   return token;
+}
+
+function logout() {
+  // TODO: Implement here or elsewhere! Also reset store(s)!
+  console.log('Logout');
 }
 
 const httpApi = new HttpLink({
@@ -27,7 +33,7 @@ const httpApi = new HttpLink({
     }
     return {
       Authorization: `Bearer ${session.token}`,
-      ...commonHeaders
+      ...commonHeaders,
     };
   },
 });
@@ -42,7 +48,7 @@ const wsApi = new GraphQLWsLink(
       }
       return {
         Authorization: `Bearer ${session.token}`,
-        ...commonHeaders
+        ...commonHeaders,
       };
     },
   })
@@ -62,8 +68,26 @@ const splitApi = split(
   httpApi
 );
 
+const logoutLink = onError(({ networkError, graphQLErrors }) => {
+  if (graphQLErrors) {
+    for (const err of graphQLErrors) {
+      //console.log(err);
+      switch (err.extensions.code) {
+      case 'UNAUTHORIZED':
+        logout();
+      }
+    }
+  }
+  else if (networkError) {
+    if ('statusCode' in networkError) {
+      if (networkError.statusCode === 401) logout();
+    }
+  }
+});
+
 const api = new ApolloClient({
-  link: splitApi,
+  link: logoutLink.concat(splitApi),
+  credentials: 'include',
   cache: new InMemoryCache(),
 });
 

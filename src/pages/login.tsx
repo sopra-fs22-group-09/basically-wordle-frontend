@@ -3,6 +3,7 @@ import { Alert, Avatar, Box, Button, Container, Grid, Link, TextField, Typograph
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { gql, useMutation } from '@apollo/client';
 import { User } from '../models/User';
+import { LoadingOverlay } from '@mantine/core';
 //import { gql, useSubscription } from '@apollo/client';
 
 const Login = () => {
@@ -91,6 +92,7 @@ const Login = () => {
           >
             Sign In
           </Button>
+          <LoadingOverlay visible={loading} />
           <Grid container>
             <Grid item xs>
               <Link href="/reset" variant="body2">
