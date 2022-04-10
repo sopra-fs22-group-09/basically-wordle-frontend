@@ -32,7 +32,7 @@ function giveMeHeaders() {
 function logout() {
   // TODO: Implement here or elsewhere! Also reset store(s)!
   localStorage.clear();
-  console.log('Logout');
+  //console.log('Logout');
 }
 
 const httpApi = new HttpLink({
