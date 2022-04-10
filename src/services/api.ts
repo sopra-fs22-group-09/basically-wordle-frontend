@@ -2,7 +2,7 @@ import { createClient } from 'graphql-ws';
 
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { HttpLink } from '@apollo/client/link/http';
-import { ApolloClient, InMemoryCache, split } from '@apollo/client';
+import { ApolloClient, ApolloLink, InMemoryCache, split } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { getHttpDomain, getWsDomain } from '../utils/getDomain';
 import { onError } from '@apollo/client/link/error';
@@ -68,6 +68,22 @@ const splitApi = split(
   httpApi
 );
 
+const afterwareLink = new ApolloLink((operation, forward) => {
+  return forward(operation).map(response => {
+    const context = operation.getContext();
+    const { response: { headers } } = context;
+
+    if (headers) {
+      const authToken = headers.get('Authorization');
+      if (authToken) {
+        localStorage.setItem('token', authToken.split('Bearer ')[1]);
+      }
+    }
+
+    return response;
+  });
+});
+
 const logoutLink = onError(({ networkError, graphQLErrors }) => {
   if (graphQLErrors) {
     for (const err of graphQLErrors) {
@@ -86,7 +102,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }) => {
 });
 
 const api = new ApolloClient({
-  link: logoutLink.concat(splitApi),
+  link: logoutLink.concat(afterwareLink).concat(splitApi),
   credentials: 'include',
   cache: new InMemoryCache(),
 });
