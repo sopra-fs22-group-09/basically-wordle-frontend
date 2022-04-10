@@ -1,15 +1,19 @@
 import * as React from 'react';
 import {
   Box, Button,
-  FormControl, Input,
-  InputLabel, Modal, Select,
-  SelectChangeEvent, Slider,
+  //FormControl,
+  //Input,
+  //InputLabel,
+  Modal,
+  //Select,
+  //SelectChangeEvent,
+  Slider,
   TextField,
   ToggleButton,
   ToggleButtonGroup
 } from '@mui/material';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
-import MenuItem from '@mui/material/MenuItem';
+//import MenuItem from '@mui/material/MenuItem';
 
 const LobbyConfirmation = () => {
 
