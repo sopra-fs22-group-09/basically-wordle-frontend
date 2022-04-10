@@ -2,51 +2,83 @@ import { createClient } from 'graphql-ws';
 
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { HttpLink } from '@apollo/client/link/http';
-import { ApolloClient, InMemoryCache, split } from '@apollo/client';
+import { ApolloClient, ApolloLink, InMemoryCache, split } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { getHttpDomain, getWsDomain } from '../utils/getDomain';
+import { onError } from '@apollo/client/link/error';
 
 const commonHeaders = {
-  'Content-Type': 'application/json;charset=utf-8',
   Accept: 'application/graphql+json',
-  'Content-Encoding': 'deflate, gzip',
+  'Content-Type': 'application/graphql+json;charset=utf-8',
 };
 
 function getSession() {
-  // TODO: Yes, to do!
-  const token = { token: null };
+  // TODO: Maybe needs selective enablement?
+  const token = { token: localStorage.getItem('token') || '' };
   return token;
+}
+
+function giveMeHeaders() {
+  const session = getSession();
+  if (!session) {
+    return commonHeaders;
+  }
+  return {
+    Authorization: `Bearer ${session.token}`,
+    ...commonHeaders,
+  };
+}
+
+function logout() {
+  // TODO: Implement here or elsewhere! Also reset store(s)!
+  localStorage.clear();
+  //console.log('Logout');
 }
 
 const httpApi = new HttpLink({
   uri: `${getHttpDomain()}/graphql`,
-  headers: () => {
-    const session = getSession();
-    if (!session) {
-      return commonHeaders;
-    }
-    return {
-      Authorization: `Bearer ${session.token}`,
-      ...commonHeaders
-    };
-  },
+  headers: giveMeHeaders()
 });
 
 const wsApi = new GraphQLWsLink(
   createClient({
     url: `${getWsDomain()}/graphqlws`,
-    connectionParams: () => {
-      const session = getSession();
-      if (!session) {
-        return commonHeaders;
-      }
-      return {
-        Authorization: `Bearer ${session.token}`,
-        ...commonHeaders
-      };
-    },
+    connectionParams: commonHeaders
   })
 );
+
+const afterwareLink = new ApolloLink((operation, forward) => {
+  return forward(operation).map(response => {
+    const context = operation.getContext();
+    const { response: { headers } } = context;
+
+    if (headers) {
+      const authToken = headers.get('authorization');
+      if (authToken) {
+        localStorage.setItem('token', authToken.split('Bearer ')[1]);
+      }
+    }
+
+    return response;
+  });
+});
+
+const logoutLink = onError(({ networkError, graphQLErrors }) => {
+  if (graphQLErrors) {
+    for (const err of graphQLErrors) {
+      //console.log(err);
+      switch (err.extensions.code) {
+      case 'UNAUTHORIZED':
+        logout();
+      }
+    }
+  }
+  else if (networkError) {
+    if ('statusCode' in networkError) {
+      if (networkError.statusCode === 401) logout();
+    }
+  }
+});
 
 // The split function takes three parameters:
 //
@@ -63,7 +95,8 @@ const splitApi = split(
 );
 
 const api = new ApolloClient({
-  link: splitApi,
+  link: afterwareLink.concat(logoutLink).concat(splitApi),
+  credentials: 'include',
   cache: new InMemoryCache(),
 });
 
