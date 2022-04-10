@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import FaceIcon from '@mui/icons-material/Face';
-import { Avatar, Badge, Toolbar } from '@mui/material';
+import {Avatar, Badge, IconButton, Toolbar} from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { NavigationBar } from './NavigationBar';
-import { useAppSelector } from '../../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 
 const drawerWidth = 240;
 
@@ -31,17 +31,25 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const Header = () => {
+
   const open = useAppSelector(state => state.drawer.isOpen);
+  const dispatch = useAppDispatch();
+
+  const toggleDrawer = () => {
+    dispatch({ type: 'drawer/toggle' });
+  };
 
   return (
     <AppBar position="fixed" open={open}>
       <Toolbar>
         {!open &&
-          <Badge badgeContent={'99+'} color="primary" sx={{ml: -1, mr: 4}}>
-            <Avatar sx={{ outline: 'white solid 5px' }}>
-              <FaceIcon />
-            </Avatar>
-          </Badge>}
+          <IconButton onClick={toggleDrawer} sx={{ml: -2, mr: 4}}>
+            <Badge badgeContent={'99+'} color="primary" >
+              <Avatar sx={{ outline: 'white solid 5px' }}>
+                <FaceIcon />
+              </Avatar>
+            </Badge>
+          </IconButton>}
         <NavigationBar />
       </Toolbar>
     </AppBar>

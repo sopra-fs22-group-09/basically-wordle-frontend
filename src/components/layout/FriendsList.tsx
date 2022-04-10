@@ -43,7 +43,6 @@ const FriendsList = () => {
   const dispatch = useAppDispatch();
 
   const toggleDrawer = () => {
-    // Use Redux state for this.
     dispatch({ type: 'drawer/toggle' });
   };
 

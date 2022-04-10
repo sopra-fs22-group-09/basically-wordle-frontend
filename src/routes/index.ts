@@ -6,6 +6,7 @@ import Profile from '../pages/profile';
 import Register from '../pages/register';
 import Reset from '../pages/reset';
 import Confirmation from '../pages/confirmation';
+import Lobby from '../pages/lobby';
 
 /**
  * Main router of your application.
@@ -48,6 +49,13 @@ export const routes: Array<Route> = [
     path: '/register',
     enabled: true,
     component: Register
+  },
+  {
+    key: 'lobby-route',
+    title: 'Lobby',
+    path: '/lobby',
+    enabled: true,
+    component: Lobby
   },
   {
     key: 'profile-route',
