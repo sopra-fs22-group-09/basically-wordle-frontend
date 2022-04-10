@@ -4,6 +4,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { gql, useMutation } from '@apollo/client';
 import { User } from '../models/User';
 import { LoadingOverlay } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
 //import { gql, useSubscription } from '@apollo/client';
 
 const Login = () => {
@@ -28,6 +29,7 @@ const Login = () => {
     user: Login;
   }
 
+  const navigate = useNavigate(); 
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [loginUser, { data, loading, error }] = useMutation<User, LoginData>(LOGIN_USER);
 
@@ -39,6 +41,13 @@ const Login = () => {
         user: {
           username: formData.get('username'),
           password: formData.get('password') }
+      },
+      onCompleted(user: User) {
+        if (user) {
+          localStorage.setItem('token', user.token as string);
+          localStorage.setItem('userId', user.id as string);
+          navigate('/');
+        }
       }
     });
   };
