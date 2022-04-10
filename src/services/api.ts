@@ -8,9 +8,8 @@ import { getHttpDomain, getWsDomain } from '../utils/getDomain';
 import { onError } from '@apollo/client/link/error';
 
 const commonHeaders = {
-  'Content-Type': 'application/json;charset=utf-8',
   Accept: 'application/graphql+json',
-  'Content-Encoding': 'deflate, gzip',
+  'Content-Type': 'application/graphql+json;charset=utf-8',
 };
 
 function getSession() {
@@ -19,53 +18,33 @@ function getSession() {
   return token;
 }
 
+function giveMeHeaders() {
+  const session = getSession();
+  if (!session) {
+    return commonHeaders;
+  }
+  return {
+    Authorization: `Bearer ${session.token}`,
+    ...commonHeaders,
+  };
+}
+
 function logout() {
   // TODO: Implement here or elsewhere! Also reset store(s)!
+  localStorage.clear();
   console.log('Logout');
 }
 
 const httpApi = new HttpLink({
   uri: `${getHttpDomain()}/graphql`,
-  headers: () => {
-    const session = getSession();
-    if (!session) {
-      return commonHeaders;
-    }
-    return {
-      Authorization: `Bearer ${session.token}`,
-      ...commonHeaders,
-    };
-  },
+  headers: giveMeHeaders()
 });
 
 const wsApi = new GraphQLWsLink(
   createClient({
     url: `${getWsDomain()}/graphqlws`,
-    connectionParams: () => {
-      const session = getSession();
-      if (!session) {
-        return commonHeaders;
-      }
-      return {
-        Authorization: `Bearer ${session.token}`,
-        ...commonHeaders,
-      };
-    },
+    connectionParams: commonHeaders
   })
-);
-
-// The split function takes three parameters:
-//
-// * A function that's called for each operation to execute
-// * The Link to use for an operation if the function returns a "truthy" value
-// * The Link to use for an operation if the function returns a "falsy" value
-const splitApi = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-    return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
-  },
-  wsApi,
-  httpApi
 );
 
 const afterwareLink = new ApolloLink((operation, forward) => {
@@ -74,7 +53,7 @@ const afterwareLink = new ApolloLink((operation, forward) => {
     const { response: { headers } } = context;
 
     if (headers) {
-      const authToken = headers.get('Authorization');
+      const authToken = headers.get('authorization');
       if (authToken) {
         localStorage.setItem('token', authToken.split('Bearer ')[1]);
       }
@@ -101,8 +80,22 @@ const logoutLink = onError(({ networkError, graphQLErrors }) => {
   }
 });
 
+// The split function takes three parameters:
+//
+// * A function that's called for each operation to execute
+// * The Link to use for an operation if the function returns a "truthy" value
+// * The Link to use for an operation if the function returns a "falsy" value
+const splitApi = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
+  },
+  wsApi,
+  httpApi
+);
+
 const api = new ApolloClient({
-  link: logoutLink.concat(afterwareLink).concat(splitApi),
+  link: afterwareLink.concat(logoutLink).concat(splitApi),
   credentials: 'include',
   cache: new InMemoryCache(),
 });

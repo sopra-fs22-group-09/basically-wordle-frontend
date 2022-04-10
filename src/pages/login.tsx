@@ -25,13 +25,17 @@ const Login = () => {
     password: FormDataEntryValue | null;
   }
 
+  interface LoginType {
+    login: User;
+  }
+
   interface LoginData {
     user: Login;
   }
 
   const navigate = useNavigate(); 
   // eslint-disable-next-line unused-imports/no-unused-vars
-  const [loginUser, { data, loading, error }] = useMutation<User, LoginData>(LOGIN_USER);
+  const [loginUser, { data, loading, error }] = useMutation<LoginType, LoginData>(LOGIN_USER);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -42,10 +46,9 @@ const Login = () => {
           username: formData.get('username'),
           password: formData.get('password') }
       },
-      onCompleted(user: User) {
-        if (user) {
-          localStorage.setItem('token', user.token as string);
-          localStorage.setItem('userId', user.id as string);
+      onCompleted(data) {
+        if (data.login) {
+          localStorage.setItem('userId', data.login.id as string);
           navigate('/');
         }
       }
