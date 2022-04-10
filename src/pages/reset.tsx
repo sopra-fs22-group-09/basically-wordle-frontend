@@ -3,11 +3,12 @@ import { Avatar, Box, Button, Container, Grid, Link, TextField, Typography } fro
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { gql, useMutation } from '@apollo/client';
 import { User } from '../models/User';
+import {useNavigate} from 'react-router-dom';
 
 const Reset = () => {
   const RESET_USER = gql`
-      mutation resetUser($user: RegisterInput!) {
-        resetUser(input: $user) {
+      mutation resetUser($user: ResetInput!) {
+        reset(input: $user) {
           email
           #verified
 	      }
@@ -18,14 +19,14 @@ const Reset = () => {
         email: FormDataEntryValue | null;
     }
 
-    interface RegistrationData {
+    interface ResetData {
         user: Reset;
     }
 
-    // eslint-disable-next-line unused-imports/no-unused-vars
-    const [resetUser, { data, loading, error }] = useMutation<User, RegistrationData>(
-      RESET_USER
-    );
+
+    const navigate = useNavigate();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [resetUser, { data, loading, error }] = useMutation<User, ResetData>(RESET_USER);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -34,6 +35,9 @@ const Reset = () => {
         variables: {
           user: {
             email: formData.get('email') }
+        },
+        onCompleted(){
+          navigate('/reset/confirmation');
         }
       });
     };
@@ -78,7 +82,6 @@ const Reset = () => {
               type="submit"
               fullWidth
               variant="contained"
-              href="/reset/confirmation"
               sx={{ mt: 3, mb: 2 }}
             >
                         Request password reset
