@@ -43,7 +43,7 @@ const httpApi = new HttpLink({
 const wsApi = new GraphQLWsLink(
   createClient({
     url: `${getWsDomain()}/graphqlws`,
-    connectionParams: commonHeaders
+    connectionParams: giveMeHeaders()
   })
 );
 
