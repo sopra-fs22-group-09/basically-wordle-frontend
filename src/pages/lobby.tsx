@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {
   Box,
-  Stack,
+  //Stack,
   Typography,
   List,
   ListItem,
