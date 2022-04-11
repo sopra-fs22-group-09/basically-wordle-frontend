@@ -1,21 +1,31 @@
 import * as React from 'react';
-import {Alert, Avatar, Box, Button, Container, Grid, Link, TextField, Typography} from '@mui/material';
+import {
+	Alert,
+	Avatar,
+	Box,
+	Button,
+	Container,
+	Grid, 
+	//Link,
+	TextField,
+	Typography
+} from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { gql, useMutation } from '@apollo/client';
 import { User } from '../models/User';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const TokenEntry = () => {
   const RESET_USER_TOKEN = gql`
-      mutation tokenEntry($user: ResetTokenInput!) {
-        resetWithToken(input: $user) {
-          id
-		      username
-          email
-          #verified
-	      }
+    mutation tokenEntry($user: ResetTokenInput!) {
+      resetWithToken(input: $user) {
+        id
+        username
+        email
+        #verified
       }
-    `;
+    }
+  `;
 
   interface tokenEntry {
     resetToken: FormDataEntryValue | null;
