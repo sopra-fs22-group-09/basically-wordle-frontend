@@ -38,7 +38,8 @@ const TokenEntry = () => {
 
 
   const navigate = useNavigate();
-  const [resetUser, {_data, loading, error}] = useMutation<User, tokenEntryData>(RESET_USER_TOKEN);
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  const [resetUser, {data, loading, error}] = useMutation<User, tokenEntryData>(RESET_USER_TOKEN);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
