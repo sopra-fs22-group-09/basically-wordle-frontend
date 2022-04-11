@@ -1,19 +1,14 @@
 import * as React from 'react';
 import {
-  Box, Button,
-  //FormControl,
-  //Input,
-  //InputLabel,
+  Box,
+  Button,
   Modal,
-  //Select,
-  //SelectChangeEvent,
   Slider,
   TextField,
   ToggleButton,
   ToggleButtonGroup
 } from '@mui/material';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
-//import MenuItem from '@mui/material/MenuItem';
 
 const LobbyConfirmation = () => {
 
@@ -47,7 +42,6 @@ const LobbyConfirmation = () => {
           left: '50%',
           transform: 'translate(-50%, -50%)',
           bgcolor: 'black',
-          border: '4px solid #ffffff',
           boxShadow: 24,
         }}
       >

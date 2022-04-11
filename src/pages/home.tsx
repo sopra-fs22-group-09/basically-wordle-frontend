@@ -47,7 +47,7 @@ const Home = () => {
   const dispatch = useAppDispatch();
 
   const toggleModal = () => {
-    dispatch({ type: 'modal/toggle', payload: 'lobbyConfirmation' });
+    dispatch({ type: 'modal/toggle', payload: 'login' });
   };
   const handleLobbyJoin = (lobbyId: GridRowId) => {
     alert('JOIN LOBBY WITH ID: ' + lobbyId);
