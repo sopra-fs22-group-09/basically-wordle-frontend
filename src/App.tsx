@@ -4,6 +4,7 @@ import { routes as appRoutes } from './routes';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import { ThemeProvider } from '@mui/material/styles';
+import LobbyConfirmation from './modals/LobbyConfirmation';
 
 function App() {
   // define theme
@@ -29,6 +30,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
+        <LobbyConfirmation />
         <Layout>
           <Routes>
             {appRoutes.filter(r => r.enabled).map((route) => (

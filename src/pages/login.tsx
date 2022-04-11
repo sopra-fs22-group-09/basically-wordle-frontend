@@ -127,6 +127,7 @@ const Login = () => {
     greetings
   }
 `;
+
   function LatestGreetings() {
     const { data, loading } = useSubscription<{greetings: string}>(
       GREETINGS_SUBSCRIPTION
@@ -138,6 +139,7 @@ const Login = () => {
       </h1>
     </>;
   }
+
   return (
     <Box
       sx={{

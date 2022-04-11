@@ -21,7 +21,8 @@ const Layout = ({ children }: LayoutProps) => {
         component="main"
         sx={{
           flexGrow: 1,
-          pt: 12.5,
+          height: 'calc(100% - 75px)',
+          transform: 'translate(0, 75px)',
           overflowY: 'scroll',
           overflowX: 'hidden',
           '&::-webkit-scrollbar': {display: 'none' },
