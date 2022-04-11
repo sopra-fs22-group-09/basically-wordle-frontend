@@ -1,11 +1,7 @@
 import * as React from 'react';
 import { useAppDispatch } from '../redux/hooks';
 import { DataGrid, GridRowId } from '@mui/x-data-grid';
-import {
-  Box,
-  Button,
-  //Stack
-} from '@mui/material';
+import { Box, Button } from '@mui/material';
 
 //TODO: get subscription data
 const lobbies = [
@@ -51,12 +47,12 @@ const Home = () => {
   const dispatch = useAppDispatch();
 
   const toggleModal = () => {
-    dispatch({ type: 'modal/toggle', payload: 'login' });
+    dispatch({ type: 'modal/toggle', payload: 'lobbyConfirmation' });
   };
   const handleLobbyJoin = (lobbyId: GridRowId) => {
     alert('JOIN LOBBY WITH ID: ' + lobbyId);
   };
-  
+
   return (
     <Box sx={{
       width:'90%',

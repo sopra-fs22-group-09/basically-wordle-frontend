@@ -1,14 +1,11 @@
 import { FC } from 'react';
 import { Route } from 'react-router-dom';
 import Home from '../pages/home';
-import Login from '../pages/login';
 import Profile from '../pages/profile';
-import Register from '../pages/register';
-import Reset from '../pages/reset';
-import Confirmation from '../pages/confirmation';
 import Lobby from '../pages/lobby';
-import TokenEntry from '../pages/tokenEntry';
-import ResetSuccess from '../pages/resetSuccess';
+import Login from '../modals/Login';
+import Register from '../modals/Register';
+import TokenEntry from '../modals/TokenEntry';
 
 /**
  * Main router of your application.
@@ -37,7 +34,7 @@ export const routes: Array<Route> = [
     path: '/',
     enabled: true,
     component: Home
-  },
+  },  
   {
     key: 'login-route',
     title: 'Login',
@@ -67,31 +64,10 @@ export const routes: Array<Route> = [
     component: Profile
   },
   {
-    key: 'password-reset-route',
+    key: 'token-entry-route',
     title: 'Password Reset',
     path: '/reset',
     enabled: true,
-    component: Reset
-  },
-  {
-    key: 'password-reset-success-route',
-    title: 'Success',
-    path: '/reset/tokenEntry/success',
-    enabled: true,
-    component: ResetSuccess
-  },
-  {
-    key: 'token-entry-route',
-    title: 'Password Reset',
-    path: '/reset/tokenEntry',
-    enabled: true,
     component: TokenEntry
   },
-  {
-    key: 'password-reset-confirmation-route',
-    title: 'Password Reset Confirmation',
-    path: '/reset/confirmation',
-    enabled: true,
-    component: Confirmation
-  }
 ];
