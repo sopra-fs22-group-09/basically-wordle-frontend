@@ -3,6 +3,8 @@ import { Alert, Avatar, Box, Button, Container, Grid, Link, TextField, Typograph
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { gql, useMutation } from '@apollo/client';
 import { User } from '../models/User';
+import { LoadingOverlay } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
 //import { gql, useSubscription } from '@apollo/client';
 
 const Login = () => {
@@ -23,12 +25,17 @@ const Login = () => {
     password: FormDataEntryValue | null;
   }
 
+  interface LoginType {
+    login: User;
+  }
+
   interface LoginData {
     user: Login;
   }
 
+  const navigate = useNavigate();
   // eslint-disable-next-line unused-imports/no-unused-vars
-  const [loginUser, { data, loading, error }] = useMutation<User, LoginData>(LOGIN_USER);
+  const [loginUser, { data, loading, error }] = useMutation<LoginType, LoginData>(LOGIN_USER);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -38,6 +45,12 @@ const Login = () => {
         user: {
           username: formData.get('username'),
           password: formData.get('password') }
+      },
+      onCompleted(data) {
+        if (data.login) {
+          localStorage.setItem('userId', data.login.id as string);
+          navigate('/');
+        }
       }
     });
   };
@@ -91,6 +104,7 @@ const Login = () => {
           >
             Sign In
           </Button>
+          <LoadingOverlay visible={loading} />
           <Grid container>
             <Grid item xs>
               <Link href="/reset" variant="body2">
@@ -113,7 +127,6 @@ const Login = () => {
     greetings
   }
 `;
-
   function LatestGreetings() {
     const { data, loading } = useSubscription<{greetings: string}>(
       GREETINGS_SUBSCRIPTION
@@ -125,7 +138,6 @@ const Login = () => {
       </h1>
     </>;
   }
-
   return (
     <Box
       sx={{
