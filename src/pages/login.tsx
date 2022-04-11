@@ -33,7 +33,7 @@ const Login = () => {
     user: Login;
   }
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [loginUser, { data, loading, error }] = useMutation<LoginType, LoginData>(LOGIN_USER);
 
