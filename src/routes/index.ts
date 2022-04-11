@@ -7,6 +7,8 @@ import Register from '../pages/register';
 import Reset from '../pages/reset';
 import Confirmation from '../pages/confirmation';
 import Lobby from '../pages/lobby';
+import TokenEntry from '../pages/tokenEntry';
+import ResetSuccess from '../pages/resetSuccess';
 
 /**
  * Main router of your application.
@@ -70,6 +72,20 @@ export const routes: Array<Route> = [
     path: '/reset',
     enabled: true,
     component: Reset
+  },
+  {
+    key: 'password-reset-success-route',
+    title: 'Success',
+    path: '/reset/tokenEntry/success',
+    enabled: true,
+    component: ResetSuccess
+  },
+  {
+    key: 'token-entry-route',
+    title: 'Password Reset',
+    path: '/reset/tokenEntry',
+    enabled: true,
+    component: TokenEntry
   },
   {
     key: 'password-reset-confirmation-route',
