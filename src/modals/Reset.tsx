@@ -34,9 +34,9 @@ const Reset = () => {
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [resetUser, { data, loading, error }] = useMutation<ResetUser, ResetData>(RESET_USER);
 
-  const closeModal = () => {
+  /*const closeModal = () => {
     dispatch({ type: 'modal/setState', payload: {isOpen: false} });
-  };
+  };*/
   const swapModal = (newModal: string) => {
     dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: newModal } });
   };

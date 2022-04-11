@@ -33,9 +33,9 @@ const TokenEntry = () => {
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [resetUser, {data, loading, error}] = useMutation<User, tokenEntryData>(RESET_USER_TOKEN);
 
-  const closeModal = () => {
+  /*const closeModal = () => {
     dispatch({ type: 'modal/setState', payload: {isOpen: false} });
-  };
+  };*/
   const swapModal = (newModal: string) => {
     dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: newModal } });
   };
