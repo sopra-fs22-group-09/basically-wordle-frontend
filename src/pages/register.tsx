@@ -5,6 +5,7 @@ import { gql, useMutation } from '@apollo/client';
 import { User } from '../models/User';
 import { useNavigate } from 'react-router-dom';
 import { LoadingOverlay } from '@mantine/core';
+import PasswordStrength from '../components/passwordStrengthMeter';
 
 const Register = () => {
   const ADD_USER = gql`
@@ -98,15 +99,7 @@ const Register = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="new-password"
-              />
+              <PasswordStrength />
             </Grid>
             {/*           <Grid item xs={12}>
             <FormControlLabel
