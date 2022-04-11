@@ -3,7 +3,7 @@ import { RootState } from '../store';
 
 export interface ModalState {
   isOpen: boolean;
-  modalWindow: 'login' | 'register' | 'reset' | 'lobbyConfirmation' | 'endgame'
+  modalWindow: 'login' | 'register' | 'reset' | 'tokenEntry' | 'lobbyConfirmation' | 'endgame'
 }
 
 const initialState: ModalState = {

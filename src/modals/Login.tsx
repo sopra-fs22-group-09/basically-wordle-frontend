@@ -38,8 +38,8 @@ const Login = () => {
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [loginUser, { data, loading, error }] = useMutation<LoginType, LoginData>(LOGIN_USER);
 
-  const toggleModal = () => {
-    dispatch({ type: 'modal/toggle', payload: 'login' });
+  const closeModal = () => {
+    dispatch({ type: 'modal/setState', payload: {isOpen: false} });
   };
   const swapModal = (newModal: string) => {
     dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: newModal } });
@@ -57,8 +57,7 @@ const Login = () => {
       onCompleted(data) {
         if (data.login) {
           localStorage.setItem('userId', data.login.id as string);
-          toggleModal();
-          //navigate('/');
+          closeModal();
         }
       }
     });
@@ -88,7 +87,8 @@ const Login = () => {
           <Typography component="h1" variant="h5">
             Sign In
           </Typography>
-          {(!loading && error) && <Alert sx={{ mt: 3, minWidth: 1, maxWidth: 1 }} variant="filled" severity="error">{error.message}</Alert>}
+          {(!loading && error) &&
+              <Alert sx={{ mt: 3, minWidth: 1, maxWidth: 1 }} variant="filled" severity="error">{error.message}</Alert>}
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
               margin="normal"
@@ -120,7 +120,7 @@ const Login = () => {
             <LoadingOverlay visible={loading} />
             <Grid container>
               <Grid item xs>
-                <Link component="button" variant="body2" onClick={() => swapModal('register')}>
+                <Link component="button" variant="body2" onClick={() => swapModal('reset')}>
                   Forgot your password?
                 </Link>
               </Grid>

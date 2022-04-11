@@ -1,13 +1,15 @@
 import React, {useEffect} from 'react';
 import { createTheme, CssBaseline} from '@mui/material';
 import { routes as appRoutes } from './routes';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import { ThemeProvider } from '@mui/material/styles';
-import LobbyConfirmation from './modals/LobbyConfirmation';
+import { useAppDispatch } from './redux/hooks';
 import Login from './modals/Login';
 import Register from './modals/Register';
-import { useAppDispatch } from './redux/hooks';
+import Reset from './modals/Reset';
+import LobbyConfirmation from './modals/LobbyConfirmation';
+import TokenEntry from './modals/TokenEntry';
 
 function App() {
   // define theme
@@ -43,6 +45,8 @@ function App() {
       <Router>
         <Register />
         <Login />
+        <Reset />
+        <TokenEntry />
         <LobbyConfirmation />
         <Layout>
           <Routes>
