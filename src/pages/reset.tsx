@@ -19,14 +19,17 @@ const Reset = () => {
         email: FormDataEntryValue | null;
     }
 
+    interface ResetUser {
+      reset: User;
+    }
+
     interface ResetData {
         user: Reset;
     }
 
-
     const navigate = useNavigate();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [resetUser, { data, loading, error }] = useMutation<User, ResetData>(RESET_USER);
+    // eslint-disable-next-line unused-imports/no-unused-vars
+    const [resetUser, { data, loading, error }] = useMutation<ResetUser, ResetData>(RESET_USER);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
