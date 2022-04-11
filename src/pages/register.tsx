@@ -4,6 +4,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { gql, useMutation } from '@apollo/client';
 import { User } from '../models/User';
 import { useNavigate } from 'react-router-dom';
+import { LoadingOverlay } from '@mantine/core';
 
 const Register = () => {
   const ADD_USER = gql`
@@ -58,10 +59,12 @@ const Register = () => {
     <Container component="main" maxWidth="xs">
       <Box
         sx={{
-          marginTop: 8,
+          mt: 10,
+          borderRadius: '4px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          position: 'relative',
         }}
       >
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
@@ -71,7 +74,7 @@ const Register = () => {
       Sign up
         </Typography>
         {(!loading && error) && <Alert sx={{ mt: 3, minWidth: 1, maxWidth: 1 }} variant="filled" severity="error">{error.message}</Alert>}
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, padding: '20px' }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -120,6 +123,11 @@ const Register = () => {
           >
         Sign Up
           </Button>
+          <LoadingOverlay
+            style={{ borderRadius: '4px' }}
+            loaderProps={{ size: 'lg', variant: 'dots' }}
+            overlayColor="#2C2E33"
+            visible={loading} />
           <Grid container justifyContent="">
             <Grid item>
               <Link href="/login" variant="body2">

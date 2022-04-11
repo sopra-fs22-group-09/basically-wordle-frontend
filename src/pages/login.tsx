@@ -59,10 +59,12 @@ const Login = () => {
     <Container component="main" maxWidth="xs">
       <Box
         sx={{
-          marginTop: 8,
+          mt: 10,
+          borderRadius: '4px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          position: 'relative',
         }}
       >
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
@@ -71,8 +73,9 @@ const Login = () => {
         <Typography component="h1" variant="h5">
           Sign In
         </Typography>
+        {/* Find a way to restrict width */}
         {(!loading && error) && <Alert sx={{ mt: 3, minWidth: 1, maxWidth: 1 }} variant="filled" severity="error">{error.message}</Alert>}
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, padding: '20px' }}>
           <TextField
             margin="normal"
             required
@@ -104,7 +107,11 @@ const Login = () => {
           >
             Sign In
           </Button>
-          <LoadingOverlay visible={loading} />
+          <LoadingOverlay
+            style={{ borderRadius: '4px' }}
+            loaderProps={{ size: 'lg', variant: 'dots' }}
+            overlayColor="#2C2E33"
+            visible={loading} />
           <Grid container>
             <Grid item xs>
               <Link href="/reset" variant="body2">
