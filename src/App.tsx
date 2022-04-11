@@ -1,10 +1,13 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { createTheme, CssBaseline} from '@mui/material';
 import { routes as appRoutes } from './routes';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import { ThemeProvider } from '@mui/material/styles';
 import LobbyConfirmation from './modals/LobbyConfirmation';
+import Login from './modals/Login';
+import Register from './modals/Register';
+import { useAppDispatch } from './redux/hooks';
 
 function App() {
   // define theme
@@ -26,16 +29,29 @@ function App() {
     },
   });
 
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (!localStorage.getItem('token')) {
+      dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
+    }
+  });
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
+        <Register />
+        <Login />
         <LobbyConfirmation />
         <Layout>
           <Routes>
-            {appRoutes.filter(r => r.enabled).map((route) => (
-              <Route key={route.key} path={route.path} element={<route.component />} />
-            ))}
+            {appRoutes
+              .filter(r => r.enabled)
+              .map((route) => (
+                <Route key={route.key} path={route.path} element={<route.component />} />
+              ))
+            }
           </Routes>
         </Layout>
       </Router>

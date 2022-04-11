@@ -1,8 +1,5 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-//import Divider from '@mui/material/Divider';
-//import MenuIcon from '@mui/icons-material/Menu';
-//import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 import { WithChildren } from '../../utils/utils';
 import Header from './Header';
@@ -13,6 +10,7 @@ import FriendsList from './FriendsList';
 type LayoutProps = WithChildren<{}>;
 
 const Layout = ({ children }: LayoutProps) => {
+
   return (
     <Box sx={{display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <Header />
