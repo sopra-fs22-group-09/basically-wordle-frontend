@@ -1,27 +1,14 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-
 import { WithChildren } from '../../utils/utils';
 import Header from './Header';
 import FriendsList from './FriendsList';
-import {useEffect} from 'react';
-import {useLocation} from 'react-router-dom';
-import {useAppDispatch} from '../../redux/hooks';
 
 // Do this explicitly if you need the component to have children!
 // eslint-disable-next-line @typescript-eslint/ban-types
 type LayoutProps = WithChildren<{}>;
 
 const Layout = ({ children }: LayoutProps) => {
-
-  const dispatch = useAppDispatch();
-  const location = useLocation();
-  
-  useEffect(() => {
-    if (location.pathname == '/reset') {
-      dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'tokenEntry'} });
-    }
-  }, [dispatch, location]);
   
   return (
     <Box sx={{display: 'flex', height: '100vh', overflow: 'hidden' }}>

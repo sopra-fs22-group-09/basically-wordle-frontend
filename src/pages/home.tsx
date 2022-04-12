@@ -43,7 +43,7 @@ const lobbies = [
 ];
 
 const Home = () => {
-  
+
   const dispatch = useAppDispatch();
 
   const toggleModal = () => {

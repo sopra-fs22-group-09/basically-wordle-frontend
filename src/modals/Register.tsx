@@ -4,6 +4,7 @@ import {Alert, Avatar, Box, Button, Grid, Link, Modal, TextField, Typography} fr
 import {gql, useMutation} from '@apollo/client';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import {useLocation, useNavigate} from 'react-router-dom';
 
 interface RegistrationFields {
   username: FormDataEntryValue | null;
@@ -31,19 +32,14 @@ const ADD_USER = gql`
     `;
 
 const Register = () => {
-  
+
+  const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'register');
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [addUser, { data, loading, error }] = useMutation<RegisterType, RegistrationData>(ADD_USER);
-
-  const closeModal = () => {
-    dispatch({ type: 'modal/setState', payload: {isOpen: false} });
-  };
-  const swapModal = (newModal: string) => {
-    dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: newModal } });
-  };
   
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -58,7 +54,10 @@ const Register = () => {
       onCompleted(data) {
         if (data.register) {
           localStorage.setItem('userId', data.register.id as string);
-          closeModal();
+          if (location.pathname == '/register') {
+            navigate('/');
+          }
+          dispatch({ type: 'modal/setState', payload: {isOpen: false} });
         }
       }
     });
@@ -135,7 +134,7 @@ const Register = () => {
             </Button>
             <Grid container justifyContent="">
               <Grid item>
-                <Link component="button" variant="body2" onClick={() => swapModal('login')}>
+                <Link component="button" variant="body2" onClick={() => navigate('login')}>
                   Already have an account? Sign In
                 </Link>
               </Grid>

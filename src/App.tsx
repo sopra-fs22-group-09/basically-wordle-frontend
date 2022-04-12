@@ -1,15 +1,15 @@
-import React, {useEffect} from 'react';
+import * as React from 'react';
 import { createTheme, CssBaseline} from '@mui/material';
 import { routes as appRoutes } from './routes';
-import {BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import { ThemeProvider } from '@mui/material/styles';
-import { useAppDispatch } from './redux/hooks';
+import Guard from './routes/Guard';
 import Login from './modals/Login';
 import Register from './modals/Register';
 import Reset from './modals/Reset';
-import LobbyConfirmation from './modals/LobbyConfirmation';
 import TokenEntry from './modals/TokenEntry';
+import LobbyConfirmation from './modals/LobbyConfirmation';
 
 function App() {
   // define theme
@@ -31,14 +31,6 @@ function App() {
     },
   });
 
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if (!localStorage.getItem('token')) {
-      dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
-    }
-  });
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -48,16 +40,18 @@ function App() {
         <Reset />
         <TokenEntry />
         <LobbyConfirmation />
-        <Layout>
-          <Routes>
-            {appRoutes
-              .filter(r => r.enabled)
-              .map((route) => (
-                <Route key={route.key} path={route.path} element={<route.component />} />
-              ))
-            }
-          </Routes>
-        </Layout>
+        <Guard>
+          <Layout>
+            <Routes>
+              {appRoutes
+                .filter(r => r.enabled)
+                .map((route) => (
+                  <Route key={route.key} path={route.path} element={ <route.component />} />
+                ))
+              }
+            </Routes>
+          </Layout>
+        </Guard>
       </Router>
     </ThemeProvider>
   );
