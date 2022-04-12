@@ -1,8 +1,14 @@
 import * as React from 'react';
 import {WithChildren} from '../utils/utils';
-import {useLocation} from 'react-router-dom';
+import {Navigate, useLocation} from 'react-router-dom';
 import {useAppDispatch} from '../redux/hooks';
 import {useEffect} from 'react';
+
+export const DefaultRoute = () => {
+  return (
+    <Navigate to={'/'} />
+  );
+};
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type LayoutProps = WithChildren<{}>;
@@ -13,18 +19,18 @@ const Guard = ({ children }: LayoutProps) => {
   const location = useLocation();
 
   useEffect(() => {
-    if (location.pathname == '/login') {
+    switch (location.pathname) {
+    case '/login':
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
       return;
-    }
-    if (location.pathname == '/register') {
+    case '/register':
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'register'} });
       return;
-    }
-    if (location.pathname == '/reset') {
+    case '/reset':
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'reset'} });
       return;
     }
+
     if (!localStorage.getItem('token')) {
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
     }
