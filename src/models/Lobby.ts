@@ -18,29 +18,67 @@ export type Lobby = {
   status: LobbyStatus;
   owner: User;
   size: Scalars['Int'];
-  name?: Maybe<Scalars['String']>;
-  gameCategory?: Maybe<GameCategory>;
-  gameMode?: Maybe<GameMode>;
+  name: Scalars['String'];
+  gameCategory: GameCategory;
+  gameSettings: GameSettings;
+  lobbyMembers: Array<Maybe<Scalars['ID']>>;
+};
+
+export type GameSettings = {
+  __typename?: 'GameSettings';
+  gameMode: GameMode;
+  amountRounds: Scalars['Int'];
+  roundTime: Scalars['Int'];
+};
+
+export type Message = {
+  __typename?: 'Message';
+  userId?: Maybe<Scalars['ID']>;
+  message?: Maybe<Scalars['String']>;
+};
+
+export type GameSettingsInput = {
+  gameMode: GameMode;
+  amountRounds: Scalars['Int'];
+  roundTime: Scalars['Int'];
+};
+
+export type QueryJoinLobbyByIdArgs = {
+  id: Scalars['Int'];
+};
+
+export type MutationCreateLobbyArgs = {
+  input: LobbyInput;
+};
+
+export type MutationUpdateLobbySettingsArgs = {
+  gameSettings: GameSettingsInput;
+};
+
+export type LobbyInput = {
+  size: Scalars['Int'];
+  name: Scalars['String'];
+  gameCategory: GameCategory;
 };
 
 export enum GameCategory {
-  PvP = 'PvP',
+  PvP = 'PVP',
   Coop = 'COOP',
   Solo = 'SOLO'
 }
 
 export enum GameMode {
-  WordsPp = 'Words_PP',
-  SonicFast = 'SonicFast',
-  TimeReset = 'TimeReset',
-  Party = 'Party',
-  Challenge = 'Challenge',
-  Chain = 'Chain',
-  Classic = 'Classic',
-  InTime = 'InTime',
-  PlayerVsAi = 'PlayerVsAI',
-  OneWord = 'OneWord',
-  WordCombination = 'WordCombination'
+  Wordspp = 'WORDSPP',
+  Sonicfast = 'SONICFAST',
+  Timereset = 'TIMERESET',
+  Party = 'PARTY',
+  Challenge = 'CHALLENGE',
+  Chain = 'CHAIN',
+  Classic = 'CLASSIC',
+  Intime = 'INTIME',
+  Playervsai = 'PLAYERVSAI',
+  Oneword = 'ONEWORD',
+  Wordcombination = 'WORDCOMBINATION'
 }
 
 export enum LobbyStatus {
@@ -48,8 +86,3 @@ export enum LobbyStatus {
   Full = 'FULL',
   Ingame = 'INGAME'
 }
-
-export type GameSettings = {
-  __typename?: 'GameSettings';
-  wordLength?: Maybe<Scalars['Int']>;
-};
