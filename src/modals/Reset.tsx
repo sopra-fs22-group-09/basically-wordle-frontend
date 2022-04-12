@@ -6,21 +6,21 @@ import {Alert, Avatar, Box, Button, Grid, Link, Modal, TextField, Typography} fr
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {useNavigate} from 'react-router-dom';
 
-interface ResetFields {
+export type ResetInput = {
   email: FormDataEntryValue | null;
-}
+};
 
-interface ResetData {
-  user: ResetFields;
-}
+export type MutationResetArgs = {
+  input: ResetInput;
+};
 
 interface ResetUser {
   reset: User;
 }
 
 const RESET_USER = gql`
-      mutation resetUser($user: ResetInput!) {
-        reset(input: $user) {
+      mutation resetUser($input: ResetInput!) {
+        reset(input: $input) {
           email
           #verified
 	      }
@@ -33,14 +33,14 @@ const Reset = () => {
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'reset');
   // eslint-disable-next-line unused-imports/no-unused-vars
-  const [resetUser, { data, loading, error }] = useMutation<ResetUser, ResetData>(RESET_USER);
+  const [resetUser, { data, loading, error }] = useMutation<ResetUser, MutationResetArgs>(RESET_USER);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     resetUser({
       variables: {
-        user: {
+        input: {
           email: formData.get('email') }
       },
       onCompleted(){

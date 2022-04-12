@@ -40,7 +40,7 @@ const Lobby = () => {
 
   const LOBBY_SUBSCRIPTION = gql`
     subscription {
-      lobbyFlux {
+      lobby {
         id
         name
       }
@@ -48,13 +48,13 @@ const Lobby = () => {
   `;
 
   function LatestLobby() {
-    const { data, loading } = useSubscription<{lobbyFlux: LobbyModel}>(
+    const { data, loading } = useSubscription<{lobby: LobbyModel}>(
       LOBBY_SUBSCRIPTION
     );
     return <>
       <p>Subscription answer:</p><br/>
       <p>
-        {(!loading && data?.lobbyFlux) ? data?.lobbyFlux.name : 'waiting for lobby events ...'}
+        {(!loading && data?.lobby) ? data?.lobby.name : 'waiting for lobby events ...'}
       </p>
     </>;
   }
