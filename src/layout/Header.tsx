@@ -4,7 +4,7 @@ import FaceIcon from '@mui/icons-material/Face';
 import { Avatar, Badge, IconButton, Toolbar } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { NavigationBar } from './NavigationBar';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 
 const drawerWidth = 240;
 

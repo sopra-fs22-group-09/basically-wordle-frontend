@@ -2,7 +2,7 @@ import * as React from 'react';
 import { createTheme, CssBaseline} from '@mui/material';
 import { routes as appRoutes } from './routes';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './components/layout/Layout';
+import Layout from './layout/Layout';
 import { ThemeProvider } from '@mui/material/styles';
 import Guard from './routes/Guard';
 import Login from './modals/Login';

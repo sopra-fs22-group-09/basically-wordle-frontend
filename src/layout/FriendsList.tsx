@@ -7,7 +7,7 @@ import { IconButton } from '@mui/material';
 import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
 import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
-import { useAppSelector, useAppDispatch } from '../../redux/hooks';
+import { useAppSelector, useAppDispatch } from '../redux/hooks';
 
 const drawerWidth = 240;
 

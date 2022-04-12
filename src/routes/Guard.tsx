@@ -1,34 +1,53 @@
 import * as React from 'react';
 import {WithChildren} from '../utils/utils';
-import {useLocation} from 'react-router-dom';
+import {Navigate, useLocation, useNavigate} from 'react-router-dom';
 import {useAppDispatch} from '../redux/hooks';
 import {useEffect} from 'react';
+
+export const DefaultRoute = () => {
+  return (
+    <Navigate to={'/'} />
+  );
+};
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type LayoutProps = WithChildren<{}>;
 
 const Guard = ({ children }: LayoutProps) => {
-  
-  const dispatch = useAppDispatch();
+
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (location.pathname == '/login') {
+    switch (location.pathname) {
+    case '/login':
+      if (localStorage.getItem('token')) {
+        navigate('/');
+        return;
+      }
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
       return;
-    }
-    if (location.pathname == '/register') {
+    case '/register':
+      if (localStorage.getItem('token')) {
+        navigate('/');
+        return;
+      }
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'register'} });
       return;
-    }
-    if (location.pathname == '/reset') {
+    case '/reset':
+      // if (localStorage.getItem('token')) {
+      //   navigate('/');
+      //   return;
+      // }
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'reset'} });
       return;
     }
+    
     if (!localStorage.getItem('token')) {
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
     }
-  }, [dispatch, location]);
+  }, [location, navigate, dispatch]);
 
   return (
     <>

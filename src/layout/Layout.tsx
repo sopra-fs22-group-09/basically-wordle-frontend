@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import { WithChildren } from '../../utils/utils';
+import { WithChildren } from '../utils/utils';
 import Header from './Header';
 import FriendsList from './FriendsList';
 

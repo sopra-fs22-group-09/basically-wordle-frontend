@@ -3,6 +3,7 @@ import { Route } from 'react-router-dom';
 import Home from '../pages/home';
 import Profile from '../pages/profile';
 import Lobby from '../pages/lobby';
+import { DefaultRoute } from './Guard';
 
 /**
  * Main router of your application.
@@ -73,5 +74,12 @@ export const routes: Array<Route> = [
     path: '/reset/{}',
     enabled: true,
     component: Home,
+  },
+  {
+    key: 'unmapped',
+    title: 'Unmapped Page',
+    path: '*',
+    enabled: true,
+    component: DefaultRoute,
   },
 ];
