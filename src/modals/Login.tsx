@@ -21,15 +21,15 @@ interface LoginType {
 }
 
 const LOGIN_USER = gql`
-      mutation signIn($user: LoginInput!) {
-        login(input: $user) {
-		      id
-		      username
-          email
-          #verified
-	      }
-      }
-    `;
+  mutation signIn($user: LoginInput!) {
+    login(input: $user) {
+      id
+      username
+      email
+      #verified
+    }
+  }
+`;
 
 const Login = () => {
 
