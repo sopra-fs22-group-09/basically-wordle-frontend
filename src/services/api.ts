@@ -6,6 +6,7 @@ import { ApolloClient, ApolloLink, InMemoryCache, split } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { getHttpDomain, getWsDomain } from '../utils/getDomain';
 import { onError } from '@apollo/client/link/error';
+import { logout } from '../utils/utils';
 
 const commonHeaders = {
   Accept: 'application/graphql+json',
@@ -27,12 +28,6 @@ function giveMeHeaders() {
     Authorization: `Bearer ${session.token}`,
     ...commonHeaders,
   };
-}
-
-function logout() {
-  // TODO: Implement here or elsewhere! Also reset store(s)!
-  localStorage.clear();
-  //console.log('Logout');
 }
 
 const httpApi = new HttpLink({

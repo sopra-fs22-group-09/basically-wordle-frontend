@@ -5,12 +5,13 @@ import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import HelpIcon from '@mui/icons-material/Help';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import SettingsIcon from '@mui/icons-material/Settings';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import IconButton from '@mui/material/IconButton';
 import { VolumeDown, VolumeUp } from '@mui/icons-material';
+import { logout } from '../utils/utils';
 
 export const NavigationBar = () => {
   
@@ -35,7 +36,7 @@ export const NavigationBar = () => {
           <IconButton sx={{color: 'black'}}>
             <InfoOutlinedIcon />
           </IconButton>
-          <IconButton sx={{color: 'black'}}>
+          <IconButton onClick={logout} sx={{color: 'black'}}>
             <LogoutIcon />
           </IconButton>
         </Stack>
