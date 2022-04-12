@@ -1,9 +1,10 @@
 import * as React from 'react';
 import {User} from '../models/User';
 import {gql, useMutation} from '@apollo/client';
-import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {useAppSelector} from '../redux/hooks';
 import {Alert, Avatar, Box, Button, Grid, Link, Modal, TextField, Typography} from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import {useNavigate} from 'react-router-dom';
 
 interface ResetFields {
   email: FormDataEntryValue | null;
@@ -28,18 +29,11 @@ const RESET_USER = gql`
 
 const Reset = () => {
 
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'reset');
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [resetUser, { data, loading, error }] = useMutation<ResetUser, ResetData>(RESET_USER);
-
-  /*const closeModal = () => {
-    dispatch({ type: 'modal/setState', payload: {isOpen: false} });
-  };*/
-  const swapModal = (newModal: string) => {
-    dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: newModal } });
-  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -106,8 +100,13 @@ const Reset = () => {
               Request password reset
             </Button>
             <Grid container justifyContent="">
-              <Grid item>
-                <Link component="button" variant="body2" onClick={() => swapModal('register')}>
+              <Grid item xs>
+                <Link component="button" variant="body2" onClick={() => navigate('login')}>
+                  Remember your password?
+                </Link>
+              </Grid>
+              <Grid item xs>
+                <Link component="button" variant="body2" onClick={() => navigate('register')}>
                   {'Don\'t have an account? Sign Up'}
                 </Link>
               </Grid>
