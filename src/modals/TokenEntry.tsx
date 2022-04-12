@@ -6,18 +6,18 @@ import {Alert, Avatar, Box, Button, Grid, Link, Modal, TextField, Typography} fr
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {useNavigate} from 'react-router-dom';
 
-interface tokenEntry {
+export type ResetTokenInput = {
   resetToken: FormDataEntryValue | null;
   password: FormDataEntryValue | null;
-}
+};
 
-interface tokenEntryData {
-  user: tokenEntry;
-}
+export type MutationResetWithTokenArgs = {
+  input: ResetTokenInput;
+};
 
 const RESET_USER_TOKEN = gql`
-    mutation tokenEntry($user: ResetTokenInput!) {
-      resetWithToken(input: $user) {
+    mutation tokenEntry($input: ResetTokenInput!) {
+      resetWithToken(input: $input) {
         id
         username
         email
@@ -32,14 +32,14 @@ const TokenEntry = () => {
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'tokenEntry');
   // eslint-disable-next-line unused-imports/no-unused-vars
-  const [resetUser, {data, loading, error}] = useMutation<User, tokenEntryData>(RESET_USER_TOKEN);
+  const [resetUser, {data, loading, error}] = useMutation<User, MutationResetWithTokenArgs>(RESET_USER_TOKEN);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     resetUser({
       variables: {
-        user: {
+        input: {
           resetToken: formData.get('resetToken'),
           password: formData.get('password')
         }

@@ -15,6 +15,8 @@ import {
 } from '@mui/material';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import { gql, useSubscription } from '@apollo/client';
+import { Lobby as LobbyModel } from '../models/Lobby';
 
 //get default gamemodes for category
 const gameModes = [
@@ -31,11 +33,31 @@ const wordCategories = [
 
 //TODO: get subscription data
 const Lobby = () => {
-
   const [gameMode, setGameMode] = React.useState(gameModes[0].label); //get initial mode ??
   const [lobbySize, setLobbySize] = React.useState(2); //get initial size
   const [gameRounds, setGameRounds] = React.useState(3); //get initial rounds
   //TODO: save di usgwählte: const [wordCategory, setWordCategory] = React.useState(''); //get default ??
+
+  const LOBBY_SUBSCRIPTION = gql`
+    subscription {
+      lobby {
+        id
+        name
+      }
+    }
+  `;
+
+  function LatestLobby() {
+    const { data, loading } = useSubscription<{lobby: LobbyModel}>(
+      LOBBY_SUBSCRIPTION
+    );
+    return <>
+      <p>Subscription answer:</p><br/>
+      <p>
+        {(!loading && data?.lobby) ? data?.lobby.name : 'waiting for lobby events ...'}
+      </p>
+    </>;
+  }
 
   return (
     <Box
@@ -66,6 +88,9 @@ const Lobby = () => {
         <Box sx={{ width: '49%', border:'solid 2px red', float: 'right' }}>
           <Typography variant='h5'>
             settings
+          </Typography>
+          <Typography variant='h3'>
+            {LatestLobby()}
           </Typography>
           <FormControl sx={{ width:150, m:2 }}>
             <InputLabel>Game Mode</InputLabel>

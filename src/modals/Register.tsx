@@ -6,30 +6,30 @@ import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {useLocation, useNavigate} from 'react-router-dom';
 
-interface RegistrationFields {
+export type RegisterInput = {
   username: FormDataEntryValue | null;
   email: FormDataEntryValue | null;
   password: FormDataEntryValue | null;
 }
 
-interface RegistrationData {
-  user: RegistrationFields;
-}
+export type MutationRegisterArgs = {
+  input: RegisterInput;
+};
 
 interface RegisterType {
   register: User;
 }
 
 const ADD_USER = gql`
-      mutation signUp($user: RegisterInput!) {
-        register(input: $user) {
-		      id
-		      username
-          email
-          #verified
-	      }
-      }
-    `;
+  mutation signUp($input: RegisterInput!) {
+    register(input: $input) {
+      id
+      username
+      email
+      #verified
+    }
+  }
+`;
 
 const Register = () => {
 
@@ -39,14 +39,14 @@ const Register = () => {
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'register');
   // eslint-disable-next-line unused-imports/no-unused-vars
-  const [addUser, { data, loading, error }] = useMutation<RegisterType, RegistrationData>(ADD_USER);
+  const [addUser, { data, loading, error }] = useMutation<RegisterType, MutationRegisterArgs>(ADD_USER);
   
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     addUser({
       variables: {
-        user: {
+        input: {
           username: formData.get('username'),
           email: formData.get('email'),
           password: formData.get('password') }

@@ -75,6 +75,14 @@ const logoutLink = onError(({ networkError, graphQLErrors }) => {
   }
 });
 
+const splitAfterware = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return !(definition.kind === 'OperationDefinition' && definition.operation === 'subscription');
+  },
+  afterwareLink,
+);
+
 // The split function takes three parameters:
 //
 // * A function that's called for each operation to execute
@@ -90,7 +98,7 @@ const splitApi = split(
 );
 
 const api = new ApolloClient({
-  link: afterwareLink.concat(logoutLink).concat(splitApi),
+  link: splitAfterware.concat(logoutLink).concat(splitApi),
   credentials: 'include',
   cache: new InMemoryCache(),
 });

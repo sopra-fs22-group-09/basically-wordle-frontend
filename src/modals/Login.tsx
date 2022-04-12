@@ -7,29 +7,29 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {LoadingOverlay} from '@mantine/core';
 import {Outlet, useLocation, useNavigate} from 'react-router-dom';
 
-interface LoginFields {
+export type LoginInput = {
   username: FormDataEntryValue | null;
   password: FormDataEntryValue | null;
-}
+};
 
-interface LoginData {
-  user: LoginFields;
-}
+export type MutationLoginArgs = {
+  input: LoginInput;
+};
 
 interface LoginType {
   login: User;
 }
 
 const LOGIN_USER = gql`
-      mutation signIn($user: LoginInput!) {
-        login(input: $user) {
-		      id
-		      username
-          email
-          #verified
-	      }
-      }
-    `;
+  mutation signIn($input: LoginInput!) {
+    login(input: $input) {
+      id
+      username
+      email
+      #verified
+    }
+  }
+`;
 
 const Login = () => {
 
@@ -39,14 +39,14 @@ const Login = () => {
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'login');
   // eslint-disable-next-line unused-imports/no-unused-vars
-  const [loginUser, { data, loading, error }] = useMutation<LoginType, LoginData>(LOGIN_USER);
+  const [loginUser, { data, loading, error }] = useMutation<LoginType, MutationLoginArgs>(LOGIN_USER);
   
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     loginUser({
       variables: {
-        user: {
+        input: {
           username: formData.get('username'),
           password: formData.get('password') }
       },
