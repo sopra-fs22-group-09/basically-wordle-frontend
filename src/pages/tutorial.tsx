@@ -35,6 +35,7 @@ const Tutorial = () => {
     user: tokenEntry;
   }
 
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [finishTutorial, { data, loading, error }] = useMutation<User, tokenData>(FINISH_TUTORIAL);
   const navigate = useNavigate();
   const [count, setCount] = useState(1);

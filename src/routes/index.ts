@@ -4,7 +4,7 @@ import Home from '../pages/home';
 import Profile from '../pages/profile';
 import Lobby from '../pages/lobby';
 import { DefaultRoute } from './Guard';
-import Tutorial from '../pages/Tutorial';
+import Tutorial from '../pages/tutorial';
 
 /**
  * Main router of your application.
