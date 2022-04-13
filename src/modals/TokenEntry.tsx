@@ -16,15 +16,15 @@ export type MutationResetWithTokenArgs = {
 };
 
 const RESET_USER_TOKEN = gql`
-    mutation tokenEntry($input: ResetTokenInput!) {
-      resetWithToken(input: $input) {
-        id
-        username
-        email
-        #verified
-      }
+  mutation tokenEntry($input: ResetTokenInput!) {
+    resetWithToken(input: $input) {
+      id
+      username
+      email
+      #verified
     }
-  `;
+  }
+`;
 
 const TokenEntry = () => {
 

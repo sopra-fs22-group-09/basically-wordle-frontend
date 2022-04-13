@@ -19,13 +19,13 @@ interface ResetUser {
 }
 
 const RESET_USER = gql`
-      mutation resetUser($input: ResetInput!) {
-        reset(input: $input) {
-          email
-          #verified
-	      }
-      }
-    `;
+  mutation resetUser($input: ResetInput!) {
+    reset(input: $input) {
+      email
+      #verified
+    }
+  }
+`;
 
 const Reset = () => {
 
