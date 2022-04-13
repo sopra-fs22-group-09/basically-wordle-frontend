@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {WithChildren} from '../utils/utils';
 import {Navigate, useLocation, useNavigate} from 'react-router-dom';
-import {useAppDispatch} from '../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {useEffect} from 'react';
 
 export const DefaultRoute = () => {
@@ -18,33 +18,26 @@ const Guard = ({ children }: LayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const open = useAppSelector(state => state.modal.isOpen);
 
   useEffect(() => {
     switch (location.pathname) {
     case '/login':
-      if (localStorage.getItem('token')) {
-        navigate('/');
-        return;
-      }
+      navigate('/');
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
       return;
     case '/register':
-      if (localStorage.getItem('token')) {
-        navigate('/');
-        return;
-      }
+      navigate('/');
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'register'} });
       return;
     case '/reset':
-      // if (localStorage.getItem('token')) {
-      //   navigate('/');
-      //   return;
-      // }
+      //  navigate('/');
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'reset'} });
       return;
     }
     
-    if (!localStorage.getItem('token')) {
+    if (!localStorage.getItem('token') && !open) { //TODO !open does not work, redirection still happens on wrong username/pw combination
+      navigate('/');
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
     }
   }, [location, navigate, dispatch]);
