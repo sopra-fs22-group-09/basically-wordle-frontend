@@ -4,6 +4,7 @@ import Home from '../pages/home';
 import Profile from '../pages/profile';
 import Lobby from '../pages/lobby';
 import { DefaultRoute } from './Guard';
+import Tutorial from '../pages/Tutorial';
 
 /**
  * Main router of your application.
@@ -46,6 +47,13 @@ export const routes: Array<Route> = [
     path: '/profile',
     enabled: true,
     component: Profile
+  },
+  {
+    key: 'tutorial-route',
+    title: 'Tutorial',
+    path: '/tutorial',
+    enabled: true,
+    component: Tutorial
   },
   {
     key: 'login-route',

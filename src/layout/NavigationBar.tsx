@@ -70,12 +70,10 @@ export const NavigationBar = () => {
             disabled={true} //{!localStorage.getItem('token')}
           />
         </Tooltip>
-        <Tooltip title='Coming soon!'>
-          <BottomNavigationAction
-            label="Tutorial" component={Link} to='/tutorial' icon={<HelpIcon />}
-            disabled={true} //{!localStorage.getItem('token')}
-          />
-        </Tooltip>
+        <BottomNavigationAction
+          label="Tutorial" component={Link} to='/tutorial' icon={<HelpIcon />}
+          disabled={!localStorage.getItem('token')}
+        />
       </BottomNavigation>
       {toolbar}
     </>
