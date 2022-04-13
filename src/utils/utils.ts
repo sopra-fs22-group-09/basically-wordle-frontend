@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import React from 'react';
-import {gql, useMutation} from '@apollo/client';
+import { gql } from '@apollo/client';
+//import { useMutation} from '@apollo/client';
 import {User} from '../models/User';
 
 type WithChildren<T = {}> = T & { children?: React.ReactNode };
 
 export type { WithChildren };
 
-export type LogoutInput = {
+/*export type LogoutInput = {
   test: string;
 };
 
@@ -25,7 +26,7 @@ const LOGOUT_USER = gql`
       username
     }
   }
-`;
+`;*/
 
 export function logout() {
   localStorage.clear();
