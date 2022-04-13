@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import React from 'react';
-import { gql } from '@apollo/client';
+//import { gql } from '@apollo/client';
 //import { useMutation} from '@apollo/client';
-import {User} from '../models/User';
+//import {User} from '../models/User';
 
 type WithChildren<T = {}> = T & { children?: React.ReactNode };
 
