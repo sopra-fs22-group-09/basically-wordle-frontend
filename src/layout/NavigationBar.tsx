@@ -16,7 +16,7 @@ import { logout } from '../utils/utils';
 export const NavigationBar = () => {
   
   const [tab, setTab] = useState(0);
-  const [volume, setVolume] = React.useState<number>(30);
+  const [volume, setVolume] = React.useState<number>(localStorage.getItem('volume') ? Number(localStorage.getItem('volume')) : 30);
 
   const handleVolumeChange = (event: Event, newValue: number | number[]) => {
     setVolume(newValue as number);
