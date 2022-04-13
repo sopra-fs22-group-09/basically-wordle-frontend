@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   Box,
-  //Stack,
   Typography,
   List,
   ListItem,
@@ -15,8 +14,7 @@ import {
 } from '@mui/material';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { gql, useSubscription } from '@apollo/client';
-import { Lobby as LobbyModel } from '../models/Lobby';
+import {useEffect} from 'react';
 
 //get default gamemodes for category
 const gameModes = [
@@ -31,45 +29,41 @@ const wordCategories = [
   { category: 'cats' },
 ];
 
+/*const LOBBY_SUBSCRIPTION = gql`
+  subscription subscribeLobby($id: number!) {
+    lobby(id: $id) {
+      id
+      size
+      name
+      gameCategory
+      #gameSettings
+      #lobbyMembers
+    }
+  }
+`;*/
+
 //TODO: get subscription data
 const Lobby = () => {
   const [gameMode, setGameMode] = React.useState(gameModes[0].label); //get initial mode ??
-  const [lobbySize, setLobbySize] = React.useState(2); //get initial size
+  const [lobbySize, setLobbySize] = React.useState(Number(localStorage.getItem('lobbySize'))); //get initial size
   const [gameRounds, setGameRounds] = React.useState(3); //get initial rounds
-  //TODO: save di usgwählte: const [wordCategory, setWordCategory] = React.useState(''); //get default ??
 
-  const LOBBY_SUBSCRIPTION = gql`
-    subscription {
-      lobby {
-        id
-        name
-      }
-    }
-  `;
-
-  function LatestLobby() {
-    const { data, loading } = useSubscription<{lobby: LobbyModel}>(
-      LOBBY_SUBSCRIPTION
-    );
-    return <>
-      <p>Subscription answer:</p><br/>
-      <p>
-        {(!loading && data?.lobby) ? data?.lobby.name : 'waiting for lobby events ...'}
-      </p>
-    </>;
-  }
+  useEffect(() => {
+    alert('yyyyyyyy');
+    //subscribe
+  });
 
   return (
     <Box
       sx={{
         width:'90%',
         mx:'auto',
-        mt: 2,
+        mt: '2.5%',
         textAlign: 'center'
       }}
     >
       <Typography variant='h1' sx={{fontSize: 48}}>
-        {'jemaie\'s Game'}
+        {localStorage.getItem('lobbyName') /*TODO: replace with subscription*/}
       </Typography>
       <Box sx={{ width: '66%!important', float: 'left', border:'solid 2px white' }}>
         <Box sx={{ width: '49%', border:'solid 2px red', float: 'left' }}>
@@ -90,7 +84,6 @@ const Lobby = () => {
             settings
           </Typography>
           <Typography variant='h3'>
-            {LatestLobby()}
           </Typography>
           <FormControl sx={{ width:150, m:2 }}>
             <InputLabel>Game Mode</InputLabel>

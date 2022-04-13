@@ -47,24 +47,18 @@ export type QueryJoinLobbyByIdArgs = {
   id: Scalars['Int'];
 };
 
-export type MutationCreateLobbyArgs = {
-  input: LobbyInput;
-};
+
 
 export type MutationUpdateLobbySettingsArgs = {
   gameSettings: GameSettingsInput;
 };
 
-export type LobbyInput = {
-  size: Scalars['Int'];
-  name: Scalars['String'];
-  gameCategory: GameCategory;
-};
+
 
 export enum GameCategory {
-  PvP = 'PVP',
-  Coop = 'COOP',
-  Solo = 'SOLO'
+  PVP = 'PVP',
+  COOP = 'COOP',
+  SOLO = 'SOLO'
 }
 
 export enum GameMode {
