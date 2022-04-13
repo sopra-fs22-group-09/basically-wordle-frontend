@@ -11,11 +11,12 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import IconButton from '@mui/material/IconButton';
 import { VolumeDown, VolumeUp } from '@mui/icons-material';
+import { logout } from '../utils/utils';
 
 export const NavigationBar = () => {
   
   const [tab, setTab] = useState(0);
-  const [volume, setVolume] = React.useState<number>(30);
+  const [volume, setVolume] = React.useState<number>(localStorage.getItem('volume') ? Number(localStorage.getItem('volume')) : 30);
 
   const handleVolumeChange = (event: Event, newValue: number | number[]) => {
     setVolume(newValue as number);
@@ -35,7 +36,7 @@ export const NavigationBar = () => {
           <IconButton sx={{color: 'black'}}>
             <InfoOutlinedIcon />
           </IconButton>
-          <IconButton sx={{color: 'black'}}>
+          <IconButton onClick={logout} sx={{color: 'black'}}>
             <LogoutIcon />
           </IconButton>
         </Stack>

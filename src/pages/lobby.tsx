@@ -40,7 +40,7 @@ const Lobby = () => {
 
   const LOBBY_SUBSCRIPTION = gql`
     subscription {
-      lobbyFlux {
+      lobby {
         id
         name
       }
@@ -48,13 +48,13 @@ const Lobby = () => {
   `;
 
   function LatestLobby() {
-    const { data, loading } = useSubscription<{lobbyFlux: LobbyModel}>(
+    const { data, loading } = useSubscription<{lobby: LobbyModel}>(
       LOBBY_SUBSCRIPTION
     );
     return <>
       <p>Subscription answer:</p><br/>
       <p>
-        {(!loading && data?.lobbyFlux) ? data?.lobbyFlux.name : 'waiting for lobby events ...'}
+        {(!loading && data?.lobby) ? data?.lobby.name : 'waiting for lobby events ...'}
       </p>
     </>;
   }
@@ -64,14 +64,14 @@ const Lobby = () => {
       sx={{
         width:'90%',
         mx:'auto',
-        mt:'2.5%',
+        mt: 2,
         textAlign: 'center'
       }}
     >
-      <Typography variant='h1' sx={{fontSize: 48}}> {/*TODO Naja...*/}
+      <Typography variant='h1' sx={{fontSize: 48}}>
         {'jemaie\'s Game'}
       </Typography>
-      <Box sx={{ width: '66%!important', float: 'left', border:'solid 2px orange' }}>
+      <Box sx={{ width: '66%!important', float: 'left', border:'solid 2px white' }}>
         <Box sx={{ width: '49%', border:'solid 2px red', float: 'left' }}>
           <Typography variant='h5'>
             players
@@ -154,7 +154,7 @@ const Lobby = () => {
           />
         </Box>
         <br />
-        <Box sx={{clear: 'both', width: '66%', maxWidth: 500, mt: 38, mx: 'auto', textAlign: 'left', border:'solid 2px blue'}}>
+        <Box sx={{clear: 'both', width: '66%', maxWidth: 500, mt: 38, mx: 'auto', textAlign: 'left', border:'solid 2px red'}}>
           <TextField
             type='text'
             defaultValue='this is a link to copy'
@@ -175,7 +175,7 @@ const Lobby = () => {
           <Button variant="contained" sx={{ mt:2, float: 'right'}}>Start Game</Button>
         </Box>
       </Box>
-      <Box sx={{ float: 'right', width: '33%!important', height: 'calc(100vh - 300px)', border:'solid 2px white' }}>
+      <Box sx={{ float: 'right', width: '33%!important', height: 'calc(100vh - 147px)', border:'solid 2px white' }}>
         chat
       </Box>
     </Box>
