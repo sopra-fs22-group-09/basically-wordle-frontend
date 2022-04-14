@@ -7,6 +7,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {useLocation, useNavigate} from 'react-router-dom';
 import { LoadingOverlay } from '@mantine/core';
 import PasswordStrength from '../components/passwordStrengthMeter';
+import { useLocalStorage } from '@mantine/hooks';
 
 export type RegisterInput = {
   username: FormDataEntryValue | null;
@@ -38,6 +39,7 @@ const Register = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [, setUserId] = useLocalStorage<string>({ key: 'userId' });
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'register');
   // eslint-disable-next-line unused-imports/no-unused-vars
@@ -55,11 +57,12 @@ const Register = () => {
       },
       onCompleted(data) {
         if (data.register) {
-          localStorage.setItem('userId', data.register.id as string);
+          setUserId(data.register.id as string);
           if (location.pathname == '/register') {
             navigate('/');
           }
           dispatch({ type: 'modal/setState', payload: {isOpen: false} });
+          window.location.reload();
         }
       }
     });
