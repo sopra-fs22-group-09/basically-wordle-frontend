@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {useAppDispatch} from '../redux/hooks';
-import {DataGrid, GridRowId} from '@mui/x-data-grid';
-import {Box, Button, Stack} from '@mui/material';
+import { useAppDispatch } from '../redux/hooks';
+import { DataGrid, GridRowId } from '@mui/x-data-grid';
+import { Box, Button } from '@mui/material';
 
 //TODO: get subscription data
 const lobbies = [
@@ -43,7 +43,7 @@ const lobbies = [
 ];
 
 const Home = () => {
-  
+
   const dispatch = useAppDispatch();
 
   const toggleModal = () => {
@@ -52,54 +52,58 @@ const Home = () => {
   const handleLobbyJoin = (lobbyId: GridRowId) => {
     alert('JOIN LOBBY WITH ID: ' + lobbyId);
   };
-  
+
   return (
     <Box sx={{
       width:'90%',
       mx:'auto',
       mt:'2.5%',
     }}>
-      <Stack sx={{ display:'flex', height:'100%' }}>
-        <Box sx={{ m:'auto', mb:'2.5%' }}>
-          <Button variant="contained" onClick={toggleModal}>
-            Create New Lobby
-          </Button>
-        </Box>
-        <Box sx={{ flexGrow:1 }}>
-          <DataGrid autoHeight disableSelectionOnClick
-            sx={{ '&.MuiDataGrid-root.MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus':
-              { outline:'none' }
-            }}
-            onRowClick={((params, event) => {
-              event.defaultMuiPrevented = true;
-              handleLobbyJoin(params.id);
-            })}
-            columns={[
-              {
-                field: 'lobby',
-                headerName: 'Lobby',
-                flex: 1,
-              },
-              {
-                field: 'mode',
-                headerName: 'Mode',
-                width: 100,
-              },
-              {
-                field: 'category',
-                headerName: 'Category',
-                width: 100,
-              },
-              {
-                field: 'player',
-                headerName: 'Player',
-                width: 100,
-              },
-            ]}
-            rows={lobbies}
-          />
-        </Box>
-      </Stack>
+      <Button
+        variant="contained"
+        onClick={toggleModal}
+        sx={{
+          display: 'block', // Margin does not apply without this line
+          mx: 'auto',
+          mb: '2.5%'
+        }}
+      >
+        Create New Lobby
+      </Button>
+      <DataGrid autoHeight disableSelectionOnClick
+        sx={{
+          '&.MuiDataGrid-root.MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus': { outline:'none' },
+          '.MuiDataGrid-virtualScrollerContent' : {overflowX: 'hidden'}
+        }}
+        onRowClick={((params, event) => {
+          event.defaultMuiPrevented = true;
+          handleLobbyJoin(params.id);
+        })}
+        columns={[
+          {
+            field: 'lobby',
+            headerName: 'Lobby',
+            flex: 1,
+            minWidth: 200,
+          },
+          {
+            field: 'mode',
+            headerName: 'Mode',
+            width: 100,
+          },
+          {
+            field: 'category',
+            headerName: 'Category',
+            width: 100,
+          },
+          {
+            field: 'player',
+            headerName: 'Player',
+            width: 100,
+          },
+        ]}
+        rows={lobbies}
+      />
     </Box>
   );
 };

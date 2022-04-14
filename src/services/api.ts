@@ -29,12 +29,6 @@ function giveMeHeaders() {
   };
 }
 
-function logout() {
-  // TODO: Implement here or elsewhere! Also reset store(s)!
-  localStorage.clear();
-  //console.log('Logout');
-}
-
 const httpApi = new HttpLink({
   uri: `${getHttpDomain()}/graphql`,
   headers: giveMeHeaders()
@@ -69,16 +63,24 @@ const logoutLink = onError(({ networkError, graphQLErrors }) => {
       //console.log(err);
       switch (err.extensions.code) {
       case 'UNAUTHORIZED':
-        logout();
+      //logout(); TODO
       }
     }
   }
   else if (networkError) {
     if ('statusCode' in networkError) {
-      if (networkError.statusCode === 401) logout();
+      if (networkError.statusCode === 401) {/*logout();*/} //TODO
     }
   }
 });
+
+const splitAfterware = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return !(definition.kind === 'OperationDefinition' && definition.operation === 'subscription');
+  },
+  afterwareLink,
+);
 
 // The split function takes three parameters:
 //
@@ -95,7 +97,7 @@ const splitApi = split(
 );
 
 const api = new ApolloClient({
-  link: afterwareLink.concat(logoutLink).concat(splitApi),
+  link: splitAfterware.concat(logoutLink).concat(splitApi),
   credentials: 'include',
   cache: new InMemoryCache(),
 });

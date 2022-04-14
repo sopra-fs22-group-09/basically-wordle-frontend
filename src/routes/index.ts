@@ -1,12 +1,10 @@
 import { FC } from 'react';
 import { Route } from 'react-router-dom';
 import Home from '../pages/home';
-import Login from '../pages/login';
 import Profile from '../pages/profile';
-import Register from '../pages/register';
-import Reset from '../pages/reset';
-import Confirmation from '../pages/confirmation';
 import Lobby from '../pages/lobby';
+import { DefaultRoute } from './Guard';
+import Tutorial from '../pages/tutorial';
 
 /**
  * Main router of your application.
@@ -34,21 +32,7 @@ export const routes: Array<Route> = [
     title: 'Home',
     path: '/',
     enabled: true,
-    component: Home
-  },
-  {
-    key: 'login-route',
-    title: 'Login',
-    path: '/login',
-    enabled: true,
-    component: Login
-  },
-  {
-    key: 'registration-route',
-    title: 'Register',
-    path: '/register',
-    enabled: true,
-    component: Register
+    component: Home,
   },
   {
     key: 'lobby-route',
@@ -65,17 +49,45 @@ export const routes: Array<Route> = [
     component: Profile
   },
   {
-    key: 'password-reset-route',
+    key: 'tutorial-route',
+    title: 'Tutorial',
+    path: '/tutorial',
+    enabled: true,
+    component: Tutorial
+  },
+  {
+    key: 'login-route',
+    title: 'Login',
+    path: '/login',
+    enabled: !localStorage.getItem('token'),
+    component: Home,
+  },
+  {
+    key: 'register-route',
+    title: 'Register',
+    path: '/register',
+    enabled: !localStorage.getItem('token'),
+    component: Home,
+  },
+  {
+    key: 'reset-route',
     title: 'Password Reset',
     path: '/reset',
     enabled: true,
-    component: Reset
+    component: Home,
   },
   {
-    key: 'password-reset-confirmation-route',
-    title: 'Password Reset Confirmation',
-    path: '/reset/confirmation',
+    key: 'token-entry-route',
+    title: 'Token Entry',
+    path: '/reset/{}',
     enabled: true,
-    component: Confirmation
-  }
+    component: Home,
+  },
+  {
+    key: 'unmapped',
+    title: 'Unmapped Page',
+    path: '*',
+    enabled: true,
+    component: DefaultRoute,
+  },
 ];

@@ -3,7 +3,7 @@ import { RootState } from '../store';
 
 export interface ModalState {
   isOpen: boolean;
-  modalWindow: 'login' | 'register' | 'reset' | 'lobbyConfirmation' | 'endgame'
+  modalWindow: 'login' | 'register' | 'reset' | 'tokenEntry' | 'lobbyConfirmation' | 'endgame'
 }
 
 const initialState: ModalState = {
@@ -31,7 +31,7 @@ export const modalSlice = createSlice({
   },
 });
 
-export const { toggle } = modalSlice.actions;
+export const { toggle, setState } = modalSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

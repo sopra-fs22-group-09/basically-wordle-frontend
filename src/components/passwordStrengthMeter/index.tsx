@@ -55,6 +55,7 @@ const PasswordStrength = () => {
       withArrow={false}
       styles={{ popover: { width: '100%', backgroundColor: '#2C2E30'}, arrow: { color: '#2C2E30' }, wrapper: { color: '#2C2E30' } }}
       trapFocus={false}
+      zIndex={9001}
       transition="pop-top-left"
       onFocusCapture={() => setPopoverOpened(true)}
       onBlurCapture={() => setPopoverOpened(false)}
