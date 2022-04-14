@@ -6,7 +6,6 @@ import { ApolloClient, ApolloLink, InMemoryCache, split } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { getHttpDomain, getWsDomain } from '../utils/getDomain';
 import { onError } from '@apollo/client/link/error';
-import { logout } from '../utils/utils';
 
 const commonHeaders = {
   Accept: 'application/graphql+json',
@@ -64,13 +63,13 @@ const logoutLink = onError(({ networkError, graphQLErrors }) => {
       //console.log(err);
       switch (err.extensions.code) {
       case 'UNAUTHORIZED':
-        logout();
+      //logout(); TODO
       }
     }
   }
   else if (networkError) {
     if ('statusCode' in networkError) {
-      if (networkError.statusCode === 401) logout();
+      if (networkError.statusCode === 401) {/*logout();*/} //TODO
     }
   }
 });
