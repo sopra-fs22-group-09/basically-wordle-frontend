@@ -28,7 +28,7 @@ export const NavigationBar = () => {
   const [tab, setTab] = useState(0);
   const [volume, setVolume] = React.useState<number>(localStorage.getItem('volume') ? Number(localStorage.getItem('volume')) : 30);
   const [logoutUser] = useMutation<LogoutType>(LOGOUT_USER);
-  const open = useAppSelector(state => state.drawer.isOpen);
+  const _open = useAppSelector(state => state.drawer.isOpen);
 
   const handleVolumeChange = (event: Event, newValue: number | number[]) => {
     setVolume(newValue as number);

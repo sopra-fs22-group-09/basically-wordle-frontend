@@ -4,7 +4,6 @@ import {gql, useMutation} from '@apollo/client';
 import {useAppSelector} from '../redux/hooks';
 import {Alert, Avatar, Box, Button, Grid, Link, Modal, TextField, Typography} from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import {useNavigate} from 'react-router-dom';
 
 export type ResetInput = {
   email: FormDataEntryValue | null;
@@ -28,8 +27,6 @@ const RESET_USER = gql`
 `;
 
 const Reset = () => {
-
-  const navigate = useNavigate();
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'reset');
   // eslint-disable-next-line unused-imports/no-unused-vars
@@ -101,13 +98,13 @@ const Reset = () => {
             </Button>
             <Grid container justifyContent="">
               <Grid item xs>
-                <Link component="button" variant="body2" onClick={() => navigate('login')}>
+                <Link href='/login' variant="body2">
                   Remember your password?
                 </Link>
               </Grid>
               <Grid item xs>
-                <Link component="button" variant="body2" onClick={() => navigate('register')}>
-                  {'Don\'t have an account? Sign Up'}
+                <Link href='/register' variant="body2">
+                  Don&apos;t have an account? Sign Up
                 </Link>
               </Grid>
             </Grid>

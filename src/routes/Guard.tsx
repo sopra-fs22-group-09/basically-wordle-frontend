@@ -21,26 +21,24 @@ const Guard = ({ children }: LayoutProps) => {
   const open = useAppSelector(state => state.modal.isOpen);
 
   useEffect(() => {
+    if (!localStorage.getItem('token') && !open) {
+      navigate('/login');
+      dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
+    }
+
     switch (location.pathname) {
     case '/login':
-      navigate('/');
-      dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
       return;
     case '/register':
-      navigate('/');
-      dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'register'} });
+      if (!localStorage.getItem('token')) {
+        dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'register'} });
+      }
       return;
     case '/reset':
-      //  navigate('/');
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'reset'} });
       return;
     }
-    
-    if (!localStorage.getItem('token') && !open) { //TODO !open does not work, redirection still happens on wrong username/pw combination
-      navigate('/');
-      dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
-    }
-  }, [location, navigate, dispatch]);
+  }, [location, navigate, dispatch, open]);
 
   return (
     <>
