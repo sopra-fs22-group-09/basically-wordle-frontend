@@ -120,13 +120,13 @@ const Login = () => {
               <LoadingOverlay visible={loading} />
               <Grid container>
                 <Grid item xs>
-                  <Link component="button" variant="body2" onClick={() => navigate('reset')}>
+                  <Link href='/reset' variant="body2">
                     Forgot your password?
                   </Link>
                 </Grid>
                 <Grid item xs>
-                  <Link component="button" variant="body2" onClick={() => navigate('register')}>
-                    {'Don\'t have an account? Sign Up'}
+                  <Link href='/register' variant="body2">
+                    Don&apos;t have an account? Sign Up
                   </Link>
                 </Grid>
               </Grid>

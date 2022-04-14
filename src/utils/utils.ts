@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import React, {useEffect} from 'react';
+import React from 'react';
 
 type WithChildren<T = {}> = T & { children?: React.ReactNode };
 

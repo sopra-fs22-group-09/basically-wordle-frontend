@@ -134,7 +134,7 @@ const Register = () => {
             </Button>
             <Grid container justifyContent="">
               <Grid item>
-                <Link component="button" variant="body2" onClick={() => navigate('login')}>
+                <Link href='/login' variant="body2">
                   Already have an account? Sign In
                 </Link>
               </Grid>
