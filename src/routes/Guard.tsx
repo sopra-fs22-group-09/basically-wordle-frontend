@@ -3,6 +3,7 @@ import {WithChildren} from '../utils/utils';
 import {Navigate, useLocation, useNavigate} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {useEffect} from 'react';
+import { useLocalStorage } from '@mantine/hooks';
 
 export const DefaultRoute = () => {
   return (
@@ -15,13 +16,15 @@ type LayoutProps = WithChildren<{}>;
 
 const Guard = ({ children }: LayoutProps) => {
 
+  const [token] = useLocalStorage<string>({ key: 'token' });
+
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const open = useAppSelector(state => state.modal.isOpen);
 
   useEffect(() => {
-    if (!localStorage.getItem('token') && !open) {
+    if (!token && !open) {
       navigate('/login');
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
     }
@@ -30,7 +33,7 @@ const Guard = ({ children }: LayoutProps) => {
     case '/login':
       return;
     case '/register':
-      if (!localStorage.getItem('token')) {
+      if (!token) {
         dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'register'} });
       }
       return;
@@ -38,7 +41,7 @@ const Guard = ({ children }: LayoutProps) => {
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'reset'} });
       return;
     }
-  }, [location, navigate, dispatch, open]);
+  }, [location, navigate, dispatch, open, token]);
 
   return (
     <>

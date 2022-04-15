@@ -15,6 +15,7 @@ import {
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import {useEffect} from 'react';
+import { useLocalStorage } from '@mantine/hooks';
 
 //get default gamemodes for category
 const gameModes = [
@@ -47,6 +48,7 @@ const Lobby = () => {
   const [gameMode, setGameMode] = React.useState(gameModes[0].label); //get initial mode ??
   const [lobbySize, setLobbySize] = React.useState(Number(localStorage.getItem('lobbySize'))); //get initial size
   const [gameRounds, setGameRounds] = React.useState(3); //get initial rounds
+  const [token] = useLocalStorage<string>({ key: 'token' });
 
   useEffect(() => {
     alert('yyyyyyyy');
@@ -126,7 +128,7 @@ const Lobby = () => {
           <Autocomplete //TODO: wie chume a di usgwählte?
             sx={{ m:'auto', width:'80%' }}
             multiple
-            readOnly={!localStorage.getItem('token')}
+            readOnly={!token}
             disableCloseOnSelect
             options={wordCategories}
             getOptionLabel={(option) => option.category}

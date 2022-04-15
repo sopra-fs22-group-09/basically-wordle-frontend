@@ -57,6 +57,7 @@ const Login = () => {
             navigate('/');
           }
           dispatch({ type: 'modal/setState', payload: {isOpen: false} });
+          window.location.reload();
         }
       }
     });
@@ -70,6 +71,8 @@ const Login = () => {
         <Box
           sx={{
             display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
             position: 'absolute',
             width: '60%',
             height: '60%',
@@ -80,7 +83,18 @@ const Login = () => {
             boxShadow: 24,
           }}
         >
-          <Box sx={{ width:'80%', height:'80%', m:'auto', textAlign:'center' }}>
+          <Box sx={{
+            mt: 10,
+            borderRadius: '4px',
+            // display: 'flex',
+            // flexDirection: 'column',
+            // alignItems: 'center',
+            position: 'relative',
+            // width:'80%',
+            height:'80%',
+            m:'auto',
+            textAlign:'center'
+          }}>
             <Avatar sx={{ m: 'auto', bgcolor: 'secondary.main' }}>
               <LockOutlinedIcon />
             </Avatar>
@@ -89,7 +103,8 @@ const Login = () => {
             </Typography>
             {(!loading && error) &&
                 <Alert sx={{ mt: 3, minWidth: 1, maxWidth: 1 }} variant="filled" severity="error">{error.message}</Alert>}
-            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            {/* Find a way to stretch width */}
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, padding: '20px' }}>
               <TextField
                 margin="normal"
                 required
@@ -117,14 +132,19 @@ const Login = () => {
               >
                 Sign In
               </Button>
-              <LoadingOverlay visible={loading} />
+              <LoadingOverlay
+                style={{ borderRadius: '4px' }}
+                loaderProps={{ size: 'lg', variant: 'dots' }}
+                overlayColor="#2C2E33"
+                visible={loading}
+              />
               <Grid container>
                 <Grid item xs>
                   <Link href='/reset' variant="body2">
                     Forgot your password?
                   </Link>
                 </Grid>
-                <Grid item xs>
+                <Grid item>
                   <Link href='/register' variant="body2">
                     Don&apos;t have an account? Sign Up
                   </Link>

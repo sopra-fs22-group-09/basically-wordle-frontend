@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import { VolumeDown, VolumeUp } from '@mui/icons-material';
 import { gql, useMutation } from '@apollo/client';
 import { useAppSelector } from '../redux/hooks';
+import { useLocalStorage } from '@mantine/hooks';
 
 interface LogoutType {
   logout: boolean;
@@ -26,13 +27,13 @@ const LOGOUT_USER = gql`
 
 export const NavigationBar = () => {
   const [tab, setTab] = useState(0);
-  const [volume, setVolume] = React.useState<number>(localStorage.getItem('volume') ? Number(localStorage.getItem('volume')) : 30);
   const [logoutUser] = useMutation<LogoutType>(LOGOUT_USER);
+  const [token] = useLocalStorage<string>({ key: 'token' });
+  const [volume, setVolume] = useLocalStorage<number>({ key: 'volume', defaultValue: 30 });
   const _open = useAppSelector(state => state.drawer.isOpen);
 
   const handleVolumeChange = (event: Event, newValue: number | number[]) => {
     setVolume(newValue as number);
-    localStorage.setItem('volume', String(newValue));
   };
 
   function logout() {
@@ -75,23 +76,23 @@ export const NavigationBar = () => {
       >
         <BottomNavigationAction
           label="Home" component={Link} to="/" icon={<HomeIcon/>}
-          disabled={!localStorage.getItem('token')}
+          disabled={!token}
         />
         <Tooltip title="Coming soon!">
           <BottomNavigationAction
             label="Profile" component={Link} to="/profile" icon={<PersonIcon/>}
-            disabled={!localStorage.getItem('token')}
+            disabled={!token} style={!token ? { pointerEvents: 'none' } : {}}
           />
         </Tooltip>
         <Tooltip title="Coming soon!">
           <BottomNavigationAction
             label="Ranked" component={Link} to="/ranked" icon={<EmojiEventsIcon/>}
-            disabled={true} //{!localStorage.getItem('token')}
+            disabled={true}
           />
         </Tooltip>
         <BottomNavigationAction
           label="Tutorial" component={Link} to="/tutorial" icon={<HelpIcon/>}
-          disabled={!localStorage.getItem('token')}
+          disabled={!token}
         />
       </BottomNavigation>
       {toolbar}

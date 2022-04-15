@@ -5,6 +5,9 @@ import {gql, useMutation} from '@apollo/client';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {useLocation, useNavigate} from 'react-router-dom';
+import { LoadingOverlay } from '@mantine/core';
+import PasswordStrength from '../components/passwordStrengthMeter';
+import { useLocalStorage } from '@mantine/hooks';
 
 export type RegisterInput = {
   username: FormDataEntryValue | null;
@@ -36,6 +39,7 @@ const Register = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [, setUserId] = useLocalStorage<string>({ key: 'userId' });
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'register');
   // eslint-disable-next-line unused-imports/no-unused-vars
@@ -53,11 +57,12 @@ const Register = () => {
       },
       onCompleted(data) {
         if (data.register) {
-          localStorage.setItem('userId', data.register.id as string);
+          setUserId(data.register.id as string);
           if (location.pathname == '/register') {
             navigate('/');
           }
           dispatch({ type: 'modal/setState', payload: {isOpen: false} });
+          window.location.reload();
         }
       }
     });
@@ -80,7 +85,15 @@ const Register = () => {
           boxShadow: 24,
         }}
       >
-        <Box sx={{ width:'80%', height:'80%', m:'auto', textAlign:'center' }}>
+        <Box sx={{
+          mt: 10,
+          borderRadius: '4px',
+          // width:'80%',
+          height:'80%',
+          m:'auto',
+          textAlign:'center',
+          position: 'relative',
+        }}>
           <Avatar sx={{ m: 'auto', bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
@@ -89,7 +102,7 @@ const Register = () => {
           </Typography>
           {(!loading && error) &&
               <Alert sx={{ mt: 3, minWidth: 1, maxWidth: 1 }} variant="filled" severity="error">{error.message}</Alert>}
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, padding: '20px' }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -113,15 +126,7 @@ const Register = () => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                />
+                <PasswordStrength />
               </Grid>
             </Grid>
             <Button
@@ -132,7 +137,13 @@ const Register = () => {
             >
               Sign Up
             </Button>
-            <Grid container justifyContent="">
+            <LoadingOverlay
+              style={{ borderRadius: '4px' }}
+              loaderProps={{ size: 'lg', variant: 'dots' }}
+              overlayColor="#2C2E33"
+              visible={loading}
+            />
+            <Grid container justifyContent="flex-start">
               <Grid item>
                 <Link href='/login' variant="body2">
                   Already have an account? Sign In
