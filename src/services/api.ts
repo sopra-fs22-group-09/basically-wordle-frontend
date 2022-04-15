@@ -18,26 +18,28 @@ function getSession() {
   return token;
 }
 
-function giveMeHeaders() {
+function authHeader() {
   const session = getSession();
   if (!session) {
     return commonHeaders;
   }
   return {
     Authorization: `Bearer ${session.token}`,
-    ...commonHeaders,
   };
 }
 
 const httpApi = new HttpLink({
   uri: `${getHttpDomain()}/graphql`,
-  headers: giveMeHeaders()
+  headers: {
+    ...authHeader(),
+    ...commonHeaders,
+  }
 });
 
 const wsApi = new GraphQLWsLink(
   createClient({
     url: `${getWsDomain()}/graphqlws`,
-    connectionParams: giveMeHeaders()
+    connectionParams: authHeader()
   })
 );
 
