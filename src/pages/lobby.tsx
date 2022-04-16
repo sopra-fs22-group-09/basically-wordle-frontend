@@ -1,28 +1,35 @@
 import * as React from 'react';
+import { useEffect } from 'react';
+import { useLocalStorage } from '@mantine/hooks';
 import {
+  Autocomplete,
   Box,
-  Typography,
+  Button,
+  Checkbox,
+  FormControl,
+  InputAdornment,
+  InputLabel,
   List,
   ListItem,
-  Select,
   MenuItem,
-  FormControl,
+  Select,
   Slider,
-  Button,
-  InputAdornment,
-  InputLabel, Autocomplete, Checkbox, TextField,
+  TextField,
+  Typography,
 } from '@mui/material';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import {useEffect} from 'react';
-import { useLocalStorage } from '@mantine/hooks';
+import { gql, useMutation, useSubscription } from '@apollo/client';
+import {
+  DefaultModePerCategory,
+  GameCategorization,
+  GameCategory,
+  GameMode,
+  Lobby as LobbyFields,
+  MutationJoinLobbyByIdArgs
+} from '../models/Lobby';
+import { User } from '../models/User';
 
-//get default gamemodes for category
-const gameModes = [
-  { label: 'Words++' },
-  { label: 'Sonic Fast' },
-  { label: 'Time Reset' },
-];
 //get default categories ??
 const wordCategories = [
   { category: 'bitches' },
@@ -30,30 +37,86 @@ const wordCategories = [
   { category: 'cats' },
 ];
 
-/*const LOBBY_SUBSCRIPTION = gql`
-  subscription subscribeLobby($id: number!) {
-    lobby(id: $id) {
+interface LobbyModel {
+  joinLobbyById: LobbyFields
+  lobby: LobbyFields
+}
+
+const JOIN_LOBBY = gql`
+  mutation joinLobby($id: String!) {
+    joinLobbyById(id: $id) {
+      id
+      name
+      size
+      gameCategory
+      players {
+        id
+        username
+      }
+      #gameSettings
+    }
+  }
+`;
+
+const LOBBY_SUBSCRIPTION = gql`
+  subscription subscribeLobby {
+    lobby {
       id
       size
       name
       gameCategory
+      players {
+        id
+        username
+      }
       #gameSettings
-      #lobbyMembers
     }
   }
-`;*/
+`;
 
-//TODO: get subscription data
 const Lobby = () => {
-  const [gameMode, setGameMode] = React.useState(gameModes[0].label); //get initial mode ??
-  const [lobbySize, setLobbySize] = React.useState(Number(localStorage.getItem('lobbySize'))); //get initial size
-  const [gameRounds, setGameRounds] = React.useState(3); //get initial rounds
-  const [token] = useLocalStorage<string>({ key: 'token' });
 
+  const [token] = useLocalStorage<string>({ key: 'token' });
+  const [name, setName] = React.useState('');
+  const [size, setSize] = React.useState(1); //get initial size
+  const [gameCategory, setGameCategory] = React.useState<GameCategory>(GameCategory.PVP);
+  const [gameMode, setGameMode] = React.useState<GameMode>(GameMode.WORDSPP); //get initial mode ??
+  const [gameRounds, setGameRounds] = React.useState(3); //get initial rounds
+  const [players, setPlayers] = React.useState<User[]>([]);
+
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  const [joinLobby, { data, loading, error }] = useMutation<LobbyModel, MutationJoinLobbyByIdArgs>(JOIN_LOBBY);
   useEffect(() => {
-    alert('yyyyyyyy');
-    //subscribe
-  });
+    joinLobby({
+      variables: {
+        id: window.location.pathname.split('/')[2]
+      }, onCompleted(data) {
+        if (data?.joinLobbyById) {
+          setName(data.joinLobbyById.name);
+          setSize(data.joinLobbyById.size);
+          setGameCategory(Object.values(GameCategory)[Object.keys(GameCategory).indexOf(data.joinLobbyById.gameCategory)]);
+          setPlayers(data.joinLobbyById.players);
+        }
+      }
+    }).then(() => {
+      setGameMode(DefaultModePerCategory.get(gameCategory) as GameMode);
+    });
+  }, [joinLobby, gameCategory]);
+
+  function UpdateLobby() {
+    const { data, loading } = useSubscription<LobbyModel>(LOBBY_SUBSCRIPTION);/*, {
+      variables: {
+        id: localStorage.getItem('lobbyID')
+      }
+    });*/
+    useEffect(() => {
+      if (!loading && data?.lobby) {
+        setName(data.lobby.name);
+        setSize(data.lobby.size); //only for testing
+      }
+    }, [data, loading]);
+  }
+  UpdateLobby();
 
   return (
     <Box
@@ -65,7 +128,7 @@ const Lobby = () => {
       }}
     >
       <Typography variant='h1' sx={{fontSize: 48}}>
-        {localStorage.getItem('lobbyName') /*TODO: replace with subscription*/}
+        {name} | {gameCategory}
       </Typography>
       <Box sx={{ width: '66%!important', float: 'left', border:'solid 2px white' }}>
         <Box sx={{ width: '49%', border:'solid 2px red', float: 'left' }}>
@@ -73,12 +136,13 @@ const Lobby = () => {
             players
           </Typography>
           <List>
-            <ListItem>
-              player1
-            </ListItem>
-            <ListItem>
-              player2
-            </ListItem>
+            {players?.map(player => {
+              return (
+                <ListItem key={player.id}>
+                  {player.username}
+                </ListItem>
+              );
+            })}
           </List>
         </Box>
         <Box sx={{ width: '49%', border:'solid 2px red', float: 'right' }}>
@@ -92,12 +156,12 @@ const Lobby = () => {
             <Select
               value={gameMode}
               label="Game Mode"
-              onChange={(event) => setGameMode(event.target.value as string)}
+              onChange={(event) => setGameMode(event.target.value as GameMode)}
             >
-              {gameModes?.map(mode => {
+              {(Object.values(GameMode)).map(mode => {
                 return (
-                  <MenuItem key={mode.label} value={mode.label}>
-                    {mode.label}
+                  <MenuItem key={mode} value={mode} disabled={gameCategory != GameCategorization.get(mode)}>
+                    {mode}
                   </MenuItem>
                 );
               })}
@@ -111,8 +175,8 @@ const Lobby = () => {
             min={1}
             max={6}
             valueLabelDisplay='auto'
-            value={lobbySize}
-            onChange={(event, newSize) => setLobbySize(newSize as number)}
+            value={size}
+            onChange={(event, newSize) => setSize(newSize as number)}
           />
           <Typography variant='h6'>Rounds</Typography>
           <Slider

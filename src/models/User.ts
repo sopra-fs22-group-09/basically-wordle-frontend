@@ -5,6 +5,14 @@ export class User {
     public avatarID: string,
     //TODO: settings? as own model or part here?
     public creationDate: Date,
-    public status: 'Online' | 'Creating Lobby' | 'InGame' | 'Away' | 'Offline'
+    public status: UserStatus
   ) {}
+}
+
+export enum UserStatus {
+  ONLINE = 'Online',
+  CREATINGLOBBY = 'Creating Lobby',
+  INGAME = 'InGame',
+  AWAY = 'Away',
+  OFFLINE = 'Offline'
 }
