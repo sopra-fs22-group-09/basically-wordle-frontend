@@ -59,14 +59,14 @@ export const routes: Array<Route> = [
     key: 'login-route',
     title: 'Login',
     path: '/login',
-    enabled: true,
+    enabled: !localStorage.getItem('token'),
     component: Home,
   },
   {
     key: 'register-route',
     title: 'Register',
     path: '/register',
-    enabled: true,
+    enabled: !localStorage.getItem('token'),
     component: Home,
   },
   {

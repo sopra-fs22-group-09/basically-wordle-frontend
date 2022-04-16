@@ -3,6 +3,7 @@ import {WithChildren} from '../utils/utils';
 import {Navigate, useLocation, useNavigate} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {useEffect} from 'react';
+import { useLocalStorage } from '@mantine/hooks';
 
 export const DefaultRoute = () => {
   return (
@@ -15,32 +16,32 @@ type LayoutProps = WithChildren<{}>;
 
 const Guard = ({ children }: LayoutProps) => {
 
+  const [token] = useLocalStorage<string>({ key: 'token' });
+
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const open = useAppSelector(state => state.modal.isOpen);
 
   useEffect(() => {
+    if (!token && !open) {
+      navigate('/login');
+      dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
+    }
+
     switch (location.pathname) {
     case '/login':
-      navigate('/');
-      dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
       return;
     case '/register':
-      navigate('/');
-      dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'register'} });
+      if (!token) {
+        dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'register'} });
+      }
       return;
     case '/reset':
-      //  navigate('/');
       dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'reset'} });
       return;
     }
-    
-    if (!localStorage.getItem('token') && !open) { //TODO !open does not work, redirection still happens on wrong username/pw combination
-      navigate('/');
-      dispatch({ type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'} });
-    }
-  }, [location, navigate, dispatch]);
+  }, [location, navigate, dispatch, open, token]);
 
   return (
     <>
