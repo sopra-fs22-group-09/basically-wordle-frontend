@@ -21,7 +21,7 @@ export type Lobby = {
   name: Scalars['String'];
   gameCategory: GameCategory;
   gameSettings: GameSettings;
-  lobbyMembers: Array<Maybe<Scalars['ID']>>;
+  players: Array<User>;
 };
 
 export type GameSettings = {
@@ -43,8 +43,8 @@ export type GameSettingsInput = {
   roundTime: Scalars['Int'];
 };
 
-export type QueryJoinLobbyByIdArgs = {
-  id: Scalars['Int'];
+export type MutationJoinLobbyByIdArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -53,30 +53,48 @@ export type MutationUpdateLobbySettingsArgs = {
   gameSettings: GameSettingsInput;
 };
 
-
-
 export enum GameCategory {
-  PVP = 'PVP',
-  COOP = 'COOP',
-  SOLO = 'SOLO'
+  PVP = 'PvP',
+  SOLO = 'SOLO',
+  COOP = 'CO-OP'
 }
 
 export enum GameMode {
-  Wordspp = 'WORDSPP',
-  Sonicfast = 'SONICFAST',
-  Timereset = 'TIMERESET',
-  Party = 'PARTY',
-  Challenge = 'CHALLENGE',
-  Chain = 'CHAIN',
-  Classic = 'CLASSIC',
-  Intime = 'INTIME',
-  Playervsai = 'PLAYERVSAI',
-  Oneword = 'ONEWORD',
-  Wordcombination = 'WORDCOMBINATION'
+  WORDSPP = 'Words++',
+  SONICFAST = 'Sonic Fast',
+  TIMERESET = 'Time Reset',
+  PARTY = 'Party',
+  CHALLENGE = 'Challenge',
+  CHAIN = 'Chain',
+  CLASSIC = 'Classic',
+  INTIME = 'In Time',
+  PLAYERVSAI = 'Player vs AI',
+  ONEWORD = 'OneWord',
+  WORDCOMBINATION = 'WordCombination'
 }
 
 export enum LobbyStatus {
-  Open = 'OPEN',
-  Full = 'FULL',
-  Ingame = 'INGAME'
+  OPEN = 'Open',
+  FULL = 'Full',
+  INGAME = 'InGame'
 }
+
+export const GameCategorization = new Map<GameMode, GameCategory>([
+  [GameMode.WORDSPP, GameCategory.PVP],
+  [GameMode.SONICFAST, GameCategory.PVP],
+  [GameMode.TIMERESET, GameCategory.PVP],
+  [GameMode.PARTY, GameCategory.PVP],
+  [GameMode.CHALLENGE, GameCategory.PVP],
+  [GameMode.CHAIN, GameCategory.PVP],
+  [GameMode.CLASSIC, GameCategory.SOLO],
+  [GameMode.INTIME, GameCategory.SOLO],
+  [GameMode.PLAYERVSAI, GameCategory.SOLO],
+  [GameMode.ONEWORD, GameCategory.COOP],
+  [GameMode.WORDCOMBINATION, GameCategory.COOP]
+]);
+
+export const DefaultModePerCategory = new Map<GameCategory, GameMode>([
+  [GameCategory.PVP, GameMode.WORDSPP],
+  [GameCategory.SOLO, GameMode.CLASSIC],
+  [GameCategory.COOP, GameMode.ONEWORD]
+]);

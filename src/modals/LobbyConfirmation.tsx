@@ -1,17 +1,9 @@
 import * as React from 'react';
-import {
-  Box,
-  Button,
-  Modal,
-  Slider,
-  TextField,
-  ToggleButton,
-  ToggleButtonGroup
-} from '@mui/material';
-import {useAppDispatch, useAppSelector} from '../redux/hooks';
-import {GameCategory, Lobby} from '../models/Lobby';
-import {gql, useMutation} from '@apollo/client';
-import {useNavigate} from 'react-router-dom';
+import { Box, Button, Modal, Slider, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { GameCategory, Lobby } from '../models/Lobby';
+import { gql, useMutation } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
 
 export type LobbyInput = {
   size: number;
@@ -44,9 +36,9 @@ const LobbyConfirmation = () => {
   const dispatch = useAppDispatch();
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'lobbyConfirmation');
-  const [lobbySize, setLobbySize] = React.useState(2); //get initial size
-  const [lobbyName, setLobbyName] = React.useState('jemaie\'s Game'); // get username as initial value + 'Game'
-  const [alignment, setAlignment] = React.useState(GameCategory.PVP); //get initial category
+  const [size, setSize] = React.useState(2); //get initial size
+  const [name, setName] = React.useState('jemaie\'s Game'); // TODO: get username as initial value + 'Game'
+  const [gameCategory, setGameCategory] = React.useState(Object.values(GameCategory)[0]); //get initial category
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [createLobby, { data, loading, error }] = useMutation<LobbyType, MutationCreateLobbyArgs>(LOBBY_CREATION);
 
@@ -59,19 +51,16 @@ const LobbyConfirmation = () => {
         input: {
           size: size,
           name: name,
-          gameCategory: gameCategory
+          gameCategory: Object.keys(GameCategory)[Object.values(GameCategory).indexOf(gameCategory)] as GameCategory
         }
       },
       onCompleted(data) {
-        if (data.createLobby) {
-          localStorage.setItem('lobbyID', data.createLobby.id); //only for testing
-          localStorage.setItem('lobbySize', data.createLobby.size.toString()); //only for testing
-          localStorage.setItem('lobbyName', data.createLobby.name); //only for testing
-          localStorage.setItem('gameCategory', data.createLobby.gameCategory); //only for testing
+        if (data?.createLobby) {
+          localStorage.setItem('lobbyId', data.createLobby.id); //only for testing
+          navigate('/lobby/' + data.createLobby.id); //probably only for testing as well
         }
       }
     }).then(() => {
-      navigate('/lobby'); //probably only for testing as well
       toggleModal();
     });
   };
@@ -97,25 +86,26 @@ const LobbyConfirmation = () => {
         <Box sx={{ width:'80%', height:'80%', m:'auto', textAlign:'center' }}>
           <ToggleButtonGroup
             color='primary'
-            value={alignment}
+            value={gameCategory}
             exclusive
-            onChange={(event, newAlignment) => setAlignment(newAlignment)}
+            onChange={(event, newAlignment) => {
+              if (newAlignment != null)
+                setGameCategory(newAlignment);
+            }}
             size='large'
             sx={{ m:2 }}
           >
-            <ToggleButton value={GameCategory.PVP}>
-              PvP
-            </ToggleButton>
-            <ToggleButton value={GameCategory.COOP}>
-              Co-op
-            </ToggleButton>
-            <ToggleButton value={GameCategory.SOLO}>
-              Solo
-            </ToggleButton>
+            {(Object.values(GameCategory)).map(category => {
+              return (
+                <ToggleButton key={category} value={category}>
+                  {category}
+                </ToggleButton>
+              );
+            })}
           </ToggleButtonGroup>
           <Box component='form' noValidate sx={{ m:2 }}>
-            <TextField variant='outlined' label='Lobby Name' value={lobbyName}
-              onChange={(event) => setLobbyName(event.target.value)}
+            <TextField variant='outlined' label='Lobby Name' value={name}
+              onChange={(event) => setName(event.target.value)}
             />
           </Box>
           <Box>
@@ -128,15 +118,15 @@ const LobbyConfirmation = () => {
                 min={1}
                 max={6}
                 valueLabelDisplay='auto'
-                value={lobbySize}
-                onChange={(event, newSize) => setLobbySize(newSize as number)}
+                value={size}
+                onChange={(event, newSize) => setSize(newSize as number)}
               />
             </Box>
           </Box>
           <Box sx={{ m:2 }}>
             <Button variant="contained" sx={{ mr:2 }} onClick={toggleModal}>Cancel</Button>
             <Button variant="contained" sx={{ ml:2 }} onClick={() =>
-            {handleLobbyConfirmation(lobbySize, lobbyName, alignment);}}>Confirm
+            {handleLobbyConfirmation(size, name, gameCategory);}}>Confirm
             </Button>
           </Box>
         </Box>

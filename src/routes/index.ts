@@ -2,8 +2,8 @@ import { FC } from 'react';
 import { Route } from 'react-router-dom';
 import Home from '../pages/home';
 import Profile from '../pages/profile';
-import Lobby from '../pages/lobby';
 import { DefaultRoute } from './Guard';
+import Lobby from '../pages/lobby';
 import Tutorial from '../pages/tutorial';
 
 /**
@@ -37,7 +37,7 @@ export const routes: Array<Route> = [
   {
     key: 'lobby-route',
     title: 'Lobby',
-    path: '/lobby',
+    path: '/lobby/*',
     enabled: true,
     component: Lobby
   },
