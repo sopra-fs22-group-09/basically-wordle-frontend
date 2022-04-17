@@ -69,7 +69,7 @@ const logoutLink = onError(({ networkError, graphQLErrors }) => {
   }
   else if (networkError) {
     if ('statusCode' in networkError) {
-      if (networkError.statusCode === 401) {/*logout();*/} //TODO
+      //if (networkError.statusCode === 401) logout(); //TODO
     }
   }
 });

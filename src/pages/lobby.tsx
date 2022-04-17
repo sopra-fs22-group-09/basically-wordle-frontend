@@ -234,7 +234,7 @@ const Lobby = () => {
           <Button variant="contained" sx={{ mt:2, float: 'right'}}>Start Game</Button>
         </Box>
       </Box>
-      <Box sx={{ float: 'right', width: '33%!important', height: 'calc(100vh - 147px)', border:'solid 2px white' }}>
+      <Box sx={{ float: 'right', width: '33%!important', height: 'calc(100vh - 164px)', border:'solid 2px white' }}>
         chat
       </Box>
     </Box>
