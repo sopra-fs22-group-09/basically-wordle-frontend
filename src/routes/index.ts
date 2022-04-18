@@ -37,7 +37,7 @@ export const routes: Array<Route> = [
   {
     key: 'lobby-route',
     title: 'Lobby',
-    path: '/lobby/*',
+    path: '/lobby/:id',
     enabled: true,
     component: Lobby
   },
@@ -79,7 +79,8 @@ export const routes: Array<Route> = [
   {
     key: 'token-entry-route',
     title: 'Token Entry',
-    path: '/reset/{}',
+    //path: '/reset/:token',
+    path: '/reset/tokenEntry',
     enabled: true,
     component: Home,
   },
