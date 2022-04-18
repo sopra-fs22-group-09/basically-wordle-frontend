@@ -29,6 +29,7 @@ const RESET_USER_TOKEN = gql`
 const TokenEntry = () => {
 
   const navigate = useNavigate();
+  //const { token } = useParams();
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'tokenEntry');
   // eslint-disable-next-line unused-imports/no-unused-vars
@@ -92,6 +93,7 @@ const TokenEntry = () => {
                   id="resetToken"
                   label="Reset Code"
                   name="resetToken"
+                  //defaultValue={token}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -115,7 +117,7 @@ const TokenEntry = () => {
               Set new password
             </Button>
             {(data && !loading) &&
-                <Link component='button' variant="body2" onClick={() => navigate('login')}>Sign In</Link>
+                <Link component='button' variant="body2" onClick={() => navigate('/login')}>Sign In</Link>
             }
           </Box>
         </Box>

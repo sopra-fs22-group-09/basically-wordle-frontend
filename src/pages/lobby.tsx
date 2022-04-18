@@ -29,6 +29,7 @@ import {
   MutationJoinLobbyByIdArgs
 } from '../models/Lobby';
 import { User } from '../models/User';
+import { useParams } from 'react-router-dom';
 
 //get default categories ??
 const wordCategories = [
@@ -83,13 +84,14 @@ const Lobby = () => {
   const [gameMode, setGameMode] = React.useState<GameMode>(GameMode.WORDSPP); //get initial mode ??
   const [gameRounds, setGameRounds] = React.useState(3); //get initial rounds
   const [players, setPlayers] = React.useState<User[]>([]);
+  const params = useParams();
 
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [joinLobby, { data, loading, error }] = useMutation<LobbyModel, MutationJoinLobbyByIdArgs>(JOIN_LOBBY);
   useEffect(() => {
     joinLobby({
       variables: {
-        id: window.location.pathname.split('/')[2]
+        id: params.id as string
       }, onCompleted(data) {
         if (data?.joinLobbyById) {
           setName(data.joinLobbyById.name);
@@ -101,7 +103,7 @@ const Lobby = () => {
     }).then(() => {
       setGameMode(DefaultModePerCategory.get(gameCategory) as GameMode);
     });
-  }, [joinLobby, gameCategory]);
+  }, [joinLobby, gameCategory, params.id]);
 
   function UpdateLobby() {
     const { data, loading } = useSubscription<LobbyModel>(LOBBY_SUBSCRIPTION);/*, {
