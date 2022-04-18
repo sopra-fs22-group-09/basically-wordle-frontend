@@ -62,6 +62,7 @@ const Register = () => {
             navigate('/');
           }
           dispatch({ type: 'modal/setState', payload: {isOpen: false} });
+          window.location.reload();
         }
       }
     });

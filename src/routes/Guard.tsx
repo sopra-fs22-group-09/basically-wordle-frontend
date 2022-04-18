@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { WithChildren } from '../utils/utils';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { useLocalStorage } from '@mantine/hooks';
 
 export const DefaultRoute = () => {
@@ -19,11 +19,10 @@ const Guard = ({ children }: LayoutProps) => {
   const [token] = useLocalStorage<string>({ key: 'token' });
 
   const location = useLocation();
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const open = useAppSelector(state => state.modal.isOpen);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     switch (location.pathname) {
     case '/register':
       if (!token) {
@@ -43,7 +42,6 @@ const Guard = ({ children }: LayoutProps) => {
     }
     
     if (!token && !open) {
-      navigate('/login');
       dispatch({ type: 'modal/setState', payload: { isOpen: true, modalWindow: 'login' } });
     }
   });

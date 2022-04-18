@@ -7,6 +7,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {LoadingOverlay} from '@mantine/core';
 import {Outlet, useLocation, useNavigate} from 'react-router-dom';
 import { useLocalStorage } from '@mantine/hooks';
+import { useEffect } from 'react';
 
 export type LoginInput = {
   username: FormDataEntryValue | null;
@@ -37,11 +38,17 @@ const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [, setUserId] = useLocalStorage<string>({ key: 'userId' });
+  const [userId, setUserId] = useLocalStorage<string>({ key: 'userId' });
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'login');
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [loginUser, { data, loading, error }] = useMutation<LoginType, MutationLoginArgs>(LOGIN_USER);
+
+  useEffect(() => {
+    if (!userId && location.pathname != '/login') {
+      navigate('/login');
+    }
+  }, [location.pathname, navigate, userId]);
   
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -59,6 +66,7 @@ const Login = () => {
             navigate('/');
           }
           dispatch({ type: 'modal/setState', payload: {isOpen: false} });
+          window.location.reload();
         }
       }
     });
