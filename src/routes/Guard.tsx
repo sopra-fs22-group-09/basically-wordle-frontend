@@ -19,7 +19,6 @@ const Guard = ({ children }: LayoutProps) => {
   const [token] = useLocalStorage<string>({ key: 'token' });
 
   const location = useLocation();
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const open = useAppSelector(state => state.modal.isOpen);
 
