@@ -25,8 +25,6 @@ const Guard = ({ children }: LayoutProps) => {
 
   useEffect(() => {
     switch (location.pathname) {
-    case '/login':
-      return;
     case '/register':
       if (!token) {
         dispatch({ type: 'modal/setState', payload: { isOpen: true, modalWindow: 'register' } });
