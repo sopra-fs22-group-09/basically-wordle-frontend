@@ -1,10 +1,11 @@
 import {gql, useMutation} from '@apollo/client';
-import {useAppSelector} from '../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {User} from '../models/User';
 import * as React from 'react';
 import {Alert, Avatar, Box, Button, Grid, Link, Modal, TextField, Typography} from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {useNavigate} from 'react-router-dom';
+import { LoadingOverlay } from '@mantine/core';
 
 export type ResetTokenInput = {
   resetToken: FormDataEntryValue | null;
@@ -29,11 +30,17 @@ const RESET_USER_TOKEN = gql`
 const TokenEntry = () => {
 
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   //const { token } = useParams();
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'tokenEntry');
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [resetUser, {data, loading, error}] = useMutation<User, MutationResetWithTokenArgs>(RESET_USER_TOKEN);
+
+  const handleClose = () => {
+    navigate('/');
+    dispatch({ type: 'modal/setState', payload: { isOpen: false } });
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -54,6 +61,7 @@ const TokenEntry = () => {
   return (
     <Modal
       open={open}
+      onClose={handleClose}
     >
       <Box
         sx={{
@@ -96,6 +104,7 @@ const TokenEntry = () => {
                   //defaultValue={token}
                 />
               </Grid>
+              {/* TODO: Add Password strength indicator here as well */}
               <Grid item xs={12}>
                 <TextField
                   required
@@ -116,6 +125,12 @@ const TokenEntry = () => {
             >
               Set new password
             </Button>
+            <LoadingOverlay
+              style={{ borderRadius: '4px' }}
+              loaderProps={{ size: 'lg', variant: 'dots' }}
+              overlayColor="#2C2E33"
+              visible={loading}
+            />
             {(data && !loading) &&
                 <Link component='button' variant="body2" onClick={() => navigate('/login')}>Sign In</Link>
             }
