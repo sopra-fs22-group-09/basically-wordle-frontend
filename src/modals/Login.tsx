@@ -6,6 +6,7 @@ import {Alert, Avatar, Box, Button, Grid, Link, Modal, TextField, Typography} fr
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {LoadingOverlay} from '@mantine/core';
 import {Outlet, useLocation, useNavigate} from 'react-router-dom';
+import { useLocalStorage } from '@mantine/hooks';
 
 export type LoginInput = {
   username: FormDataEntryValue | null;
@@ -36,6 +37,7 @@ const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [, setToken] = useLocalStorage<string>({ key: 'token' });
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'login');
   // eslint-disable-next-line unused-imports/no-unused-vars
@@ -52,12 +54,11 @@ const Login = () => {
       },
       onCompleted(data) {
         if (data.login) {
-          localStorage.setItem('userId', data.login.id as string);
+          setToken(data.login.id as string);
           if (location.pathname == '/login') {
             navigate('/');
           }
           dispatch({ type: 'modal/setState', payload: {isOpen: false} });
-          window.location.reload();
         }
       }
     });
