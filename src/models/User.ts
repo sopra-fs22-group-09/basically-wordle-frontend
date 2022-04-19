@@ -1,13 +1,13 @@
-export class User {
-  constructor(
-    public id: string,
-    public username: string,
-    public avatarID: string,
-    //TODO: settings? as own model or part here?
-    public creationDate: Date,
-    public status: UserStatus
-  ) {}
-}
+import { Scalars } from '.';
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  username: Scalars['String'];
+  avatarID: Scalars['String'];
+  //creationDate: Date;
+  status: UserStatus;
+};
 
 export enum UserStatus {
   ONLINE = 'Online',

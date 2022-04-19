@@ -1,16 +1,5 @@
+import { Maybe, Scalars } from '.';
 import { User } from './User';
-
-export type Maybe<T> = T | null;
-
-export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // Date: any;
-};
 
 export type Lobby = {
   __typename?: 'Lobby';
@@ -46,8 +35,6 @@ export type GameSettingsInput = {
 export type MutationJoinLobbyByIdArgs = {
   id: Scalars['ID'];
 };
-
-
 
 export type MutationUpdateLobbySettingsArgs = {
   gameSettings: GameSettingsInput;

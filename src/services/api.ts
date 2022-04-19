@@ -6,6 +6,7 @@ import { ApolloClient, ApolloLink, InMemoryCache, split } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { getHttpDomain, getWsDomain } from '../utils/getDomain';
 import { onError } from '@apollo/client/link/error';
+//import { mergeArrayByField } from '../utils/utils';
 
 const commonHeaders = {
   Accept: 'application/graphql+json',
@@ -101,7 +102,21 @@ const splitApi = split(
 const api = new ApolloClient({
   link: splitAfterware.concat(logoutLink).concat(splitApi),
   credentials: 'include',
-  cache: new InMemoryCache(),
+  //cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Lobby: {
+        fields: {
+          players: {
+            // This SHOULD work automatically, but turns out it doesn't...so there you go
+            // https://www.apollographql.com/docs/react/caching/cache-field-behavior#merging-arrays-of-non-normalized-objects
+            // https://www.apollographql.com/docs/react/caching/cache-configuration#customizing-cache-ids
+            merge: (existing, incoming) => incoming,  //mergeArrayByField<User[]>('id'),
+          },
+        },
+      },
+    },
+  }),
 });
 
 export default api;
