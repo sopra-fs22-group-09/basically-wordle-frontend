@@ -37,7 +37,7 @@ const LobbyConfirmation = () => {
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'lobbyConfirmation');
   const [size, setSize] = React.useState(2); //get initial size
-  const [name, setName] = React.useState('jemaie\'s Game'); // TODO: get username as initial value + 'Game'
+  const [name, setName] = React.useState(localStorage.getItem('username') + '\'s Game'); // TODO: get username as initial value + 'Game'
   const [gameCategory, setGameCategory] = React.useState(Object.values(GameCategory)[0]); //get initial category
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [createLobby, { data, loading, error }] = useMutation<LobbyType, MutationCreateLobbyArgs>(LOBBY_CREATION);

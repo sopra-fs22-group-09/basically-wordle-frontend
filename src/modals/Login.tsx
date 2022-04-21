@@ -62,6 +62,7 @@ const Login = () => {
       onCompleted(data) {
         if (data.login) {
           setUserId(data.login.id as string);
+          localStorage.setItem('username', data.login.username);
           if (location.pathname == '/login') {
             navigate('/');
           }
