@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box, Button, Modal, Slider, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { GameCategory, Lobby } from '../models/Lobby';
+import { GameCategory, GameCategoryMaxSize, Lobby } from '../models/Lobby';
 import { gql, useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 
@@ -36,28 +36,27 @@ const LobbyConfirmation = () => {
   const dispatch = useAppDispatch();
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'lobbyConfirmation');
-  const [size, setSize] = React.useState(2); //get initial size
-  const [name, setName] = React.useState(localStorage.getItem('username') + '\'s Game'); // TODO: get username as initial value + 'Game'
-  const [gameCategory, setGameCategory] = React.useState(Object.values(GameCategory)[0]); //get initial category
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  const [createLobby, { data, loading, error }] = useMutation<LobbyType, MutationCreateLobbyArgs>(LOBBY_CREATION);
-
+  const [size, setSize] = React.useState(2);
+  const [name, setName] = React.useState(localStorage.getItem('userName') + '\'s Game');
+  const [gameCategory, setGameCategory] = React.useState(Object.values(GameCategory)[0]);
   const toggleModal = () => {
     dispatch({ type: 'modal/toggle', payload: 'lobbyConfirmation' });
   };
+
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  const [createLobby, { data, loading, error }] = useMutation<LobbyType, MutationCreateLobbyArgs>(LOBBY_CREATION);
   const handleLobbyConfirmation = (size: number, name: string, gameCategory: GameCategory) => {
     createLobby({
       variables: {
         input: {
-          size: size,
+          size: gameCategory == GameCategory.SOLO ? 1 : size,
           name: name,
           gameCategory: Object.keys(GameCategory)[Object.values(GameCategory).indexOf(gameCategory)] as GameCategory
         }
       },
       onCompleted(data) {
         if (data?.createLobby) {
-          localStorage.setItem('lobbyId', data.createLobby.id); //only for testing
-          navigate('/lobby/' + data.createLobby.id); //probably only for testing as well
+          navigate('/lobby/' + data.createLobby.id);
         }
       }
     }).then(() => {
@@ -89,8 +88,12 @@ const LobbyConfirmation = () => {
             value={gameCategory}
             exclusive
             onChange={(event, newAlignment) => {
-              if (newAlignment != null)
+              if (newAlignment != null) {
                 setGameCategory(newAlignment);
+                if (newAlignment == GameCategory.COOP && size > (GameCategoryMaxSize.get(newAlignment) as number)) {
+                  setSize(4);
+                }
+              }
             }}
             size='large'
             sx={{ m:2 }}
@@ -108,21 +111,23 @@ const LobbyConfirmation = () => {
               onChange={(event) => setName(event.target.value)}
             />
           </Box>
-          <Box>
+          {gameCategory != GameCategory.SOLO &&
             <Box>
-              Lobby Size (Decide between InputField and Slider!)
+              <Box>
+                  Lobby Size: {size}
+              </Box>
               <Slider
                 sx={{ m:'auto', width:'60%' }}
                 marks
                 step={1}
-                min={1}
-                max={6}
+                min={2}
+                max={GameCategoryMaxSize.get(gameCategory)}
                 valueLabelDisplay='auto'
                 value={size}
                 onChange={(event, newSize) => setSize(newSize as number)}
               />
             </Box>
-          </Box>
+          }
           <Box sx={{ m:2 }}>
             <Button variant="contained" sx={{ mr:2 }} onClick={toggleModal}>Cancel</Button>
             <Button variant="contained" sx={{ ml:2 }} onClick={() =>

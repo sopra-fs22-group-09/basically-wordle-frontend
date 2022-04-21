@@ -1,6 +1,12 @@
 import { Maybe, Scalars } from '.';
 import { User } from './User';
 
+export interface LobbyModels {
+  joinLobbyById: Lobby
+  lobby: Lobby
+  updateLobbySettings: Lobby
+}
+
 export type Lobby = {
   __typename?: 'Lobby';
   id: Scalars['ID'];
@@ -9,13 +15,13 @@ export type Lobby = {
   size: Scalars['Int'];
   name: Scalars['String'];
   gameCategory: GameCategory;
-  gameSettings: GameSettings;
+  gameMode: GameMode;
+  game: Game;
   players: Array<User>;
 };
 
-export type GameSettings = {
-  __typename?: 'GameSettings';
-  gameMode: GameMode;
+export type Game = {
+  __typename?: 'Game';
   amountRounds: Scalars['Int'];
   roundTime: Scalars['Int'];
 };
@@ -26,18 +32,23 @@ export type Message = {
   message?: Maybe<Scalars['String']>;
 };
 
-export type GameSettingsInput = {
-  gameMode: GameMode;
-  amountRounds: Scalars['Int'];
-  roundTime: Scalars['Int'];
-};
-
 export type MutationJoinLobbyByIdArgs = {
   id: Scalars['ID'];
 };
 
+export type SubscriptionLobbyArgs = {
+  id: Scalars['ID'];
+}
+
 export type MutationUpdateLobbySettingsArgs = {
+  id: Scalars['ID'];
   gameSettings: GameSettingsInput;
+};
+
+export type GameSettingsInput = {
+  gameMode: GameMode;
+  amountRounds: Scalars['Int'];
+  roundTime: Scalars['Int'];
 };
 
 export enum GameCategory {
@@ -80,8 +91,8 @@ export const GameCategorization = new Map<GameMode, GameCategory>([
   [GameMode.WORDCOMBINATION, GameCategory.COOP]
 ]);
 
-export const DefaultModePerCategory = new Map<GameCategory, GameMode>([
-  [GameCategory.PVP, GameMode.WORDSPP],
-  [GameCategory.SOLO, GameMode.CLASSIC],
-  [GameCategory.COOP, GameMode.ONEWORD]
+export const GameCategoryMaxSize = new Map<GameCategory, number>([
+  [GameCategory.PVP, 6],
+  [GameCategory.SOLO, 1],
+  [GameCategory.COOP, 4]
 ]);

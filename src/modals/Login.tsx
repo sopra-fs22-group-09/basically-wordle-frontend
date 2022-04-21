@@ -1,13 +1,11 @@
 import * as React from 'react';
-import {useAppDispatch, useAppSelector} from '../redux/hooks';
-import {User} from '../models/User';
-import {gql, useMutation} from '@apollo/client';
-import {Alert, Avatar, Box, Button, Grid, Link, Modal, TextField, Typography} from '@mui/material';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { User } from '../models/User';
+import { gql, useMutation } from '@apollo/client';
+import { Alert, Avatar, Box, Button, Grid, Link, Modal, TextField, Typography } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import {LoadingOverlay} from '@mantine/core';
-import {Outlet, useLocation, useNavigate} from 'react-router-dom';
-import { useLocalStorage } from '@mantine/hooks';
-import { useEffect } from 'react';
+import { LoadingOverlay } from '@mantine/core';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 export type LoginInput = {
   username: FormDataEntryValue | null;
@@ -35,20 +33,12 @@ const LOGIN_USER = gql`
 
 const Login = () => {
 
-  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [userId, setUserId] = useLocalStorage<string>({ key: 'userId' });
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'login');
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [loginUser, { data, loading, error }] = useMutation<LoginType, MutationLoginArgs>(LOGIN_USER);
-
-  useEffect(() => {
-    if (!userId && location.pathname != '/login') {
-      navigate('/login');
-    }
-  }, [location.pathname, navigate, userId]);
   
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -57,19 +47,19 @@ const Login = () => {
       variables: {
         input: {
           username: formData.get('username'),
-          password: formData.get('password') }
+          password: formData.get('password')
+        }
       },
       onCompleted(data) {
         if (data.login) {
-          setUserId(data.login.id as string);
-          localStorage.setItem('username', data.login.username);
-          if (location.pathname == '/login') {
-            navigate('/');
-          }
-          dispatch({ type: 'modal/setState', payload: {isOpen: false} });
-          window.location.reload();
+          localStorage.setItem('userId', data.login.id);
+          localStorage.setItem('userName', data.login.username);
         }
       }
+    }).then(() => {
+      navigate('/');
+      dispatch({type: 'modal/setState', payload: {isOpen: false}});
+      window.location.reload();
     });
   };
   
