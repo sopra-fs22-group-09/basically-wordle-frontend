@@ -31,7 +31,7 @@ export const Friends = () => {
           <FaceIcon />
         </Avatar>
       </ListItemAvatar>
-      <ListItemText primary="Me" secondary="Online" />
+      <ListItemText primary={localStorage.getItem('userName')} secondary="Online" />
       <IconButton
         color="inherit"
         onClick={() => {alert('Still waiting to be implemented...');}} /*TODO: Show notification menu*/

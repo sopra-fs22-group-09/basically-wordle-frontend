@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { WithChildren } from '../utils/utils';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { useLayoutEffect } from 'react';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../redux/hooks';
+import { useEffect } from 'react';
 import { useLocalStorage } from '@mantine/hooks';
 
 export const DefaultRoute = () => {
@@ -19,11 +19,16 @@ const Guard = ({ children }: LayoutProps) => {
   const [token] = useLocalStorage<string>({ key: 'token' });
 
   const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const open = useAppSelector(state => state.modal.isOpen);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     switch (location.pathname) {
+    case '/login':
+      if (!token) {
+        dispatch({ type: 'modal/setState', payload: { isOpen: true, modalWindow: 'login' } });
+      }
+      return;
     case '/register':
       if (!token) {
         dispatch({ type: 'modal/setState', payload: { isOpen: true, modalWindow: 'register' } });
@@ -41,8 +46,9 @@ const Guard = ({ children }: LayoutProps) => {
       return;
     }
     
-    if (!token && !open) {
-      dispatch({ type: 'modal/setState', payload: { isOpen: true, modalWindow: 'login' } });
+    if (!token) {
+      navigate('/login');
+      window.location.reload();
     }
   });
 
