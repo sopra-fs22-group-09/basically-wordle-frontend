@@ -66,13 +66,17 @@ const logoutLink = onError(({ networkError, graphQLErrors }) => {
       //console.log(err);
       switch (err.extensions.code) {
       case 'UNAUTHORIZED':
-      //logout(); TODO
+        localStorage.clear();
+        window.location.reload();
       }
     }
   }
   else if (networkError) {
     if ('statusCode' in networkError) {
-      //if (networkError.statusCode === 401) logout(); //TODO
+      if (networkError.statusCode === 401) {
+        localStorage.clear();
+        window.location.reload();
+      }
     }
   }
 });
