@@ -96,3 +96,11 @@ export const GameCategoryMaxSize = new Map<GameCategory, number>([
   [GameCategory.SOLO, 1],
   [GameCategory.COOP, 4]
 ]);
+
+//TODO: Get default categories ??
+export const WordCategories = [
+  { category: 'dogs' },
+  { category: 'cats' },
+  { category: 'cows' },
+  { category: 'dunno' }
+];
