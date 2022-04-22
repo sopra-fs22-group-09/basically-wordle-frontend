@@ -28,17 +28,11 @@ import {
   LobbyModels,
   MutationJoinLobbyByIdArgs,
   MutationUpdateLobbySettingsArgs,
-  SubscriptionLobbyArgs
+  SubscriptionLobbyArgs,
+  WordCategories
 } from '../models/Lobby';
 import { User } from '../models/User';
 import { useNavigate, useParams } from 'react-router-dom';
-
-//get default categories ??
-const wordCategories = [
-  { category: 'bitches' },
-  { category: 'hoes' },
-  { category: 'cats' },
-];
 
 const JOIN_LOBBY = gql`
   mutation joinLobby($id: String!) {
@@ -98,7 +92,7 @@ const Lobby = () => {
 
   const [name, setName] = React.useState('');
   const [size, setSize] = React.useState(0);
-  const [owner, setOwner] = React.useState('');
+  const [ownerId, setOwnerId] = React.useState('');
   const [gameCategory, setGameCategory] = React.useState<GameCategory>(GameCategory.PVP);
   const [gameMode, setGameMode] = React.useState<GameMode>(GameMode.WORDSPP);
   const [gameRounds, setGameRounds] = React.useState(0);
@@ -116,7 +110,7 @@ const Lobby = () => {
           if (data?.joinLobbyById) {
             setName(data.joinLobbyById.name);
             setSize(data.joinLobbyById.size);
-            setOwner(data.joinLobbyById.owner.id);
+            setOwnerId(data.joinLobbyById.owner.id);
             setGameCategory(Object.values(GameCategory)[Object.keys(GameCategory).indexOf(data.joinLobbyById.gameCategory)]);
             setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(data.joinLobbyById.gameMode)]);
             setGameRounds(data.joinLobbyById.game.amountRounds);
@@ -137,7 +131,7 @@ const Lobby = () => {
     });
     useEffect(() => {
       if (!loading && data?.lobby) {
-        setOwner(data.lobby.owner.id);
+        setOwnerId(data.lobby.owner.id);
         setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(data.lobby.gameMode)]);
         setGameRounds(data.lobby.game.amountRounds);
         setRoundTime(data.lobby.game.roundTime);
@@ -199,7 +193,7 @@ const Lobby = () => {
             <Select
               value={gameMode}
               label="Game Mode"
-              disabled={localStorage.getItem('userId') != owner}
+              disabled={localStorage.getItem('userId') != ownerId}
               onChange={event => changeLobbySettings(event.target.value as GameMode, gameRounds, roundTime)}
             >
               {(Object.values(GameMode)).map(mode => {
@@ -222,7 +216,7 @@ const Lobby = () => {
                 max={5}
                 valueLabelDisplay='auto'
                 value={gameRounds}
-                disabled={localStorage.getItem('userId') != owner}
+                disabled={localStorage.getItem('userId') != ownerId}
                 onChange={(event, newRounds) => {
                   setGameRounds(newRounds as number);
                   stateDebounceLobbyChange(gameMode, newRounds as number, roundTime);
@@ -241,7 +235,7 @@ const Lobby = () => {
                   max={300}
                   valueLabelDisplay='auto'
                   value={roundTime}
-                  disabled={localStorage.getItem('userId') != owner}
+                  disabled={localStorage.getItem('userId') != ownerId}
                   onChange={(event, newTime) => {
                     setRoundTime(newTime as number);
                     stateDebounceLobbyChange(gameMode, gameRounds, newTime as number);
@@ -254,7 +248,7 @@ const Lobby = () => {
             multiple
             readOnly={true}
             disableCloseOnSelect
-            options={wordCategories}
+            options={WordCategories}
             getOptionLabel={(option) => option.category}
             renderOption={(props, option, { selected }) => (
               <li {...props}>
@@ -294,7 +288,7 @@ const Lobby = () => {
             }}
           />
           <Button variant="contained" sx={{ mx:2, mt:2 }} onClick={() => navigate('/')}>Leave Lobby</Button>
-          <Button variant="contained" sx={{ mx:2, mt:2 }}>Start Game</Button>
+          <Button variant="contained" sx={{ mx:2, mt:2 }} onClick={() => alert('Starting the game.?')}>Start Game</Button>
         </Box>
       </Box>
       <Box sx={{ float: 'right', width: '33%!important', height: 'calc(100vh - 164px)', border:'solid 2px white' }}>
