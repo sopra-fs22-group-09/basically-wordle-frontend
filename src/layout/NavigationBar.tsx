@@ -38,9 +38,9 @@ export const NavigationBar = () => {
 
   function logout() {
     localStorage.clear();
-    logoutUser().then(() =>
-      window.location.reload()
-    );
+    logoutUser();
+    window.location.reload();
+
   }
 
   const toolbar = (

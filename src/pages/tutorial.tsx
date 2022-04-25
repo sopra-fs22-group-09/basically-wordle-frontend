@@ -216,7 +216,7 @@ const Tutorial = () => {
       </Box>
     </Container>;
   }
-  return(null);
+  return null;
 };
 
 export default Tutorial;
