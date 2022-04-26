@@ -19,10 +19,10 @@ const PasswordRequirement = ({ meets, label }: { meets: boolean; label: string }
 };
 
 const requirements = [
-  { re: /[0-9]/, label: 'Includes number' },
+  { re: /\d/, label: 'Includes number' },
   { re: /[a-z]/, label: 'Includes lowercase letter' },
   { re: /[A-Z]/, label: 'Includes uppercase letter' },
-  { re: /[$&+,:;=?@#|'<>.^*()%!-]/, label: 'Includes special symbol' },
+  { re: /[ !"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~]/, label: 'Includes special symbol' },
 ];
 
 function getStrength(password: string) {
@@ -53,6 +53,7 @@ const PasswordStrength = () => {
       position="bottom"
       placement="start"
       withArrow={false}
+      style={{display: 'block'}}
       styles={{ popover: { width: '100%', backgroundColor: '#2C2E30'}, arrow: { color: '#2C2E30' }, wrapper: { color: '#2C2E30' } }}
       trapFocus={false}
       zIndex={9001}
