@@ -1,5 +1,5 @@
 import { Maybe, Scalars } from '.';
-import { User } from './User';
+import { Player } from './Player';
 
 export interface LobbyModels {
   joinLobbyById: Lobby
@@ -11,13 +11,13 @@ export type Lobby = {
   __typename?: 'Lobby';
   id: Scalars['ID'];
   status: LobbyStatus;
-  owner: User;
+  owner: Player;
   size: Scalars['Int'];
   name: Scalars['String'];
   gameCategory: GameCategory;
   gameMode: GameMode;
   game: Game;
-  players: Array<User>;
+  players: Array<Player>;
 };
 
 export type Game = {
@@ -41,8 +41,7 @@ export type SubscriptionLobbyArgs = {
 }
 
 export type MutationUpdateLobbySettingsArgs = {
-  id: Scalars['ID'];
-  gameSettings: GameSettingsInput;
+  input: GameSettingsInput;
 };
 
 export type GameSettingsInput = {
