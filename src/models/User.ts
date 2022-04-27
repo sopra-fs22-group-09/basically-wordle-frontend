@@ -4,7 +4,7 @@ export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
   username: Scalars['String'];
-  avatarID: Scalars['String'];
+  avatarId: Scalars['String'];
   //creationDate: Date;
   status: UserStatus;
 };

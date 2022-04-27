@@ -31,7 +31,7 @@ import {
   SubscriptionLobbyArgs,
   WordCategories
 } from '../models/Lobby';
-import { User } from '../models/User';
+import { Player } from '../models/Player';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const JOIN_LOBBY = gql`
@@ -51,7 +51,7 @@ const JOIN_LOBBY = gql`
       }
       players {
         id
-        username
+        name
       }
     }
   }
@@ -70,15 +70,15 @@ const LOBBY_SUBSCRIPTION = gql`
       }
       players {
         id
-        username
+        name
       }
     }
   }
 `;
 
 const CHANGE_LOBBY = gql`
-  mutation updateLobby($id: String!, $gameSettings: GameSettingsInput!) {
-    updateLobbySettings(id: $id, gameSettings: $gameSettings) {
+  mutation updateLobby($input: GameSettingsInput!) {
+    updateLobbySettings(input: $input) {
       id
     }
   }
@@ -97,7 +97,7 @@ const Lobby = () => {
   const [gameMode, setGameMode] = React.useState<GameMode>(GameMode.WORDSPP);
   const [gameRounds, setGameRounds] = React.useState(0);
   const [roundTime, setRoundTime] = React.useState(0);
-  const [players, setPlayers] = React.useState<User[]>([]);
+  const [players, setPlayers] = React.useState<Player[]>([]);
 
   function JoinLobby() {
     // eslint-disable-next-line unused-imports/no-unused-vars
@@ -146,8 +146,7 @@ const Lobby = () => {
   const changeLobbySettings = (gameMode: GameMode, amountRounds: number, roundTime: number) => {
     changeLobby({
       variables: {
-        id: params.id as string,
-        gameSettings: {
+        input: {
           gameMode: Object.keys(GameMode)[Object.values(GameMode).indexOf(gameMode)] as GameMode,
           amountRounds: amountRounds,
           roundTime: roundTime
@@ -178,7 +177,7 @@ const Lobby = () => {
             {players?.map(player => {
               return (
                 <ListItem key={player.id}>
-                  {player.username}
+                  {player.name}
                 </ListItem>
               );
             })}
