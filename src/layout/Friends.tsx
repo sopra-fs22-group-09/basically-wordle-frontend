@@ -19,20 +19,16 @@ import { useLocalStorage } from '@mantine/hooks';
 import { User } from '../models/User';
 
 const READ_USERNAME = gql`
-  query readUsername($id: ID!) {
-    user(id: $id) {
-      username
-    }
+  fragment myUser on User {
+    username
   }
 `;
 
 export const Friends = () => {
-  const [userId] = useLocalStorage<string>({ key: 'userId' });
-  const { username } = api.readQuery<User, { id: string }>({
-    query: READ_USERNAME,
-    variables: {
-      id: userId
-    }
+  const [userId] = useLocalStorage<string>({ key: 'userId', getInitialValueInEffect: true });
+  const { username } = api.readFragment<User>({
+    fragment: READ_USERNAME,
+    id: 'User:' + userId
   }) ?? { username: 'unknown' };
 
   const myProfile = (

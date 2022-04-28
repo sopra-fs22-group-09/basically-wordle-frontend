@@ -6,6 +6,7 @@ import { Alert, Avatar, Box, Button, Grid, Link, Modal, TextField, Typography } 
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { LoadingOverlay } from '@mantine/core';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
 
 export type LoginInput = {
   username: FormDataEntryValue | null;
@@ -40,10 +41,10 @@ const Login = () => {
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [loginUser, { data, loading, error }] = useMutation<LoginType, MutationLoginArgs>(LOGIN_USER);
   
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    loginUser({
+    await loginUser({
       variables: {
         input: {
           username: formData.get('username'),
@@ -61,7 +62,7 @@ const Login = () => {
       dispatch({type: 'modal/setState', payload: {isOpen: false}});
       window.location.reload();
     });
-  };
+  }, [dispatch, loginUser, navigate]);
   
   return (
     <>

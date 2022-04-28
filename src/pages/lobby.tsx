@@ -102,6 +102,7 @@ const Lobby = () => {
   function JoinLobby() {
     // eslint-disable-next-line unused-imports/no-unused-vars
     const [joinLobby, { data, loading, error }] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY);
+    // FIXME: useEffect inside function??
     useEffect(() => {
       joinLobby({
         variables: {
@@ -129,6 +130,7 @@ const Lobby = () => {
         id: params.id as string
       }
     });
+    // FIXME: useEffect inside function??
     useEffect(() => {
       if (!loading && data?.lobby) {
         setOwnerId(data.lobby.owner.id);

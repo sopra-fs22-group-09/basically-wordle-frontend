@@ -7,6 +7,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useNavigate } from 'react-router-dom';
 import { LoadingOverlay } from '@mantine/core';
 import PasswordStrength from '../components/passwordStrengthMeter';
+import { useCallback } from 'react';
 
 export type RegisterInput = {
   username: FormDataEntryValue | null;
@@ -42,10 +43,10 @@ const Register = () => {
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [addUser, { data, loading, error }] = useMutation<RegisterType, MutationRegisterArgs>(ADD_USER);
   
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    addUser({
+    await addUser({
       variables: {
         input: {
           username: formData.get('username'),
@@ -64,7 +65,7 @@ const Register = () => {
       dispatch({type: 'modal/setState', payload: {isOpen: false}});
       window.location.reload();
     });
-  };
+  }, [addUser, dispatch, navigate]);
 
   return (
     <Modal
