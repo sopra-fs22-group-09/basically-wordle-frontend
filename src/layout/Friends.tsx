@@ -13,8 +13,27 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import { gql } from '@apollo/client';
+import api from '../services/api';
+import { useLocalStorage } from '@mantine/hooks';
+import { User } from '../models/User';
+
+const READ_USERNAME = gql`
+  query readUsername($id: ID!) {
+    user(id: $id) {
+      username
+    }
+  }
+`;
 
 export const Friends = () => {
+  const [userId] = useLocalStorage<string>({ key: 'userId' });
+  const { username } = api.readQuery<User, { id: string }>({
+    query: READ_USERNAME,
+    variables: {
+      id: userId
+    }
+  }) ?? { username: 'unknown' };
 
   const myProfile = (
     <ListItem
@@ -31,7 +50,7 @@ export const Friends = () => {
           <FaceIcon />
         </Avatar>
       </ListItemAvatar>
-      <ListItemText primary={localStorage.getItem('userName')} secondary="Online" />
+      <ListItemText primary={username} secondary="Online" />
       <IconButton
         color="inherit"
         onClick={() => {alert('Still waiting to be implemented...');}} /*TODO: Show notification menu*/
