@@ -23,10 +23,13 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import {
   GameCategorization,
   GameCategory,
-  GameMode, LobbyStatus,
+  GameMode,
+  LobbyModels,
+  MutationUpdateLobbySettingsArgs,
   WordCategories
 } from '../models/Lobby';
 import { Player } from '../models/Player';
+import { gql, useMutation } from '@apollo/client';
 
 interface LobbyInformation {
   name: string
@@ -39,15 +42,36 @@ interface LobbyInformation {
   players: Player[]
   setGameRounds: (rounds: number) => void
   setRoundTime: (time: number) => void
-  changeLobbySettings: (gameMode: GameMode, amountRounds: number, roundTime: number) => void
-  setStatus: (status: LobbyStatus) => void
+  startGame: () => void
 }
+
+const CHANGE_LOBBY = gql`
+  mutation updateLobby($input: GameSettingsInput!) {
+    updateLobbySettings(input: $input) {
+      id
+    }
+  }
+`;
 
 const LobbyManagement = (lobbyInfo: LobbyInformation) => {
 
   const navigate = useNavigate();
   const [copied, setCopied] = React.useState(false);
-  const [stateDebounceLobbyChange] = React.useState(() => debounce(lobbyInfo.changeLobbySettings, 250));
+
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  const [changeLobby, { data, loading, error }] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
+  const changeLobbySettings = (gameMode: GameMode, amountRounds: number, roundTime: number) => {
+    changeLobby({
+      variables: {
+        input: {
+          gameMode: Object.keys(GameMode)[Object.values(GameMode).indexOf(gameMode)] as GameMode,
+          amountRounds: amountRounds,
+          roundTime: roundTime
+        }
+      }
+    });
+  };
+  const [stateDebounceLobbyChange] = React.useState(() => debounce(changeLobbySettings, 250));
 
   return (
     <Box
@@ -86,7 +110,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               value={lobbyInfo.gameMode}
               label="Game Mode"
               disabled={localStorage.getItem('userId') != lobbyInfo.ownerId}
-              onChange={event => lobbyInfo.changeLobbySettings(event.target.value as GameMode, lobbyInfo.gameRounds, lobbyInfo.roundTime)}
+              onChange={event => changeLobbySettings(event.target.value as GameMode, lobbyInfo.gameRounds, lobbyInfo.roundTime)}
             >
               {(Object.values(GameMode)).map(mode => {
                 return (
@@ -180,7 +204,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
             }}
           />
           <Button variant="contained" sx={{ mx:2, mt:2 }} onClick={() => navigate('/')}>Leave Lobby</Button>
-          <Button variant="contained" sx={{ mx:2, mt:2 }} onClick={() => lobbyInfo.setStatus(LobbyStatus.INGAME)}>Start Game</Button>
+          <Button variant="contained" sx={{ mx:2, mt:2 }} onClick={() => lobbyInfo.startGame()}>Start Game</Button>
         </Box>
       </Box>
       <Box sx={{ float: 'right', width: '33%!important', height: 'calc(100vh - 164px)', border:'solid 2px white' }}>

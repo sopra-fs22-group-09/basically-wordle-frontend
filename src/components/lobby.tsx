@@ -9,11 +9,11 @@ import {
   LobbyModels,
   LobbyStatus,
   MutationJoinLobbyByIdArgs,
-  MutationUpdateLobbySettingsArgs,
   SubscriptionLobbyArgs
 } from '../models/Lobby';
 import { Player } from '../models/Player';
 import { gql, useMutation, useSubscription } from '@apollo/client';
+import { GameModels } from '../models/Game';
 
 const JOIN_LOBBY = gql`
   mutation joinLobby($id: ID!) {
@@ -59,10 +59,11 @@ const LOBBY_SUBSCRIPTION = gql`
   }
 `;
 
-const CHANGE_LOBBY = gql`
-  mutation updateLobby($input: GameSettingsInput!) {
-    updateLobbySettings(input: $input) {
-      id
+const START_GAME = gql`
+  mutation initializeGame {
+    startGame {
+      amountRounds
+      roundTime
     }
   }
 `;
@@ -126,16 +127,18 @@ const Lobby = () => {
   UpdateLobby();
 
   // eslint-disable-next-line unused-imports/no-unused-vars
-  const [changeLobby, { data, loading, error }] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
-  const changeLobbySettings = (gameMode: GameMode, amountRounds: number, roundTime: number) => {
-    changeLobby({
-      variables: {
-        input: {
-          gameMode: Object.keys(GameMode)[Object.values(GameMode).indexOf(gameMode)] as GameMode,
-          amountRounds: amountRounds,
-          roundTime: roundTime
+  const [startGame, { data, loading, error }] = useMutation<GameModels>(START_GAME);
+  const initializeGame = () => {
+    startGame({
+      onCompleted(data) {
+        if (data?.startGame) {
+          // TODO probably not needed? can probably delete
+          setGameRounds(data.startGame.amountRounds);
+          setRoundTime(data.startGame.roundTime);
         }
       }
+    }).then(() => {
+      setStatus(LobbyStatus.INGAME);
     });
   };
 
@@ -152,8 +155,7 @@ const Lobby = () => {
         players={players}
         setGameRounds={setGameRounds}
         setRoundTime={setRoundTime}
-        changeLobbySettings={changeLobbySettings}
-        setStatus={setStatus}
+        startGame={initializeGame}
       />
       :
       <Game
