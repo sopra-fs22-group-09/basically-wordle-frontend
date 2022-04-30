@@ -73,6 +73,7 @@ export enum GameMode {
 export enum LobbyStatus {
   OPEN = 'Open',
   FULL = 'Full',
+  PREPARING = 'Preparing',
   INGAME = 'InGame'
 }
 

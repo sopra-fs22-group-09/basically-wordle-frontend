@@ -3,8 +3,8 @@ import { Route } from 'react-router-dom';
 import Home from '../pages/home';
 import Profile from '../pages/profile';
 import { DefaultRoute } from './Guard';
-import Lobby from '../pages/lobby';
 import Tutorial from '../pages/tutorial';
+import Lobby from '../components/lobby';
 
 /**
  * Main router of your application.
