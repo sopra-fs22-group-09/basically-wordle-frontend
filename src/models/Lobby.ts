@@ -1,5 +1,6 @@
 import { Maybe, Scalars } from '.';
 import { Player } from './Player';
+import { Game } from './Game';
 
 export interface LobbyModels {
   joinLobbyById: Lobby
@@ -18,12 +19,6 @@ export type Lobby = {
   gameMode: GameMode;
   game: Game;
   players: Array<Player>;
-};
-
-export type Game = {
-  __typename?: 'Game';
-  amountRounds: Scalars['Int'];
-  roundTime: Scalars['Int'];
 };
 
 export type Message = {
@@ -73,7 +68,6 @@ export enum GameMode {
 export enum LobbyStatus {
   OPEN = 'Open',
   FULL = 'Full',
-  PREPARING = 'Preparing',
   INGAME = 'InGame'
 }
 

@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { LobbyStatus } from '../models/Lobby';
 import { Button } from '@mui/material';
-import { gql } from '@apollo/client';
+import { gql, useMutation, useSubscription } from '@apollo/client';
+import { GameRoundModel, GameStatsModel, GameStatusModel, LetterState, OpponentGameRoundModel } from '../models/Game';
 
 interface GameInformation {
   name: string
@@ -11,34 +12,67 @@ interface GameInformation {
 const SUBMIT_GUESS = gql`
   mutation submitGuess($word: String!) {
     submitGuess(word: $word) {
-      player {
-        id
-        name
-      }
-      currentRound
-      targetWord
       words
       letterStates
     }
   }
 `;
 
-const NEXT_GAME_ROUND = gql`
-  mutation nextGameRound {
-    nextGameRound {
-      player {
-        id
-        name
-      }
-      currentRound
+const CONCLUDE_GAME = gql`
+  query concludeGame {
+    concludeGame {
       targetWord
-      words
-      letterStates
+      roundsTaken
+      timeTaken
+      score
+      rank
+    }
+  }
+`;
+
+const GAME_STATUS = gql`
+  subscription gameStatus {
+    gameStatus {
+      gameStatus
+    }
+  }
+`;
+
+const OPPONENT_GAME_ROUND = gql`
+  subscription opponentGameRound {
+    opponentGameRound {
+      gameRounds
     }
   }
 `;
 
 const Game = (gameInfo: GameInformation) => {
+
+  const [words, setWords] = React.useState<string[]>([]);
+  const [letterState, setLetterState] = React.useState<LetterState[][]>([[]]);
+  
+  const [submitGuess, submitGuessData] = useMutation<GameRoundModel>(SUBMIT_GUESS);
+  const guess = () => {
+    submitGuess({
+      onCompleted(data) {
+        if (data?.submitGuess) {
+          setWords(data.submitGuess.words);
+          setLetterState(data.submitGuess.letterStates);
+        }
+      }
+    });
+  };
+
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  const [concludeGame, concludeGameData] = useMutation<GameStatsModel>(CONCLUDE_GAME);
+  const conclude = () => {
+    concludeGame();
+  };
+
+  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {});
+
+  const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND, {});
+
 
   return (
     <Button variant="contained" sx={{ mx:2, mt:2 }} onClick={() => gameInfo.setStatus(LobbyStatus.OPEN)}>End Game</Button>

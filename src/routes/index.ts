@@ -4,7 +4,7 @@ import Home from '../pages/home';
 import Profile from '../pages/profile';
 import { DefaultRoute } from './Guard';
 import Tutorial from '../pages/tutorial';
-import Lobby from '../components/lobby';
+import Index from '../components/lobby';
 
 /**
  * Main router of your application.
@@ -39,7 +39,7 @@ export const routes: Array<Route> = [
     title: 'Lobby',
     path: '/lobby/:id',
     enabled: true,
-    component: Lobby
+    component: Index
   },
   {
     key: 'profile-route',
