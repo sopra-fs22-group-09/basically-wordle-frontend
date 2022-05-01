@@ -17,10 +17,10 @@ const Row = ({
 }: RowProps) => {
 
   const getColorForLetter = (letter: string, n: number) => {
-    if (letterStates[n] === LetterState.CORRECTPOSITION) return 'lightgreen';
+    if (letterStates[n] === LetterState.CORRECTPOSITION) return '#00b300';
     else if (letterStates[n] === LetterState.INWORD) return 'orange';
     else if (letterStates[n] === LetterState.WRONG) return 'black';
-    else return 'transparent';
+    else return '#808080';
   };
 
   return (

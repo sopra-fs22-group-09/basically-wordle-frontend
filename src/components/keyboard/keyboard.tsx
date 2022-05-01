@@ -22,10 +22,10 @@ const Keyboard = ({
 }: KeyboardProps) => {
   
   const getColorForLetter = (letter: string) => {
-    if (letterOnCorrectPosition.toUpperCase().includes(letter.toUpperCase())) return 'lightgreen';
+    if (letterOnCorrectPosition.toUpperCase().includes(letter.toUpperCase())) return '#00b300';
     else if (letterInWord.toUpperCase().includes(letter.toUpperCase())) return 'orange';
     else if (letterNotInWord.toUpperCase().includes(letter.toUpperCase())) return 'black';
-    else return 'gray';
+    else return '#808080';
   };
 
   const onClick = (value: string) => {
