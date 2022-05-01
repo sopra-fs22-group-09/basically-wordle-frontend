@@ -8,7 +8,6 @@ import {
 } from '@mui/material';
 import {gql, useMutation} from '@apollo/client';
 import {useState} from 'react';
-import {User} from '../models/User';
 import { useNavigate } from 'react-router-dom';
 import { LoadingOverlay } from '@mantine/core';
 import image1 from '../assets/1.png';
@@ -16,40 +15,27 @@ import image2 from '../assets/2.png';
 import image3 from '../assets/3.png';
 import image4 from '../assets/4.png';
 import image5 from '../assets/5.png';
-import { useLocalStorage } from '@mantine/hooks';
 
 const Tutorial = () => {
 
   const FINISH_TUTORIAL = gql`
-    mutation tutorialFinished($user: TokenInput!) {
-      tutorialCompleted(input: $user) {
-        id
+      mutation {
+          tutorialFinished
       }
-    }
   `;
 
-  interface tokenEntry {
-    token: string | null;
-  }
-
-  interface tokenData {
-    user: tokenEntry;
+  interface TutorialType {
+    logout: boolean;
   }
 
   // eslint-disable-next-line unused-imports/no-unused-vars
-  const [finishTutorial, { data, loading, error }] = useMutation<User, tokenData>(FINISH_TUTORIAL);
+  const [finishTutorial, { data, loading, error }] = useMutation<TutorialType>(FINISH_TUTORIAL);
   const [count, setCount] = useState(1);
-  const [token] = useLocalStorage<string>({ key: 'token' });
-
   const navigate = useNavigate();
 
   const handleSubmit = () => {
     finishTutorial({
-      variables: {
-        user: {
-          token: token
-        }
-      },
+      variables: {},
       onCompleted() {
         navigate('/');
       }
