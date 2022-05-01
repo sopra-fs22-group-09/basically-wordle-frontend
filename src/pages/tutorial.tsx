@@ -25,7 +25,7 @@ const Tutorial = () => {
   `;
 
   interface TutorialType {
-    logout: boolean;
+    tutorialFinished: boolean;
   }
 
   // eslint-disable-next-line unused-imports/no-unused-vars
