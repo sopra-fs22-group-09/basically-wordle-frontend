@@ -60,16 +60,6 @@ const FriendsList = () => {
       >
         {open ? <ArrowBackIosOutlinedIcon /> : <ArrowForwardIosOutlinedIcon />}
       </IconButton>
-      <IconButton onClick={() => { alert('They see me scrollin\''); } } // TODO: Scroll feature
-        sx={{
-          position: 'absolute',
-          bottom: '15px',
-          left: '50%',
-          transform: 'translateX(-50%)'
-        }}
-      >
-        <ArrowDropDownCircleOutlinedIcon />
-      </IconButton>
     </Drawer>
   );
 };

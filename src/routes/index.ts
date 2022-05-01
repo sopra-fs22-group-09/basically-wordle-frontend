@@ -4,6 +4,7 @@ import Home from '../pages/home';
 import Profile from '../pages/profile';
 import { DefaultRoute } from './Guard';
 import Tutorial from '../pages/tutorial';
+import Game from '../pages/game';
 import Index from '../components/lobby';
 
 /**
@@ -40,6 +41,13 @@ export const routes: Array<Route> = [
     path: '/lobby/:id',
     enabled: true,
     component: Index
+  },
+  {
+    key: 'game-route',
+    title: 'Game',
+    path: '/game/:id',
+    enabled: true,
+    component: Game
   },
   {
     key: 'profile-route',

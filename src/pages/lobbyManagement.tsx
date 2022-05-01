@@ -86,7 +86,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
         {lobbyInfo.name} | {lobbyInfo.gameCategory} [{lobbyInfo.size}]
       </Typography>
       <Box sx={{ width: '66%!important', float: 'left', border:'solid 2px white' }}>
-        <Box sx={{ width: '49%', border:'solid 2px red', float: 'left' }}>
+        <Box sx={{ width: '49%', border:'solid 2px white', float: 'left' }}>
           <Typography variant='h5'>
             players
           </Typography>
@@ -100,7 +100,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
             })}
           </List>
         </Box>
-        <Box sx={{ width: '49%', border:'solid 2px red', float: 'right' }}>
+        <Box sx={{ width: '49%', border:'solid 2px white', float: 'right' }}>
           <Typography variant='h5'>
             settings
           </Typography>
@@ -182,7 +182,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
             )}
           />
         </Box>
-        <Box sx={{clear: 'both', width: '80%', maxWidth: 600, mt: 38, mx: 'auto', textAlign: 'center', border:'solid 2px red'}}>
+        <Box sx={{clear: 'both', width: '80%', maxWidth: 600, mt: 38, mx: 'auto', textAlign: 'center', border:'solid 2px white'}}>
           <TextField
             type='text'
             defaultValue={window.location.host + window.location.pathname}
