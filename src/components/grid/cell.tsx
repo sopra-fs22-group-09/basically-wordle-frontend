@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Box } from '@mui/material';
+import { LetterState } from '../../models/Game';
 
 type CellProps = {
   value?: string

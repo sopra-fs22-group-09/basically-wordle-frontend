@@ -1,31 +1,41 @@
 import * as React from 'react';
 import { Box } from '@mui/material';
 import Row from './row';
+import { LetterState } from '../../models/Game';
 
 type GridProps = {
   currentRow: number
+  currentWord: string
+  allGuesses: string[]
   style?: React.CSSProperties
+  allLetterStates: LetterState[][]
 }
 
 const Grid = ({
   currentRow,
+  currentWord,
+  allGuesses,
   style,
+  allLetterStates
 
 }: GridProps) => {
+
+
 
   return (
     <Box
       sx={{
         m: 'auto',
+        width: '320px',
         ...style
       }}
     >
-      <Row word={'loool'} />
-      <Row word={'loool'} />
-      <Row word={'a'} />
-      <Row word={'a'} />
-      <Row word={'a'} />
-      <Row word={'a'} />
+      {allGuesses.map((word, i) => (
+        <Row
+          word={currentRow === i ? currentWord?.toUpperCase() : allGuesses[i].toUpperCase()}
+          key={i}
+          letterStates={allLetterStates[i]}/>
+      ))}
     </Box>
   );
 };

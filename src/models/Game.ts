@@ -63,8 +63,8 @@ export enum PlayerStatus {
 }
 
 export enum LetterState {
-  CORRECTPOSITION = 'Correct Position',
-  INWORD = 'In Word',
-  WRONG = 'Wrong',
-  UNKNOWN = 'Unknown',
+  CORRECTPOSITION = 'CORRECTPOSITION',
+  INWORD = 'INWORD',
+  WRONG = 'WRONG',
+  UNKNOWN = 'UNKNOWN',
 }

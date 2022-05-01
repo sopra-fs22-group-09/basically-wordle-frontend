@@ -50,7 +50,7 @@ const Keyboard = ({
   }, [onEnter, onDelete, onChar]);
 
   return (
-    <Box>
+    <Box sx={{minWidth: '380px'}}>
       <Box>
         {['Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P'].map((key) => (
           <Key
