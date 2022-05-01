@@ -5,6 +5,7 @@ import Profile from '../pages/profile';
 import { DefaultRoute } from './Guard';
 import Lobby from '../pages/lobby';
 import Tutorial from '../pages/tutorial';
+import Game from '../pages/game';
 
 /**
  * Main router of your application.
@@ -40,6 +41,13 @@ export const routes: Array<Route> = [
     path: '/lobby/:id',
     enabled: true,
     component: Lobby
+  },
+  {
+    key: 'game-route',
+    title: 'Game',
+    path: '/game/:id',
+    enabled: true,
+    component: Game
   },
   {
     key: 'profile-route',
