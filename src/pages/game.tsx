@@ -4,7 +4,7 @@ import Keyboard from '../components/keyboard/keyboard';
 import { useState } from 'react';
 import Grid from '../components/grid/grid';
 import { LobbyStatus } from '../models/Lobby';
-import { gql, useMutation, useSubscription } from '@apollo/client';
+import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
 import {
   GameRoundModel,
   GameStatsModel,
@@ -85,11 +85,14 @@ const Game = (gameInfo: GameInformation) => {
     });
   };
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  const [concludeGame, concludeGameData] = useMutation<GameStatsModel>(CONCLUDE_GAME);
-  const conclude = () => {
-    concludeGame();
-  };
+  function ConcludeGame() {
+    // eslint-disable-next-line unused-imports/no-unused-vars
+    const concludeGameData = useQuery<GameStatsModel>(CONCLUDE_GAME, {
+      onCompleted(data) {
+        console.log('ja');
+      }
+    });
+  }
 
   const playerStatusData = useSubscription<PlayerStatusModel>(PLAYER_STATUS, {});
 
