@@ -119,11 +119,11 @@ const Game = (gameInfo: GameInformation) => {
       <Grid currentRow={0} />
       <br style={{clear: 'both'}}/>
       <Keyboard onChar={onChar}
-                onDelete={onDelete}
-                onEnter={onEnter}
-                letterOnCorrectPosition={letterOnCorrectPosition}
-                letterInWord={letterInWord}
-                letterNotInWord={letterNotInWord}
+        onDelete={onDelete}
+        onEnter={onEnter}
+        letterOnCorrectPosition={letterOnCorrectPosition}
+        letterInWord={letterInWord}
+        letterNotInWord={letterNotInWord}
       />
     </Box>
   );

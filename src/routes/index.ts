@@ -42,13 +42,13 @@ export const routes: Array<Route> = [
     enabled: true,
     component: Index
   },
-  {
+  /*  {
     key: 'game-route',
     title: 'Game',
     path: '/game/:id',
     enabled: true,
     component: Game
-  },
+  },*/
   {
     key: 'profile-route',
     title: 'Profile',
