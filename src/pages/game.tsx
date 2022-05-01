@@ -2,7 +2,14 @@ import * as React from 'react';
 import { LobbyStatus } from '../models/Lobby';
 import { Button } from '@mui/material';
 import { gql, useMutation, useSubscription } from '@apollo/client';
-import { GameRoundModel, GameStatsModel, GameStatusModel, LetterState, OpponentGameRoundModel } from '../models/Game';
+import {
+  GameRoundModel,
+  GameStatsModel,
+  GameStatusModel,
+  LetterState,
+  OpponentGameRoundModel,
+  PlayerStatusModel
+} from '../models/Game';
 
 interface GameInformation {
   name: string
@@ -26,6 +33,14 @@ const CONCLUDE_GAME = gql`
       timeTaken
       score
       rank
+    }
+  }
+`;
+
+const PLAYER_STATUS = gql`
+  subscription gameStatus {
+    gameStatus {
+      gameStatus
     }
   }
 `;
@@ -68,6 +83,8 @@ const Game = (gameInfo: GameInformation) => {
   const conclude = () => {
     concludeGame();
   };
+
+  const playerStatusData = useSubscription<PlayerStatusModel>(PLAYER_STATUS, {});
 
   const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {});
 

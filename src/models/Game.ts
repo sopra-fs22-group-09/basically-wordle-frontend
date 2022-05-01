@@ -17,6 +17,10 @@ export interface GameStatusModel {
   gameStatus: GameStatus
 }
 
+export interface PlayerStatusModel {
+  playerStatus: PlayerStatus
+}
+
 export interface OpponentGameRoundModel {
   gameRounds: Array<GameRound>
 }
@@ -50,6 +54,12 @@ export enum GameStatus {
   GUESSING = 'Guessing',
   WAITING = 'Waiting',
   FINISHED = 'Finished'
+}
+
+export enum PlayerStatus {
+  SYNCING = 'Syncing',
+  GUESSING = 'Guessing',
+  WAITING = 'Waiting',
 }
 
 export enum LetterState {
