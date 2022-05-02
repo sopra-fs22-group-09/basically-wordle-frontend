@@ -1,18 +1,20 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import Keyboard from '../components/keyboard/keyboard';
-import { useState } from 'react';
 import Grid from '../components/grid/grid';
 import { LobbyStatus } from '../models/Lobby';
-import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
+import { gql, useMutation, useSubscription } from '@apollo/client';
 import {
   GameRoundModel,
-  GameStatsModel,
+  GameStatus,
   GameStatusModel,
   LetterState,
   OpponentGameRoundModel,
+  PlayerStatus,
   PlayerStatusModel
 } from '../models/Game';
+import GameConclusion from '../modals/GameConclusion';
 
 interface GameInformation {
   name: string
@@ -22,6 +24,7 @@ interface GameInformation {
 const SUBMIT_GUESS = gql`
   mutation submitGuess($word: String!) {
     submitGuess(word: $word) {
+      targetWord
       words
       letterStates
     }
@@ -41,18 +44,14 @@ const CONCLUDE_GAME = gql`
 `;
 
 const PLAYER_STATUS = gql`
-  subscription gameStatus {
-    gameStatus {
-      gameStatus
-    }
+  subscription playerStatus {
+    playerStatus
   }
 `;
 
 const GAME_STATUS = gql`
   subscription gameStatus {
-    gameStatus {
-      gameStatus
-    }
+    gameStatus
   }
 `;
 
@@ -65,8 +64,16 @@ const OPPONENT_GAME_ROUND = gql`
 `;
 
 const Game = (gameInfo: GameInformation) => {
+
+  const [open, setOpen] = React.useState<boolean>(false);
+  const toggleModal = () => {
+    setOpen(!open);
+  };
+
   const [words, setWords] = React.useState<string[]>([]);
   const [letterState, setLetterState] = React.useState<LetterState[][]>([[]]);
+  const [playerStatus, setPlayerStatus] = useState<PlayerStatus>(PlayerStatus.SYNCING);
+  const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.PREPARING);
 
   const [letterOnCorrectPosition, setLetterOnCorrectPosition] = useState('');
   const [letterInWord, setLetterInWord] = useState('');
@@ -81,6 +88,7 @@ const Game = (gameInfo: GameInformation) => {
     },
     onCompleted(data) {
       if (data?.submitGuess) {
+        console.log(data.submitGuess.targetWord);
         //setWords(data.submitGuess.words);
         // TODO Just a temporary fix since the broken backend:
         //  The backend returns null when submitting the last guess and there are still rounds left
@@ -107,20 +115,53 @@ const Game = (gameInfo: GameInformation) => {
         setLetterOnCorrectPosition(corr);
         setLetterInWord(inWord);
         setLetterNotInWord(wrong);
+
+
+
+        console.log(gameStatus);
+        if (currentGuess >= 5) {
+          toggleModal();
+        }
+        let allRight = true;
+        console.log(row);
+        for (const letterState of row) {
+          console.log(letterState);
+          if (letterState != LetterState.CORRECTPOSITION) {
+            allRight = false;
+          }
+        }
+        if (allRight) {
+          toggleModal();
+        }
       }
     }
   });
 
-  function ConcludeGame() {
+  /*  function ConcludeGame() {
     const concludeGameData = useQuery<GameStatsModel>(CONCLUDE_GAME, {
       onCompleted(data) {
-        console.log('ja');
+        toggleModal();
       }
     });
-  }
+  }*/
 
   const playerStatusData = useSubscription<PlayerStatusModel>(PLAYER_STATUS, {});
+  useEffect(() => {
+    if (!playerStatusData.loading && playerStatusData.data?.playerStatus) {
+      setPlayerStatus(playerStatusData.data.playerStatus);
+    }
+  }, [playerStatusData.data, playerStatusData.loading]);
+
   const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {});
+  useEffect(() => {
+    if (!gameStatusData.loading && gameStatusData.data?.gameStatus) {
+      setGameStatus(gameStatusData.data.gameStatus);
+      if (gameStatus == GameStatus.FINISHED) {
+        toggleModal();
+      }
+    }
+  }, [gameStatus, gameStatusData.data, gameStatusData.loading, toggleModal]);
+
   const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND, {});
 
   const onChar = (value: string) => {if (currentWord.length < 5) setCurrentWord(currentWord + value.toLowerCase());};
@@ -136,6 +177,7 @@ const Game = (gameInfo: GameInformation) => {
       });
     }
   };
+
   return (
     <Box sx={{
       width:'90%',
@@ -143,6 +185,7 @@ const Game = (gameInfo: GameInformation) => {
       mt:'2.5%',
       textAlign: 'center'
     }}>
+      <GameConclusion open={open} toggle={toggleModal}/>
       <Box sx={{width: '66%', float: 'left', m: 'auto'}}>
         <Box sx={{height: '50vh'}}>
           <Grid
