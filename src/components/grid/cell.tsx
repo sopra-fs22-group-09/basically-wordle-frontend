@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Box } from '@mui/material';
 import { LetterState } from '../../models/Game';
 
+
 type CellProps = {
   value?: string
   style?: React.CSSProperties
@@ -16,8 +17,11 @@ const Cell = ({
   return (
     <Box
       sx={{
-        width: '60px',
-        height: '60px',
+        width: '18%',
+        maxWidth: '60px',
+        aspectRatio: '6/1',
+        height: '100%',
+        maxHeight: '60px',
         m: '2px',
         p: '10px 0',
         border: '2px solid white',
