@@ -9,12 +9,10 @@ import {
   GameRoundModel,
   GameStatsModel,
   GameStatus,
-  GameStatusModel,
   LetterState,
   OpponentGameRoundModel,
-  PlayerStatusModel
 } from '../models/Game';
-import { useAppDispatch } from '../redux/hooks';
+import GameConclusion from '../modals/GameConclusion';
 
 interface GameInformation {
   name: string
@@ -60,7 +58,10 @@ const OPPONENT_GAME_ROUND = gql`
 
 const Game = (gameInfo: GameInformation) => {
 
-  const dispatch = useAppDispatch();
+  const [open, setOpen] = React.useState<boolean>(false);
+  const toggleModal = () => {
+    setOpen(!open);
+  };
 
   const [words, setWords] = React.useState<string[]>([]);
   const [letterState, setLetterState] = React.useState<LetterState[][]>([[]]);
@@ -106,7 +107,7 @@ const Game = (gameInfo: GameInformation) => {
         setLetterInWord(inWord);
         setLetterNotInWord(wrong);
 
-        console.log(gameStatus);
+
         if (currentGuess >= 5) {
           toggleModal();
         }
@@ -151,29 +152,23 @@ const Game = (gameInfo: GameInformation) => {
     }
   };
   return (
-    <>
-      {(gameInfo.gameStatus == GameStatus.PREPARING) && 
-        <Box sx={{
-          width:'100%',
-          mx: 'auto',
-          mt:'2.5%',
-          textAlign: 'center'
-        }}>
-          <Typography variant='h2'>Loading ...</Typography>
+    <Box sx={{
+      width:'90%',
+      mx:'auto',
+      mt:'2.5%',
+      textAlign: 'center'
+    }}>
+      <GameConclusion open={open} toggle={toggleModal}/>
+      <Box sx={{width: '66%', float: 'left', m: 'auto'}}>
+        <Box sx={{height: '50vh'}}>
+          <Grid
+            currentRow={currentGuess}
+            allGuesses={allGuesses}
+            currentWord={currentWord}
+            allLetterStates={letterState}
+            style={{height: '100%'}}
+          />
         </Box>
-      }
-      {(gameInfo.gameStatus == GameStatus.PLAYING) &&
-      <Box sx={{
-        width:'90%',
-        mx:'auto',
-        mt:'2.5%',
-        textAlign: 'center'
-      }}>
-        <Grid
-          currentRow={currentGuess}
-          allGuesses={allGuesses}
-          currentWord={currentWord}
-          allLetterStates={letterState}/>
         <br style={{clear: 'both'}}/>
         <Keyboard
           onChar={onChar}
