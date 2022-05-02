@@ -4,7 +4,7 @@ import Cell from './cell';
 import { LetterState } from '../../models/Game';
 
 type RowProps = {
-  word: string
+  word?: string
   style?: React.CSSProperties
   letterStates: LetterState[]
 }
@@ -26,10 +26,13 @@ const Row = ({
   return (
     <Box
       sx={{
-        m: '2px',
-        width: '100%',
-        minWidth: '24.5px',
-        height: '60px',
+        my: '2px',
+        mx: 'auto',
+        maxWidth: '100%',
+        aspectRatio: '6/1',
+        height: '16%',
+        maxHeight: '60px',
+        textAlign: 'center',
         clear: 'both',
         ...style
       }}
@@ -38,8 +41,8 @@ const Row = ({
         <Cell value={letter} key={letter + i} style={{backgroundColor: `${getColorForLetter(letter, i)}`}} />
       ))}
       {/* TODO do it better (if you find time) */}
-      {'     '.substring(0, 5 - word.length).split('').map((_, i) => (
-        <Cell key={word + i} />
+      {'     '.substring(0, 5 - (word ? word.length : 0)).split('').map((_, i) => (
+        <Cell key={5+i} />
       ))}
     </Box>
   );

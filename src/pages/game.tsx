@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import Keyboard from '../components/keyboard/keyboard';
 import { useState } from 'react';
 import Grid from '../components/grid/grid';
@@ -82,7 +82,10 @@ const Game = (gameInfo: GameInformation) => {
     onCompleted(data) {
       if (data?.submitGuess) {
         //setWords(data.submitGuess.words);
-        setLetterState(data.submitGuess.letterStates);
+        // TODO Just a temporary fix since the broken backend:
+        //  The backend returns null when submitting the last guess and there are still rounds left
+        //  Remove "? data.submitGuess.letterStates : letterState" once backend is fixed
+        setLetterState(data.submitGuess.letterStates ? data.submitGuess.letterStates : letterState);
 
         let corr = letterOnCorrectPosition;
         let inWord = letterInWord;
@@ -140,20 +143,41 @@ const Game = (gameInfo: GameInformation) => {
       mt:'2.5%',
       textAlign: 'center'
     }}>
-      <Grid
-        currentRow={currentGuess}
-        allGuesses={allGuesses}
-        currentWord={currentWord}
-        allLetterStates={letterState}/>
-      <br style={{clear: 'both'}}/>
-      <Keyboard
-        onChar={onChar}
-        onDelete={onDelete}
-        onEnter={onEnter}
-        letterOnCorrectPosition={letterOnCorrectPosition}
-        letterInWord={letterInWord}
-        letterNotInWord={letterNotInWord}
-      />
+      <Box sx={{width: '66%', float: 'left', m: 'auto'}}>
+        <Box sx={{height: '50vh'}}>
+          <Grid
+            currentRow={currentGuess}
+            allGuesses={allGuesses}
+            currentWord={currentWord}
+            allLetterStates={letterState}
+            style={{height: '100%'}}
+          />
+        </Box>
+        <br style={{clear: 'both'}}/>
+        <Keyboard
+          onChar={onChar}
+          onDelete={onDelete}
+          onEnter={onEnter}
+          letterOnCorrectPosition={letterOnCorrectPosition}
+          letterInWord={letterInWord}
+          letterNotInWord={letterNotInWord}
+        />
+      </Box>
+      {/*Opponents grid*/}
+      <Box sx={{width: '30%', float: 'right'}}>
+        {opponentGameRoundData.data?.gameRounds.map((round) => (
+          <>
+            <Box style={{height: '19vh'}}>
+              <Typography variant={'h2'} sx={{fontSize: '32px', pt: '10px'}}>{round.player.name}</Typography>
+              <Grid
+                allLetterStates={round.letterStates}
+                allGuesses={['', '', '', '', '', '']}
+                style={{height: '100%'}}/>
+            </Box>
+            <br style={{clear: 'both'}}/>
+          </>
+        ))}
+      </Box>
     </Box>
   );
 };
