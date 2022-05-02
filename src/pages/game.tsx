@@ -1,24 +1,25 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import Keyboard from '../components/keyboard/keyboard';
+import { useState } from 'react';
 import Grid from '../components/grid/grid';
 import { LobbyStatus } from '../models/Lobby';
-import { gql, useMutation, useSubscription } from '@apollo/client';
+import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
 import {
   GameRoundModel,
+  GameStatsModel,
   GameStatus,
   GameStatusModel,
   LetterState,
   OpponentGameRoundModel,
-  PlayerStatus,
   PlayerStatusModel
 } from '../models/Game';
-import GameConclusion from '../modals/GameConclusion';
+import { useAppDispatch } from '../redux/hooks';
 
 interface GameInformation {
   name: string
   setStatus: (status: LobbyStatus) => void
+  gameStatus?: GameStatus
 }
 
 const SUBMIT_GUESS = gql`
@@ -49,12 +50,6 @@ const PLAYER_STATUS = gql`
   }
 `;
 
-const GAME_STATUS = gql`
-  subscription gameStatus {
-    gameStatus
-  }
-`;
-
 const OPPONENT_GAME_ROUND = gql`
   subscription opponentGameRound {
     opponentGameRound {
@@ -65,15 +60,10 @@ const OPPONENT_GAME_ROUND = gql`
 
 const Game = (gameInfo: GameInformation) => {
 
-  const [open, setOpen] = React.useState<boolean>(false);
-  const toggleModal = () => {
-    setOpen(!open);
-  };
+  const dispatch = useAppDispatch();
 
   const [words, setWords] = React.useState<string[]>([]);
   const [letterState, setLetterState] = React.useState<LetterState[][]>([[]]);
-  const [playerStatus, setPlayerStatus] = useState<PlayerStatus>(PlayerStatus.SYNCING);
-  const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.PREPARING);
 
   const [letterOnCorrectPosition, setLetterOnCorrectPosition] = useState('');
   const [letterInWord, setLetterInWord] = useState('');
@@ -116,8 +106,6 @@ const Game = (gameInfo: GameInformation) => {
         setLetterInWord(inWord);
         setLetterNotInWord(wrong);
 
-
-
         console.log(gameStatus);
         if (currentGuess >= 5) {
           toggleModal();
@@ -137,30 +125,15 @@ const Game = (gameInfo: GameInformation) => {
     }
   });
 
-  /*  function ConcludeGame() {
+  function ConcludeGame() {
     const concludeGameData = useQuery<GameStatsModel>(CONCLUDE_GAME, {
       onCompleted(data) {
-        toggleModal();
+        console.log('ja');
       }
     });
-  }*/
+  }
 
-  const playerStatusData = useSubscription<PlayerStatusModel>(PLAYER_STATUS, {});
-  useEffect(() => {
-    if (!playerStatusData.loading && playerStatusData.data?.playerStatus) {
-      setPlayerStatus(playerStatusData.data.playerStatus);
-    }
-  }, [playerStatusData.data, playerStatusData.loading]);
-
-  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {});
-  useEffect(() => {
-    if (!gameStatusData.loading && gameStatusData.data?.gameStatus) {
-      setGameStatus(gameStatusData.data.gameStatus);
-      if (gameStatus == GameStatus.FINISHED) {
-        toggleModal();
-      }
-    }
-  }, [gameStatus, gameStatusData.data, gameStatusData.loading]);
+  //const playerStatusData = useSubscription<PlayerStatusModel>(PLAYER_STATUS, {});
 
   const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND, {});
 
@@ -177,25 +150,30 @@ const Game = (gameInfo: GameInformation) => {
       });
     }
   };
-
   return (
-    <Box sx={{
-      width:'90%',
-      mx:'auto',
-      mt:'2.5%',
-      textAlign: 'center'
-    }}>
-      <GameConclusion open={open} toggle={toggleModal}/>
-      <Box sx={{width: '66%', float: 'left', m: 'auto'}}>
-        <Box sx={{height: '50vh'}}>
-          <Grid
-            currentRow={currentGuess}
-            allGuesses={allGuesses}
-            currentWord={currentWord}
-            allLetterStates={letterState}
-            style={{height: '100%'}}
-          />
+    <>
+      {(gameInfo.gameStatus == GameStatus.PREPARING) && 
+        <Box sx={{
+          width:'100%',
+          mx: 'auto',
+          mt:'2.5%',
+          textAlign: 'center'
+        }}>
+          <Typography variant='h2'>Loading ...</Typography>
         </Box>
+      }
+      {(gameInfo.gameStatus == GameStatus.PLAYING) &&
+      <Box sx={{
+        width:'90%',
+        mx:'auto',
+        mt:'2.5%',
+        textAlign: 'center'
+      }}>
+        <Grid
+          currentRow={currentGuess}
+          allGuesses={allGuesses}
+          currentWord={currentWord}
+          allLetterStates={letterState}/>
         <br style={{clear: 'both'}}/>
         <Keyboard
           onChar={onChar}
