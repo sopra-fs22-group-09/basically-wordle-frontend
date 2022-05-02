@@ -1,9 +1,11 @@
 import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import drawerReducer from './layout/drawerSlice';
 import modalReducer from './layout/modalSlice';
+import startGameReducer from './game/startGameSlice';
 
 export const store = configureStore({
   reducer: {
+    syncState: startGameReducer,
     drawer: drawerReducer,
     modal: modalReducer,
   },

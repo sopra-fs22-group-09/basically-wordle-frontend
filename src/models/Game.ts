@@ -50,10 +50,10 @@ export type GameStats = {
 };
 
 export enum GameStatus {
-  PREPARING = 'Preparing',
-  GUESSING = 'Guessing',
-  WAITING = 'Waiting',
-  FINISHED = 'Finished'
+  NEW = 'NEW',
+  PREPARING = 'PREPARING',
+  PLAYING = 'PLAYING',
+  FINISHED = 'FINISHED'
 }
 
 export enum PlayerStatus {

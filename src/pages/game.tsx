@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import Keyboard from '../components/keyboard/keyboard';
 import { useState } from 'react';
 import Grid from '../components/grid/grid';
@@ -8,15 +8,18 @@ import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
 import {
   GameRoundModel,
   GameStatsModel,
+  GameStatus,
   GameStatusModel,
   LetterState,
   OpponentGameRoundModel,
   PlayerStatusModel
 } from '../models/Game';
+import { useAppDispatch } from '../redux/hooks';
 
 interface GameInformation {
   name: string
   setStatus: (status: LobbyStatus) => void
+  gameStatus?: GameStatus
 }
 
 const SUBMIT_GUESS = gql`
@@ -48,14 +51,6 @@ const PLAYER_STATUS = gql`
   }
 `;
 
-const GAME_STATUS = gql`
-  subscription gameStatus {
-    gameStatus {
-      gameStatus
-    }
-  }
-`;
-
 const OPPONENT_GAME_ROUND = gql`
   subscription opponentGameRound {
     opponentGameRound {
@@ -65,6 +60,8 @@ const OPPONENT_GAME_ROUND = gql`
 `;
 
 const Game = (gameInfo: GameInformation) => {
+  const dispatch = useAppDispatch();
+
   const [words, setWords] = React.useState<string[]>([]);
   const [letterState, setLetterState] = React.useState<LetterState[][]>([[]]);
 
@@ -116,8 +113,7 @@ const Game = (gameInfo: GameInformation) => {
     });
   }
 
-  const playerStatusData = useSubscription<PlayerStatusModel>(PLAYER_STATUS, {});
-  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {});
+  //const playerStatusData = useSubscription<PlayerStatusModel>(PLAYER_STATUS, {});
   const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND, {});
 
   const onChar = (value: string) => {if (currentWord.length < 5) setCurrentWord(currentWord + value.toLowerCase());};
@@ -134,27 +130,41 @@ const Game = (gameInfo: GameInformation) => {
     }
   };
   return (
-    <Box sx={{
-      width:'90%',
-      mx:'auto',
-      mt:'2.5%',
-      textAlign: 'center'
-    }}>
-      <Grid
-        currentRow={currentGuess}
-        allGuesses={allGuesses}
-        currentWord={currentWord}
-        allLetterStates={letterState}/>
-      <br style={{clear: 'both'}}/>
-      <Keyboard
-        onChar={onChar}
-        onDelete={onDelete}
-        onEnter={onEnter}
-        letterOnCorrectPosition={letterOnCorrectPosition}
-        letterInWord={letterInWord}
-        letterNotInWord={letterNotInWord}
-      />
-    </Box>
+    <>
+      {(gameInfo.gameStatus == GameStatus.PREPARING) && 
+        <Box sx={{
+          width:'100%',
+          mx: 'auto',
+          mt:'2.5%',
+          textAlign: 'center'
+        }}>
+          <Typography variant='h2'>Loading ...</Typography>
+        </Box>
+      }
+      {(gameInfo.gameStatus == GameStatus.PLAYING) &&
+      <Box sx={{
+        width:'90%',
+        mx:'auto',
+        mt:'2.5%',
+        textAlign: 'center'
+      }}>
+        <Grid
+          currentRow={currentGuess}
+          allGuesses={allGuesses}
+          currentWord={currentWord}
+          allLetterStates={letterState}/>
+        <br style={{clear: 'both'}}/>
+        <Keyboard
+          onChar={onChar}
+          onDelete={onDelete}
+          onEnter={onEnter}
+          letterOnCorrectPosition={letterOnCorrectPosition}
+          letterInWord={letterInWord}
+          letterNotInWord={letterNotInWord}
+        />
+      </Box>
+      }
+    </>
   );
 };
 

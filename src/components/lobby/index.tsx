@@ -13,7 +13,8 @@ import {
 } from '../../models/Lobby';
 import { Player } from '../../models/Player';
 import { gql, useMutation, useSubscription } from '@apollo/client';
-import { GameModel } from '../../models/Game';
+import { GameModel, GameStatus, GameStatusModel, PlayerStatusModel } from '../../models/Game';
+import { useAppSelector } from '../../redux/hooks';
 
 const JOIN_LOBBY = gql`
   mutation joinLobby($id: ID!) {
@@ -59,9 +60,15 @@ const LOBBY_SUBSCRIPTION = gql`
   }
 `;
 
-const START_GAME = gql`
+const ANNOUNCE_START = gql`
   mutation announceStandby {
     announceStandby
+  }
+`;
+
+const GAME_STATUS = gql`
+  subscription gameStatus {
+    gameStatus
   }
 `;
 
@@ -69,8 +76,11 @@ const Index = () => {
 
   const params = useParams();
 
+  const syncing = useAppSelector(state => state.syncState.syncing);
+
   const [ownerId, setOwnerId] = React.useState('');
   const [lobbyStatus, setLobbyStatus] = React.useState<LobbyStatus>(LobbyStatus.OPEN);
+  const [gameStatus, setGameStatus] = React.useState<GameStatus>(GameStatus.NEW);
   const [gameMode, setGameMode] = React.useState<GameMode>(GameMode.WORDSPP);
   const [gameRounds, setGameRounds] = React.useState(0);
   const [roundTime, setRoundTime] = React.useState(0);
@@ -106,8 +116,24 @@ const Index = () => {
     }
   }, [subscribeLobbyData.loading, subscribeLobbyData.data]);
 
+  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {
+    onSubscriptionData: data => {
+      console.log(data.subscriptionData.data?.gameStatus);
+    }
+  });
+  useEffect(() => {
+    if (!gameStatusData.loading && gameStatusData.data?.gameStatus) {
+      setGameStatus(gameStatusData.data.gameStatus);
+      if (gameStatusData.data?.gameStatus == GameStatus.PREPARING) {
+        initializeGame();
+      } else if (gameStatusData.data?.gameStatus == GameStatus.PLAYING) {
+        setLobbyStatus(LobbyStatus.INGAME);
+      }
+    }
+  }, [gameStatus, gameStatusData.data, gameStatusData.loading]);
+
   // eslint-disable-next-line unused-imports/no-unused-vars
-  const [startGame, startGameData] = useMutation<GameModel>(START_GAME);
+  const [startGame, startGameData] = useMutation<GameModel>(ANNOUNCE_START);
   const initializeGame = () => {
     startGame({
       onCompleted(data) {
@@ -141,6 +167,7 @@ const Index = () => {
       <Game
         name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
         setStatus={setLobbyStatus}
+        gameStatus={gameStatus}
       />
   );
 };
