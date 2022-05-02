@@ -13,7 +13,7 @@ import {
 } from '../../models/Lobby';
 import { Player } from '../../models/Player';
 import { gql, useMutation, useSubscription } from '@apollo/client';
-import { GameModel, GameStatus, GameStatusModel, PlayerStatusModel } from '../../models/Game';
+import { GameModel, GameStatus, GameStatusModel } from '../../models/Game';
 import { useAppSelector } from '../../redux/hooks';
 
 const JOIN_LOBBY = gql`
