@@ -3,8 +3,9 @@ import { Route } from 'react-router-dom';
 import Home from '../pages/home';
 import Profile from '../pages/profile';
 import { DefaultRoute } from './Guard';
-import Lobby from '../pages/lobby';
 import Tutorial from '../pages/tutorial';
+import Game from '../pages/game';
+import Index from '../components/lobby';
 
 /**
  * Main router of your application.
@@ -39,8 +40,15 @@ export const routes: Array<Route> = [
     title: 'Lobby',
     path: '/lobby/:id',
     enabled: true,
-    component: Lobby
+    component: Index
   },
+  /*  {
+    key: 'game-route',
+    title: 'Game',
+    path: '/game/:id',
+    enabled: true,
+    component: Game
+  },*/
   {
     key: 'profile-route',
     title: 'Profile',

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Autocomplete,
   Box,
@@ -20,61 +20,30 @@ import {
 } from '@mui/material';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { gql, useMutation, useSubscription } from '@apollo/client';
 import {
   GameCategorization,
   GameCategory,
   GameMode,
   LobbyModels,
-  MutationJoinLobbyByIdArgs,
   MutationUpdateLobbySettingsArgs,
-  SubscriptionLobbyArgs,
   WordCategories
 } from '../models/Lobby';
 import { Player } from '../models/Player';
-import { useNavigate, useParams } from 'react-router-dom';
+import { gql, useMutation } from '@apollo/client';
 
-const JOIN_LOBBY = gql`
-  mutation joinLobby($id: String!) {
-    joinLobbyById(id: $id) {
-      id
-      name
-      size
-      owner {
-        id
-      }
-      gameCategory
-      gameMode
-      game {
-        amountRounds
-        roundTime
-      }
-      players {
-        id
-        name
-      }
-    }
-  }
-`;
-
-const LOBBY_SUBSCRIPTION = gql`
-  subscription subscribeLobby($id: String!) {
-    lobby(id: $id) {
-      owner {
-        id
-      }
-      gameMode
-      game {
-        amountRounds
-        roundTime
-      }
-      players {
-        id
-        name
-      }
-    }
-  }
-`;
+interface LobbyInformation {
+  name: string
+  size: number
+  ownerId: string
+  gameCategory: GameCategory
+  gameMode: GameMode
+  gameRounds: number
+  roundTime: number
+  players: Player[]
+  setGameRounds: (rounds: number) => void
+  setRoundTime: (time: number) => void
+  startGame: () => void
+}
 
 const CHANGE_LOBBY = gql`
   mutation updateLobby($input: GameSettingsInput!) {
@@ -84,62 +53,10 @@ const CHANGE_LOBBY = gql`
   }
 `;
 
-const Lobby = () => {
+const LobbyManagement = (lobbyInfo: LobbyInformation) => {
 
-  const params = useParams();
   const navigate = useNavigate();
   const [copied, setCopied] = React.useState(false);
-
-  const [name, setName] = React.useState('');
-  const [size, setSize] = React.useState(0);
-  const [ownerId, setOwnerId] = React.useState('');
-  const [gameCategory, setGameCategory] = React.useState<GameCategory>(GameCategory.PVP);
-  const [gameMode, setGameMode] = React.useState<GameMode>(GameMode.WORDSPP);
-  const [gameRounds, setGameRounds] = React.useState(0);
-  const [roundTime, setRoundTime] = React.useState(0);
-  const [players, setPlayers] = React.useState<Player[]>([]);
-
-  function JoinLobby() {
-    // eslint-disable-next-line unused-imports/no-unused-vars
-    const [joinLobby, { data, loading, error }] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY);
-    useEffect(() => {
-      joinLobby({
-        variables: {
-          id: params.id as string
-        }, onCompleted(data) {
-          if (data?.joinLobbyById) {
-            setName(data.joinLobbyById.name);
-            setSize(data.joinLobbyById.size);
-            setOwnerId(data.joinLobbyById.owner.id);
-            setGameCategory(Object.values(GameCategory)[Object.keys(GameCategory).indexOf(data.joinLobbyById.gameCategory)]);
-            setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(data.joinLobbyById.gameMode)]);
-            setGameRounds(data.joinLobbyById.game.amountRounds);
-            setRoundTime(data.joinLobbyById.game.roundTime);
-            setPlayers(data.joinLobbyById.players);
-          }
-        }
-      });
-    }, [joinLobby]);
-  }
-  JoinLobby();
-
-  function UpdateLobby() {
-    const { data, loading } = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION, {
-      variables: {
-        id: params.id as string
-      }
-    });
-    useEffect(() => {
-      if (!loading && data?.lobby) {
-        setOwnerId(data.lobby.owner.id);
-        setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(data.lobby.gameMode)]);
-        setGameRounds(data.lobby.game.amountRounds);
-        setRoundTime(data.lobby.game.roundTime);
-        setPlayers(data.lobby.players);
-      }
-    }, [data, loading]);
-  }
-  UpdateLobby();
 
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [changeLobby, { data, loading, error }] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
@@ -166,15 +83,15 @@ const Lobby = () => {
       }}
     >
       <Typography variant='h1' sx={{fontSize: 48}}>
-        {name} | {gameCategory} [{size}]
+        {lobbyInfo.name} | {lobbyInfo.gameCategory} [{lobbyInfo.size}]
       </Typography>
       <Box sx={{ width: '66%!important', float: 'left', border:'solid 2px white' }}>
-        <Box sx={{ width: '49%', border:'solid 2px red', float: 'left' }}>
+        <Box sx={{ width: '49%', border:'solid 2px white', float: 'left' }}>
           <Typography variant='h5'>
             players
           </Typography>
           <List>
-            {players?.map(player => {
+            {lobbyInfo.players?.map(player => {
               return (
                 <ListItem key={player.id}>
                   {player.name}
@@ -183,30 +100,30 @@ const Lobby = () => {
             })}
           </List>
         </Box>
-        <Box sx={{ width: '49%', border:'solid 2px red', float: 'right' }}>
+        <Box sx={{ width: '49%', border:'solid 2px white', float: 'right' }}>
           <Typography variant='h5'>
             settings
           </Typography>
           <FormControl sx={{ minWidth:150, width:'auto', mt:3 }}>
             <InputLabel>Game Mode</InputLabel>
             <Select
-              value={gameMode}
+              value={lobbyInfo.gameMode}
               label="Game Mode"
-              disabled={localStorage.getItem('userId') != ownerId}
-              onChange={event => changeLobbySettings(event.target.value as GameMode, gameRounds, roundTime)}
+              disabled={localStorage.getItem('userId') != lobbyInfo.ownerId}
+              onChange={event => changeLobbySettings(event.target.value as GameMode, lobbyInfo.gameRounds, lobbyInfo.roundTime)}
             >
               {(Object.values(GameMode)).map(mode => {
                 return (
-                  <MenuItem key={mode} value={mode} disabled={gameCategory != GameCategorization.get(mode)}>
+                  <MenuItem key={mode} value={mode} disabled={lobbyInfo.gameCategory != GameCategorization.get(mode)}>
                     {mode}
                   </MenuItem>
                 );
               })}
             </Select>
           </FormControl>
-          {gameRounds != 0 &&
+          {lobbyInfo.gameRounds != 0 &&
             <Box sx={{ m:'auto', mt:2, width:'80%' }}>
-              <Typography variant='h6'>Rounds: {gameRounds}</Typography>
+              <Typography variant='h6'>Rounds: {lobbyInfo.gameRounds}</Typography>
               <Slider
                 sx={{ m:'auto' }}
                 marks
@@ -214,18 +131,18 @@ const Lobby = () => {
                 min={1}
                 max={5}
                 valueLabelDisplay='auto'
-                value={gameRounds}
-                disabled={localStorage.getItem('userId') != ownerId}
+                value={lobbyInfo.gameRounds}
+                disabled={localStorage.getItem('userId') != lobbyInfo.ownerId}
                 onChange={(event, newRounds) => {
-                  setGameRounds(newRounds as number);
-                  stateDebounceLobbyChange(gameMode, newRounds as number, roundTime);
+                  lobbyInfo.setGameRounds(newRounds as number);
+                  stateDebounceLobbyChange(lobbyInfo.gameMode, newRounds as number, lobbyInfo.roundTime);
                 }}
               />
             </Box>
           }
-          {roundTime != 0 &&
+          {lobbyInfo.roundTime != 0 &&
               <Box sx={{ m:'auto', mt:2, width:'80%' }}>
-                <Typography variant='h6'>Time: {roundTime}</Typography>
+                <Typography variant='h6'>Time: {lobbyInfo.roundTime}</Typography>
                 <Slider
                   sx={{ m:'auto' }}
                   marks
@@ -233,11 +150,11 @@ const Lobby = () => {
                   min={0}
                   max={300}
                   valueLabelDisplay='auto'
-                  value={roundTime}
-                  disabled={localStorage.getItem('userId') != ownerId}
+                  value={lobbyInfo.roundTime}
+                  disabled={localStorage.getItem('userId') != lobbyInfo.ownerId}
                   onChange={(event, newTime) => {
-                    setRoundTime(newTime as number);
-                    stateDebounceLobbyChange(gameMode, gameRounds, newTime as number);
+                    lobbyInfo.setRoundTime(newTime as number);
+                    stateDebounceLobbyChange(lobbyInfo.gameMode, lobbyInfo.gameRounds, newTime as number);
                   }}
                 />
               </Box>
@@ -265,7 +182,7 @@ const Lobby = () => {
             )}
           />
         </Box>
-        <Box sx={{clear: 'both', width: '80%', maxWidth: 600, mt: 38, mx: 'auto', textAlign: 'center', border:'solid 2px red'}}>
+        <Box sx={{clear: 'both', width: '80%', maxWidth: 600, mt: 38, mx: 'auto', textAlign: 'center', border:'solid 2px white'}}>
           <TextField
             type='text'
             defaultValue={window.location.host + window.location.pathname}
@@ -275,8 +192,8 @@ const Lobby = () => {
                 <InputAdornment position="end">
                   <Tooltip title={'Copied to clipboard!'} open={copied} leaveDelay={1500} onClose={() => setCopied(false)}>
                     <Button variant='contained' onClick={() => {
-                      navigator.clipboard.writeText(window.location.host + window.location.pathname);
-                      setCopied(true);
+                      navigator.clipboard.writeText(window.location.host + window.location.pathname)
+                        .then(() => setCopied(true));
                     }}>
                       COPY
                     </Button>
@@ -287,7 +204,7 @@ const Lobby = () => {
             }}
           />
           <Button variant="contained" sx={{ mx:2, mt:2 }} onClick={() => navigate('/')}>Leave Lobby</Button>
-          <Button variant="contained" sx={{ mx:2, mt:2 }} onClick={() => alert('Starting the game.?')}>Start Game</Button>
+          <Button variant="contained" sx={{ mx:2, mt:2 }} onClick={() => lobbyInfo.startGame()}>Start Game</Button>
         </Box>
       </Box>
       <Box sx={{ float: 'right', width: '33%!important', height: 'calc(100vh - 164px)', border:'solid 2px white' }}>
@@ -297,4 +214,4 @@ const Lobby = () => {
   );
 };
 
-export default Lobby;
+export default LobbyManagement;

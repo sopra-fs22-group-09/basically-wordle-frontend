@@ -25,17 +25,17 @@ const Tutorial = () => {
   `;
 
   interface TutorialType {
-    logout: boolean;
+    tutorialFinished: boolean;
   }
 
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [finishTutorial, { data, loading, error }] = useMutation<TutorialType>(FINISH_TUTORIAL);
   const [count, setCount] = useState(1);
+
   const navigate = useNavigate();
 
   const handleSubmit = () => {
     finishTutorial({
-      variables: {},
       onCompleted() {
         navigate('/');
       }
