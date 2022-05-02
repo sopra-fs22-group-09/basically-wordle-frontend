@@ -160,7 +160,7 @@ const Game = (gameInfo: GameInformation) => {
         toggleModal();
       }
     }
-  }, [gameStatus, gameStatusData.data, gameStatusData.loading, toggleModal]);
+  }, [gameStatus, gameStatusData.data, gameStatusData.loading]);
 
   const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND, {});
 
