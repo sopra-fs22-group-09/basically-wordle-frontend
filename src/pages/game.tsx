@@ -30,6 +30,14 @@ const SUBMIT_GUESS = gql`
   }
 `;
 
+const OPPONENT_GAME_ROUND = gql`
+  subscription opponentGameRound {
+    opponentGameRound {
+      gameRounds
+    }
+  }
+`;
+
 const CONCLUDE_GAME = gql`
   query concludeGame {
     concludeGame {
@@ -42,25 +50,15 @@ const CONCLUDE_GAME = gql`
   }
 `;
 
-const PLAYER_STATUS = gql`
-  subscription playerStatus {
-    playerStatus
-  }
-`;
-
-const OPPONENT_GAME_ROUND = gql`
-  subscription opponentGameRound {
-    opponentGameRound {
-      gameRounds
-    }
-  }
-`;
-
 const Game = (gameInfo: GameInformation) => {
 
-  const [open, setOpen] = React.useState<boolean>(false);
-  const toggleModal = () => {
-    setOpen(!open);
+  const [roundConclusion, setRoundConclusion] = React.useState<boolean>(false);
+  const [gameConclusion, setGameConclusion] = React.useState<boolean>(false);
+  const toggleRoundConclusionModal = () => {
+    setRoundConclusion(!roundConclusion);
+  };
+  const toggleGameConclusionModal = () => {
+    setGameConclusion(!gameConclusion);
   };
 
   const [words, setWords] = React.useState<string[]>([]);
@@ -108,8 +106,9 @@ const Game = (gameInfo: GameInformation) => {
         setLetterNotInWord(wrong);
 
 
+        //TODO: This section needs refactoring based on gamestatus subscription(update)
         if (currentGuess >= 5) {
-          toggleModal();
+          toggleRoundConclusionModal();
         }
         let allRight = true;
         console.log(row);
@@ -120,11 +119,13 @@ const Game = (gameInfo: GameInformation) => {
           }
         }
         if (allRight) {
-          toggleModal();
+          toggleRoundConclusionModal();
         }
       }
     }
   });
+
+  const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND, {});
 
   function ConcludeGame() {
     const concludeGameData = useQuery<GameStatsModel>(CONCLUDE_GAME, {
@@ -133,10 +134,6 @@ const Game = (gameInfo: GameInformation) => {
       }
     });
   }
-
-  //const playerStatusData = useSubscription<PlayerStatusModel>(PLAYER_STATUS, {});
-
-  const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND, {});
 
   const onChar = (value: string) => {if (currentWord.length < 5) setCurrentWord(currentWord + value.toLowerCase());};
   const onDelete = () => {if (currentWord.length > 0) setCurrentWord(currentWord.substring(0, currentWord.length - 1));};
@@ -151,6 +148,7 @@ const Game = (gameInfo: GameInformation) => {
       });
     }
   };
+
   return (
     <Box sx={{
       width:'90%',
@@ -158,7 +156,8 @@ const Game = (gameInfo: GameInformation) => {
       mt:'2.5%',
       textAlign: 'center'
     }}>
-      <GameConclusion open={open} toggle={toggleModal}/>
+      <GameConclusion open={roundConclusion} toggle={toggleRoundConclusionModal}/>
+      <GameConclusion open={gameConclusion} toggle={toggleGameConclusionModal}/>
       <Box sx={{width: '66%', float: 'left', m: 'auto'}}>
         <Box sx={{height: '50vh'}}>
           <Grid

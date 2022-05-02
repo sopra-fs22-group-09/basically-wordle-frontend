@@ -1,6 +1,7 @@
 import { Scalars } from './index';
 import { Player } from './Player';
 
+//currently unused
 export interface GameModel {
   startGame: Game
 }
@@ -15,10 +16,6 @@ export interface GameStatsModel {
 
 export interface GameStatusModel {
   gameStatus: GameStatus
-}
-
-export interface PlayerStatusModel {
-  playerStatus: PlayerStatus
 }
 
 export interface OpponentGameRoundModel {

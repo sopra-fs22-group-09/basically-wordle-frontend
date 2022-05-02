@@ -13,8 +13,7 @@ import {
 } from '../../models/Lobby';
 import { Player } from '../../models/Player';
 import { gql, useMutation, useSubscription } from '@apollo/client';
-import { GameModel, GameStatus, GameStatusModel } from '../../models/Game';
-import { useAppSelector } from '../../redux/hooks';
+import { GameStatus, GameStatusModel } from '../../models/Game';
 
 const JOIN_LOBBY = gql`
   mutation joinLobby($id: ID!) {
@@ -76,8 +75,6 @@ const Index = () => {
 
   const params = useParams();
 
-  const syncing = useAppSelector(state => state.syncState.syncing);
-
   const [ownerId, setOwnerId] = React.useState('');
   const [lobbyStatus, setLobbyStatus] = React.useState<LobbyStatus>(LobbyStatus.OPEN);
   const [gameStatus, setGameStatus] = React.useState<GameStatus>(GameStatus.NEW);
@@ -116,37 +113,21 @@ const Index = () => {
     }
   }, [subscribeLobbyData.loading, subscribeLobbyData.data]);
 
-  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {
-    onSubscriptionData: data => {
-      console.log(data.subscriptionData.data?.gameStatus);
-    }
-  });
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  const [startGame, startGameData] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
+  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS);
   useEffect(() => {
     if (!gameStatusData.loading && gameStatusData.data?.gameStatus) {
       setGameStatus(gameStatusData.data.gameStatus);
       if (gameStatusData.data?.gameStatus == GameStatus.PREPARING) {
-        initializeGame();
+        startGame().then(() => {
+          setLobbyStatus(LobbyStatus.INGAME);
+        });
       } else if (gameStatusData.data?.gameStatus == GameStatus.PLAYING) {
         setLobbyStatus(LobbyStatus.INGAME);
       }
     }
-  }, [gameStatus, gameStatusData.data, gameStatusData.loading]);
-
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  const [startGame, startGameData] = useMutation<GameModel>(ANNOUNCE_START);
-  const initializeGame = () => {
-    startGame({
-      onCompleted(data) {
-        if (data?.startGame) {
-          // TODO probably not needed? can probably delete
-          setGameRounds(data.startGame.amountRounds);
-          setRoundTime(data.startGame.roundTime);
-        }
-      }
-    }).then(() => {
-      setLobbyStatus(LobbyStatus.INGAME);
-    });
-  };
+  }, [gameStatusData, startGame]);
 
   return (
     lobbyStatus != LobbyStatus.INGAME ?
@@ -161,7 +142,7 @@ const Index = () => {
         players={players}
         setGameRounds={setGameRounds}
         setRoundTime={setRoundTime}
-        startGame={initializeGame}
+        startGame={startGame}
       />
       :
       <Game
