@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box, Typography } from '@mui/material';
 import Keyboard from '../components/keyboard/keyboard';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Grid from '../components/grid/grid';
 import { LobbyStatus } from '../models/Lobby';
 import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
@@ -18,6 +18,7 @@ interface GameInformation {
   name: string
   setStatus: (status: LobbyStatus) => void
   gameStatus?: GameStatus
+  startGame: () => void
 }
 
 const SUBMIT_GUESS = gql`
@@ -70,6 +71,11 @@ const Game = (gameInfo: GameInformation) => {
   const [currentWord, setCurrentWord] = useState('');
   const [currentGuess, setCurrentGuess] = useState(0);
   const [allGuesses, setAllGuesses] = useState<string[]>(['', '', '', '', '', '']);
+
+  useEffect(() => {
+    gameInfo.startGame();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);  // Please don't touch!!
 
   const [submitGuess] = useMutation<GameRoundModel>(SUBMIT_GUESS, {
     variables: {
@@ -150,24 +156,29 @@ const Game = (gameInfo: GameInformation) => {
   };
 
   return (
-    <Box sx={{
-      width:'90%',
-      mx:'auto',
-      mt:'2.5%',
-      textAlign: 'center'
-    }}>
-      <GameConclusion open={roundConclusion} toggle={toggleRoundConclusionModal}/>
-      <GameConclusion open={gameConclusion} toggle={toggleGameConclusionModal}/>
-      <Box sx={{width: '66%', float: 'left', m: 'auto'}}>
-        <Box sx={{height: '50vh'}}>
-          <Grid
-            currentRow={currentGuess}
-            allGuesses={allGuesses}
-            currentWord={currentWord}
-            allLetterStates={letterState}
-            style={{height: '100%'}}
-          />
+    <>
+      {(gameInfo.gameStatus == GameStatus.SYNCING) && 
+        <Box sx={{
+          width:'100%',
+          mx: 'auto',
+          mt:'2.5%',
+          textAlign: 'center'
+        }}>
+          <Typography variant='h2'>Loading ...</Typography>
         </Box>
+      }
+      {(gameInfo.gameStatus == GameStatus.GUESSING) &&
+      <Box sx={{
+        width:'90%',
+        mx:'auto',
+        mt:'2.5%',
+        textAlign: 'center'
+      }}>
+        <Grid
+          currentRow={currentGuess}
+          allGuesses={allGuesses}
+          currentWord={currentWord}
+          allLetterStates={letterState}/>
         <br style={{clear: 'both'}}/>
         <Keyboard
           onChar={onChar}
@@ -178,6 +189,7 @@ const Game = (gameInfo: GameInformation) => {
           letterNotInWord={letterNotInWord}
         />
       </Box>
+      }
       {/*Opponents grid*/}
       <Box sx={{width: '30%', float: 'right'}}>
         {opponentGameRoundData.data?.gameRounds.map((round) => (
@@ -193,7 +205,7 @@ const Game = (gameInfo: GameInformation) => {
           </>
         ))}
       </Box>
-    </Box>
+    </>
   );
 };
 

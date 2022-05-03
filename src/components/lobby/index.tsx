@@ -14,6 +14,7 @@ import {
 import { Player } from '../../models/Player';
 import { gql, useMutation, useSubscription } from '@apollo/client';
 import { GameStatus, GameStatusModel } from '../../models/Game';
+import { useLocalStorage } from '@mantine/hooks';
 
 const JOIN_LOBBY = gql`
   mutation joinLobby($id: ID!) {
@@ -82,6 +83,7 @@ const Index = () => {
   const [gameRounds, setGameRounds] = React.useState(0);
   const [roundTime, setRoundTime] = React.useState(0);
   const [players, setPlayers] = React.useState<Player[]>([]);
+  const [userId] = useLocalStorage<string>({ key: 'userId' });
 
   const [joinLobby, joinLobbyData] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY);
   useEffect(() => {
@@ -117,17 +119,19 @@ const Index = () => {
   const [startGame, startGameData] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
   const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS);
   useEffect(() => {
-    if (!gameStatusData.loading && gameStatusData.data?.gameStatus) {
+    if (!gameStatusData.loading && gameStatusData.data?.gameStatus && gameStatus != GameStatus.GUESSING) {
       setGameStatus(gameStatusData.data.gameStatus);
-      if (gameStatusData.data?.gameStatus == GameStatus.PREPARING) {
+      // Only if we are the owner! TODO: Still called too often!
+      if (gameStatusData.data?.gameStatus == GameStatus.SYNCING && ownerId == userId) {
         startGame().then(() => {
           setLobbyStatus(LobbyStatus.INGAME);
         });
-      } else if (gameStatusData.data?.gameStatus == GameStatus.PLAYING) {
+      } else if (gameStatusData.data?.gameStatus == GameStatus.SYNCING ||
+        gameStatusData.data?.gameStatus == GameStatus.GUESSING) {
         setLobbyStatus(LobbyStatus.INGAME);
       }
     }
-  }, [gameStatusData, startGame]);
+  }, [gameStatusData, startGame, gameStatus, ownerId, userId]);
 
   return (
     lobbyStatus != LobbyStatus.INGAME ?
@@ -149,6 +153,7 @@ const Index = () => {
         name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
         setStatus={setLobbyStatus}
         gameStatus={gameStatus}
+        startGame={startGame}
       />
   );
 };

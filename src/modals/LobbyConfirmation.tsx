@@ -106,8 +106,8 @@ const LobbyConfirmation = () => {
               );
             })}
           </ToggleButtonGroup>
-          <Box component='form' noValidate sx={{ m:2 }}>
-            <TextField variant='outlined' label='Lobby Name' value={name}
+          <Box component='form' sx={{ m:2 }}>
+            <TextField variant='outlined' inputProps={{ minLength: 3, maxLength: 50 }} label='Lobby Name' value={name}
               onChange={(event) => setName(event.target.value)}
             />
           </Box>

@@ -48,8 +48,9 @@ export type GameStats = {
 
 export enum GameStatus {
   NEW = 'NEW',
-  PREPARING = 'PREPARING',
-  PLAYING = 'PLAYING',
+  SYNCING = 'SYNCING',
+  GUESSING = 'GUESSING',
+  WAITING = 'WAITING',
   FINISHED = 'FINISHED'
 }
 
