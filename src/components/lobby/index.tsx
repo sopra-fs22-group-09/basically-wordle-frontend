@@ -62,7 +62,11 @@ const LOBBY_SUBSCRIPTION = gql`
 
 const ANNOUNCE_START = gql`
   mutation announceStandby {
-    announceStandby
+    announceStandby {
+      amountRounds
+      roundTime
+      targetWords
+    }
   }
 `;
 

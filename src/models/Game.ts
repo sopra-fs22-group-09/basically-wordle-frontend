@@ -19,7 +19,7 @@ export interface GameStatusModel {
 }
 
 export interface OpponentGameRoundModel {
-  gameRounds: Array<GameRound>
+  opponentGameRound: Array<GameRound>
 }
 
 export type Game = {

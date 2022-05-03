@@ -12,7 +12,6 @@ import {
   LetterState,
   OpponentGameRoundModel,
 } from '../models/Game';
-import GameConclusion from '../modals/GameConclusion';
 
 interface GameInformation {
   name: string
@@ -34,7 +33,11 @@ const SUBMIT_GUESS = gql`
 const OPPONENT_GAME_ROUND = gql`
   subscription opponentGameRound {
     opponentGameRound {
-      gameRounds
+      player {
+        name
+      }
+      currentRound
+      letterStates
     }
   }
 `;
@@ -131,6 +134,7 @@ const Game = (gameInfo: GameInformation) => {
     }
   });
 
+  //TODO Write hooks to initialize an empty state and show this state. then, use useeffect to update the hooks.
   const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND, {});
 
   function ConcludeGame() {
@@ -190,12 +194,12 @@ const Game = (gameInfo: GameInformation) => {
         />
       </Box>
       }
-      {/*Opponents grid*/}
+      {/*Opponents grid, TODO: l. 118: do that and it will work.*/}
       <Box sx={{width: '30%', float: 'right'}}>
-        {opponentGameRoundData.data?.gameRounds.map((round) => (
+        {opponentGameRoundData.data?.opponentGameRound.map((round) => (
           <>
             <Box style={{height: '19vh'}}>
-              <Typography variant={'h2'} sx={{fontSize: '32px', pt: '10px'}}>{round.player.name}</Typography>
+              <Typography variant={'h2'} sx={{fontSize: '32px', pt: '10px'}}>{round.player.name} - Round {round.currentRound}</Typography>
               <Grid
                 allLetterStates={round.letterStates}
                 allGuesses={['', '', '', '', '', '']}
