@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Box } from '@mui/material';
 import Row from './row';
 import { LetterState } from '../../models/Game';
+import { v4 as uuid } from 'uuid';
 
 type GridProps = {
   currentRow?: number
@@ -34,8 +35,9 @@ const Grid = ({
       {allGuesses?.map((word, i) => (
         <Row
           word={currentRow === i ? currentWord?.toUpperCase() : allGuesses[i]?.toUpperCase()}
-          key={i}
-          letterStates={allLetterStates[i]}/>
+          key={uuid()}
+          letterStates={allLetterStates[i] ? allLetterStates[i] : []}
+        />
       ))}
     </Box>
   );

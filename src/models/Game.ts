@@ -1,6 +1,7 @@
 import { Scalars } from './index';
 import { Player } from './Player';
 
+//currently unused
 export interface GameModel {
   startGame: Game
 }
@@ -17,12 +18,8 @@ export interface GameStatusModel {
   gameStatus: GameStatus
 }
 
-export interface PlayerStatusModel {
-  playerStatus: PlayerStatus
-}
-
 export interface OpponentGameRoundModel {
-  gameRounds: Array<GameRound>
+  opponentGameRound: Array<GameRound>
 }
 
 export type Game = {
@@ -51,8 +48,9 @@ export type GameStats = {
 
 export enum GameStatus {
   NEW = 'NEW',
-  PREPARING = 'PREPARING',
-  PLAYING = 'PLAYING',
+  SYNCING = 'SYNCING',
+  GUESSING = 'GUESSING',
+  WAITING = 'WAITING',
   FINISHED = 'FINISHED'
 }
 

@@ -13,8 +13,8 @@ import {
 } from '../../models/Lobby';
 import { Player } from '../../models/Player';
 import { gql, useMutation, useSubscription } from '@apollo/client';
-import { GameModel, GameStatus, GameStatusModel } from '../../models/Game';
-import { useAppSelector } from '../../redux/hooks';
+import { GameStatus, GameStatusModel } from '../../models/Game';
+import { useLocalStorage } from '@mantine/hooks';
 
 const JOIN_LOBBY = gql`
   mutation joinLobby($id: ID!) {
@@ -62,7 +62,11 @@ const LOBBY_SUBSCRIPTION = gql`
 
 const ANNOUNCE_START = gql`
   mutation announceStandby {
-    announceStandby
+    announceStandby {
+      amountRounds
+      roundTime
+      targetWords
+    }
   }
 `;
 
@@ -72,11 +76,9 @@ const GAME_STATUS = gql`
   }
 `;
 
-const Index = () => {
+const Lobby = () => {
 
   const params = useParams();
-
-  const syncing = useAppSelector(state => state.syncState.syncing);
 
   const [ownerId, setOwnerId] = React.useState('');
   const [lobbyStatus, setLobbyStatus] = React.useState<LobbyStatus>(LobbyStatus.OPEN);
@@ -85,6 +87,7 @@ const Index = () => {
   const [gameRounds, setGameRounds] = React.useState(0);
   const [roundTime, setRoundTime] = React.useState(0);
   const [players, setPlayers] = React.useState<Player[]>([]);
+  const [userId] = useLocalStorage<string>({ key: 'userId' });
 
   const [joinLobby, joinLobbyData] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY);
   useEffect(() => {
@@ -108,7 +111,7 @@ const Index = () => {
   useEffect(() => {
     if (!subscribeLobbyData.loading && subscribeLobbyData.data?.lobby) {
       setOwnerId(subscribeLobbyData.data.lobby.owner.id);
-      setLobbyStatus(subscribeLobbyData.data.lobby.status);
+      //setLobbyStatus(subscribeLobbyData.data.lobby.status);
       setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(subscribeLobbyData.data.lobby.gameMode)]);
       setGameRounds(subscribeLobbyData.data.lobby.game.amountRounds);
       setRoundTime(subscribeLobbyData.data.lobby.game.roundTime);
@@ -116,37 +119,22 @@ const Index = () => {
     }
   }, [subscribeLobbyData.loading, subscribeLobbyData.data]);
 
-  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {
-    onSubscriptionData: data => {
-      console.log(data.subscriptionData.data?.gameStatus);
-    }
-  });
+  const [startGame] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
+  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS);
   useEffect(() => {
-    if (!gameStatusData.loading && gameStatusData.data?.gameStatus) {
+    if (!gameStatusData.loading && gameStatusData.data?.gameStatus && gameStatus != GameStatus.GUESSING) {
       setGameStatus(gameStatusData.data.gameStatus);
-      if (gameStatusData.data?.gameStatus == GameStatus.PREPARING) {
-        initializeGame();
-      } else if (gameStatusData.data?.gameStatus == GameStatus.PLAYING) {
+      // Only if we are the owner! TODO: Still called too often!
+      if (gameStatusData.data?.gameStatus == GameStatus.SYNCING && ownerId == userId) {
+        startGame().then(() => {
+          //setLobbyStatus(LobbyStatus.INGAME);
+        });
+      } else if (gameStatusData.data?.gameStatus == GameStatus.SYNCING ||
+        gameStatusData.data?.gameStatus == GameStatus.GUESSING) {
         setLobbyStatus(LobbyStatus.INGAME);
       }
     }
-  }, [gameStatus, gameStatusData.data, gameStatusData.loading]);
-
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  const [startGame, startGameData] = useMutation<GameModel>(ANNOUNCE_START);
-  const initializeGame = () => {
-    startGame({
-      onCompleted(data) {
-        if (data?.startGame) {
-          // TODO probably not needed? can probably delete
-          setGameRounds(data.startGame.amountRounds);
-          setRoundTime(data.startGame.roundTime);
-        }
-      }
-    }).then(() => {
-      setLobbyStatus(LobbyStatus.INGAME);
-    });
-  };
+  }, [gameStatusData, startGame, gameStatus, ownerId, userId]);
 
   return (
     lobbyStatus != LobbyStatus.INGAME ?
@@ -161,15 +149,16 @@ const Index = () => {
         players={players}
         setGameRounds={setGameRounds}
         setRoundTime={setRoundTime}
-        startGame={initializeGame}
+        startGame={startGame}
       />
       :
       <Game
         name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
         setStatus={setLobbyStatus}
         gameStatus={gameStatus}
+        startGame={startGame}
       />
   );
 };
 
-export default Index;
+export default Lobby;

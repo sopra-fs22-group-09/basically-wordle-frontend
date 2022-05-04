@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Box } from '@mui/material';
 import Cell from './cell';
 import { LetterState } from '../../models/Game';
+import { v4 as uuid } from 'uuid';
 
 type RowProps = {
   word?: string
@@ -16,11 +17,11 @@ const Row = ({
 
 }: RowProps) => {
 
-  const getColorForLetter = (letter: string, n: number) => {
+  const getColorForLetter = (n: number) => {
     if (letterStates[n] === LetterState.CORRECTPOSITION) return '#00b300';
     else if (letterStates[n] === LetterState.INWORD) return 'orange';
     else if (letterStates[n] === LetterState.WRONG) return 'black';
-    else return '#808080';
+    else return 'transparent';
   };
 
   return (
@@ -38,11 +39,11 @@ const Row = ({
       }}
     >
       {word?.split('').map((letter, i) => (
-        <Cell value={letter} key={letter + i} style={{backgroundColor: `${getColorForLetter(letter, i)}`}} />
+        <Cell value={letter} key={uuid()} style={{backgroundColor: `${getColorForLetter(i)}`}} />
       ))}
       {/* TODO do it better (if you find time) */}
       {'     '.substring(0, 5 - (word ? word.length : 0)).split('').map((_, i) => (
-        <Cell key={5+i} />
+        <Cell key={uuid()} style={{backgroundColor: `${getColorForLetter(i)}`}} />
       ))}
     </Box>
   );
