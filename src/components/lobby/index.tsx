@@ -76,7 +76,7 @@ const GAME_STATUS = gql`
   }
 `;
 
-const Index = () => {
+const Lobby = () => {
 
   const params = useParams();
 
@@ -111,7 +111,7 @@ const Index = () => {
   useEffect(() => {
     if (!subscribeLobbyData.loading && subscribeLobbyData.data?.lobby) {
       setOwnerId(subscribeLobbyData.data.lobby.owner.id);
-      setLobbyStatus(subscribeLobbyData.data.lobby.status);
+      //setLobbyStatus(subscribeLobbyData.data.lobby.status);
       setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(subscribeLobbyData.data.lobby.gameMode)]);
       setGameRounds(subscribeLobbyData.data.lobby.game.amountRounds);
       setRoundTime(subscribeLobbyData.data.lobby.game.roundTime);
@@ -119,8 +119,7 @@ const Index = () => {
     }
   }, [subscribeLobbyData.loading, subscribeLobbyData.data]);
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  const [startGame, startGameData] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
+  const [startGame] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
   const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS);
   useEffect(() => {
     if (!gameStatusData.loading && gameStatusData.data?.gameStatus && gameStatus != GameStatus.GUESSING) {
@@ -128,7 +127,7 @@ const Index = () => {
       // Only if we are the owner! TODO: Still called too often!
       if (gameStatusData.data?.gameStatus == GameStatus.SYNCING && ownerId == userId) {
         startGame().then(() => {
-          setLobbyStatus(LobbyStatus.INGAME);
+          //setLobbyStatus(LobbyStatus.INGAME);
         });
       } else if (gameStatusData.data?.gameStatus == GameStatus.SYNCING ||
         gameStatusData.data?.gameStatus == GameStatus.GUESSING) {
@@ -162,4 +161,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Lobby;

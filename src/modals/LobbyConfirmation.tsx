@@ -107,14 +107,14 @@ const LobbyConfirmation = () => {
             })}
           </ToggleButtonGroup>
           <Box component='form' sx={{ m:2 }}>
-            <TextField variant='outlined' inputProps={{ minLength: 3, maxLength: 50 }} label='Lobby Name' value={name}
+            <TextField variant='outlined' inputProps={{ minLength: 3, maxLength: 50 }} label='Index Name' value={name}
               onChange={(event) => setName(event.target.value)}
             />
           </Box>
           {gameCategory != GameCategory.SOLO &&
             <Box>
               <Box>
-                  Lobby Size: {size}
+                  Index Size: {size}
               </Box>
               <Slider
                 sx={{ m:'auto', width:'60%' }}

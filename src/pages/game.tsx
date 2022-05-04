@@ -1,12 +1,11 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import Keyboard from '../components/keyboard/keyboard';
-import { useEffect, useState } from 'react';
 import Grid from '../components/grid/grid';
 import { LobbyStatus } from '../models/Lobby';
 import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
-import {
-  GameRoundModel,
+import { GameRoundModel,
   GameStatsModel,
   GameStatus,
   LetterState,
@@ -86,7 +85,7 @@ const Game = (gameInfo: GameInformation) => {
     },
     onCompleted(data) {
       if (data?.submitGuess) {
-        console.log(data.submitGuess.targetWord);
+        //console.log(data.submitGuess.targetWord);
         //setWords(data.submitGuess.words);
         // TODO Just a temporary fix since the broken backend:
         //  The backend returns null when submitting the last guess and there are still rounds left
@@ -98,7 +97,7 @@ const Game = (gameInfo: GameInformation) => {
         let wrong = letterNotInWord;
         const row = data.submitGuess.letterStates[currentGuess];
 
-        for (let i = 0; i < data.submitGuess.letterStates[currentGuess].length; ++i) {
+        for (let i = 0; i < row.length; ++i) {
           const letter = data.submitGuess.words[currentGuess].substring(i, i + 1);
 
           if (row[i] === LetterState.CORRECTPOSITION && !letterOnCorrectPosition.includes(letter)) {
@@ -120,9 +119,9 @@ const Game = (gameInfo: GameInformation) => {
           toggleRoundConclusionModal();
         }
         let allRight = true;
-        console.log(row);
+        //console.log(row);
         for (const letterState of row) {
-          console.log(letterState);
+          //console.log(letterState);
           if (letterState != LetterState.CORRECTPOSITION) {
             allRight = false;
           }
@@ -135,18 +134,21 @@ const Game = (gameInfo: GameInformation) => {
   });
 
   //TODO Write hooks to initialize an empty state and show this state. then, use useeffect to update the hooks.
-  const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND, {});
+  const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND, {
+    onSubscriptionData: a => console.log(a.subscriptionData)
+  });
 
   function ConcludeGame() {
     const concludeGameData = useQuery<GameStatsModel>(CONCLUDE_GAME, {
       onCompleted(data) {
+        //gameInfo.setStatus(LobbyStatus.OPEN);
         console.log('ja');
       }
     });
   }
 
-  const onChar = (value: string) => {if (currentWord.length < 5) setCurrentWord(currentWord + value.toLowerCase());};
-  const onDelete = () => {if (currentWord.length > 0) setCurrentWord(currentWord.substring(0, currentWord.length - 1));};
+  const onChar = (value: string) => {if (currentWord.length < 5 && currentGuess <= 6) setCurrentWord(currentWord + value.toLowerCase());};
+  const onDelete = () => {if (currentWord.length > 0 && currentGuess <= 6) setCurrentWord(currentWord.substring(0, currentWord.length - 1));};
   const onEnter = () => {
     if (currentWord.length === 5 && currentGuess <= 6) {
       const tmp:string[] = allGuesses;
@@ -172,44 +174,48 @@ const Game = (gameInfo: GameInformation) => {
         </Box>
       }
       {(gameInfo.gameStatus == GameStatus.GUESSING) &&
-      <Box sx={{
-        width:'90%',
-        mx:'auto',
-        mt:'2.5%',
-        textAlign: 'center'
-      }}>
-        <Grid
-          currentRow={currentGuess}
-          allGuesses={allGuesses}
-          currentWord={currentWord}
-          allLetterStates={letterState}/>
-        <br style={{clear: 'both'}}/>
-        <Keyboard
-          onChar={onChar}
-          onDelete={onDelete}
-          onEnter={onEnter}
-          letterOnCorrectPosition={letterOnCorrectPosition}
-          letterInWord={letterInWord}
-          letterNotInWord={letterNotInWord}
-        />
-      </Box>
-      }
-      {/*Opponents grid, TODO: l. 118: do that and it will work.*/}
-      <Box sx={{width: '30%', float: 'right'}}>
-        {opponentGameRoundData.data?.opponentGameRound.map((round) => (
-          <>
-            <Box style={{height: '19vh'}}>
-              <Typography variant={'h2'} sx={{fontSize: '32px', pt: '10px'}}>{round.player.name} - Round {round.currentRound}</Typography>
-              <Grid
-                allLetterStates={round.letterStates}
-                allGuesses={['', '', '', '', '', '']}
-                style={{height: '100%'}}/>
-            </Box>
+        <>
+          <Box sx={{
+            width: '60%',
+            mx: 'auto',
+            mt: '2.5%',
+            textAlign: 'center',
+            float: 'left'
+          }}>
+            <Grid
+              currentRow={currentGuess}
+              allGuesses={allGuesses}
+              currentWord={currentWord}
+              allLetterStates={letterState}/>
             <br style={{clear: 'both'}}/>
-          </>
-        ))}
-      </Box>
-    </>
+            <Keyboard
+              onChar={onChar}
+              onDelete={onDelete}
+              onEnter={onEnter}
+              letterOnCorrectPosition={letterOnCorrectPosition}
+              letterInWord={letterInWord}
+              letterNotInWord={letterNotInWord}
+            />
+          </Box>
+          {/*Opponents grid, TODO: l. 118: do that and it will work.*/}
+          <Box sx={{width: '30%', mt: '2.5%', mr: '5%', float: 'right' }}>
+            {opponentGameRoundData.data?.opponentGameRound.map((round) => (
+              <>
+                <Box style={{height: '19vh'}}>
+                  <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>{round.player.name} -
+                      Round {round.currentRound}</Typography>
+                  <Grid
+                    allLetterStates={round.letterStates}
+                    allGuesses={['', '', '', '', '', '']}
+                    style={{height: '100%'}}/>
+                </Box>
+                <br style={{clear: 'both'}}/>
+              </>
+            ))}
+          </Box>
+        </>
+      }
+    </>  
   );
 };
 
