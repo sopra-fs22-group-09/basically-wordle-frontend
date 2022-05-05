@@ -6,7 +6,7 @@
     "@apollo/client": "^3.5.10",
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
-    "@fontsource/roboto": "^4.5.3",
+    "@fontsource/roboto": "^4.5.5",
     "@graphql-codegen/cli": "^2.6.2",
     "@mantine/core": "^4.2.2",
     "@mantine/hooks": "^4.1.0",
