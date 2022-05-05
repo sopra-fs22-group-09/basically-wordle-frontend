@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
-import { Friends } from './Friends';
-import { IconButton } from '@mui/material';
+import { IconButton, Skeleton } from '@mui/material';
 
-import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
 import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
+import { lazy, Suspense } from 'react';
 
 const drawerWidth = 240;
 
@@ -39,6 +38,8 @@ const Drawer = styled(MuiDrawer, {
 );
 
 const FriendsList = () => {
+  const Friends = lazy(() => import('./Friends'));
+
   const open = useAppSelector(state => state.drawer.isOpen);
   const dispatch = useAppDispatch();
 
@@ -49,7 +50,9 @@ const FriendsList = () => {
 
   return (
     <Drawer variant="permanent" open={open}>
-      <Friends />
+      <Suspense fallback={<Skeleton variant='rectangular'><Friends /></Skeleton>}>
+        <Friends />
+      </Suspense>
       <IconButton onClick={toggleDrawer}
         sx={{
           position: 'absolute',

@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
-import Keyboard from '../components/keyboard/keyboard';
-import Grid from '../components/grid/grid';
+import { lazy, Suspense, useEffect, useState } from 'react';
+import { Box, Typography, useTheme } from '@mui/material';
+import { Orbit, DotWave } from '@uiball/loaders';
 import { LobbyStatus } from '../models/Lobby';
 import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
 import { GameRoundModel,
@@ -11,6 +10,7 @@ import { GameRoundModel,
   LetterState,
   OpponentGameRoundModel,
 } from '../models/Game';
+import LoaderCenterer from '../components/loader';
 
 interface GameInformation {
   name: string
@@ -54,6 +54,10 @@ const CONCLUDE_GAME = gql`
 `;
 
 const Game = (gameInfo: GameInformation) => {
+  const Grid = lazy(() => import('../components/grid/grid'));
+  const Keyboard = lazy(() => import('../components/keyboard/keyboard'));
+
+  const theme = useTheme();
 
   const [roundConclusion, setRoundConclusion] = React.useState<boolean>(false);
   const [gameConclusion, setGameConclusion] = React.useState<boolean>(false);
@@ -75,7 +79,8 @@ const Game = (gameInfo: GameInformation) => {
   const [allGuesses, setAllGuesses] = useState<string[]>(['', '', '', '', '', '']);
 
   useEffect(() => {
-    gameInfo.startGame();
+    if (gameInfo.gameStatus == GameStatus.SYNCING || gameInfo.gameStatus == GameStatus.NEW)
+      gameInfo.startGame();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);  // Please don't touch!!
 
@@ -164,14 +169,13 @@ const Game = (gameInfo: GameInformation) => {
   return (
     <>
       {(gameInfo.gameStatus == GameStatus.SYNCING) && 
-        <Box sx={{
-          width:'100%',
-          mx: 'auto',
-          mt:'2.5%',
-          textAlign: 'center'
-        }}>
-          <Typography variant='h2'>Loading ...</Typography>
-        </Box>
+        <LoaderCenterer>
+          <DotWave 
+            size={50}
+            speed={1} 
+            color='#eee'
+          />
+        </LoaderCenterer>
       }
       {(gameInfo.gameStatus == GameStatus.GUESSING) &&
         <>
@@ -182,20 +186,24 @@ const Game = (gameInfo: GameInformation) => {
             textAlign: 'center',
             float: 'left'
           }}>
-            <Grid
-              currentRow={currentGuess}
-              allGuesses={allGuesses}
-              currentWord={currentWord}
-              allLetterStates={letterState}/>
+            <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
+              <Grid
+                currentRow={currentGuess}
+                allGuesses={allGuesses}
+                currentWord={currentWord}
+                allLetterStates={letterState}/>
+            </Suspense> 
             <br style={{clear: 'both'}}/>
-            <Keyboard
-              onChar={onChar}
-              onDelete={onDelete}
-              onEnter={onEnter}
-              letterOnCorrectPosition={letterOnCorrectPosition}
-              letterInWord={letterInWord}
-              letterNotInWord={letterNotInWord}
-            />
+            <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
+              <Keyboard
+                onChar={onChar}
+                onDelete={onDelete}
+                onEnter={onEnter}
+                letterOnCorrectPosition={letterOnCorrectPosition}
+                letterInWord={letterInWord}
+                letterNotInWord={letterNotInWord}
+              />
+            </Suspense>
           </Box>
           {/*Opponents grid, TODO: l. 118: do that and it will work.*/}
           <Box sx={{width: '30%', mt: '2.5%', mr: '5%', float: 'right' }}>
@@ -215,7 +223,7 @@ const Game = (gameInfo: GameInformation) => {
           </Box>
         </>
       }
-    </>  
+    </>
   );
 };
 

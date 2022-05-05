@@ -1,19 +1,22 @@
 import * as React from 'react';
-import { createTheme, CssBaseline} from '@mui/material';
+import { createTheme, CssBaseline, ThemeProvider} from '@mui/material';
 import { routes as appRoutes } from './routes';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './layout/Layout';
-import { ThemeProvider } from '@mui/material/styles';
 import Guard from './routes/Guard';
-import Login from './modals/Login';
-import Register from './modals/Register';
-import Reset from './modals/Reset';
-import TokenEntry from './modals/TokenEntry';
-import LobbyConfirmation from './modals/LobbyConfirmation';
+import { lazy, Suspense } from 'react';
+import { Orbit } from '@uiball/loaders';
+import LoaderCenterer from './components/loader';
 
 function App() {
   // define theme
   const theme = createTheme({
+    additional: {
+      UiBallLoader: {
+        colors: {
+          main: '#234F20'
+        }
+      }
+    },
     palette: {
       primary: {
         light: '#63b8ff',
@@ -31,27 +34,40 @@ function App() {
     },
   });
 
+  const Layout = lazy(() => import('./layout/Layout'));
+  const Login = lazy(() => import('./modals/Login'));
+  const Register = lazy(() => import('./modals/Register'));
+  const Reset = lazy(() => import('./modals/Reset'));
+  const TokenEntry = lazy(() => import('./modals/TokenEntry'));
+  const LobbyConfirmation = lazy(() => import('./modals/LobbyConfirmation'));
+
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
+      <CssBaseline enableColorScheme />
       <Router>
-        <Register />
-        <Login />
-        <Reset />
-        <TokenEntry />
-        <LobbyConfirmation />
-        <Guard>
-          <Layout>
-            <Routes>
-              {appRoutes
-                .filter(r => r.enabled)
-                .map((route) => (
-                  <Route key={route.key} path={route.path} element={ <route.component />} />
-                ))
-              }
-            </Routes>
-          </Layout>
-        </Guard>
+        <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
+          <Register />
+          <Login />
+          <Reset />
+          <TokenEntry />
+          <LobbyConfirmation />
+          <Guard>
+            <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
+              <Layout>
+                <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
+                  <Routes>
+                    {appRoutes
+                      .filter(r => r.enabled)
+                      .map((route) => (
+                        <Route key={route.key} path={route.path} element={ <route.component />} />
+                      ))
+                    }
+                  </Routes>
+                </Suspense>
+              </Layout>
+            </Suspense>
+          </Guard>
+        </Suspense>
       </Router>
     </ThemeProvider>
   );

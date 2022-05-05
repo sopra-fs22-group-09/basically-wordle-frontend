@@ -1,19 +1,28 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import { WithChildren } from '../utils/utils';
-import Header from './Header';
-import FriendsList from './FriendsList';
+import { lazy, Suspense } from 'react';
+import { Skeleton, useTheme } from '@mui/material';
+import MuiAppBar from '@mui/material/AppBar';
+import MuiDrawer from '@mui/material/Drawer';
 
 // Do this explicitly if you need the component to have children!
 // eslint-disable-next-line @typescript-eslint/ban-types
 type LayoutProps = WithChildren<{}>;
 
 const Layout = ({ children }: LayoutProps) => {
+
+  const Header = lazy(() => import('./Header'));
+  const FriendsList = lazy(() => import('./FriendsList'));
   
   return (
     <Box sx={{display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      <Header />
-      <FriendsList />
+      <Suspense fallback={<Skeleton variant='rectangular'><MuiAppBar /></Skeleton>}>
+        <Header />
+      </Suspense>
+      <Suspense fallback={<Skeleton variant='rectangular' width='260px'><MuiDrawer /></Skeleton>}>
+        <FriendsList />
+      </Suspense>
       <Box
         component="main"
         sx={{

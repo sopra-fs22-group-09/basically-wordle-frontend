@@ -6,6 +6,7 @@
     <link rel="icon" type="image/ico" href="%PUBLIC_URL%/favicon.ico">
     <link rel="icon" type="image/png" href="%PUBLIC_URL%/logo512.png">
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo512.png" />
+    <link rel="stylesheet" type="text/css" media="screen" href="%PUBLIC_URL%/index.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -34,7 +35,28 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app. Welcome to 2022.</noscript>
-    <div id="root"></div>
+    <div id="root">
+      <div id="spinner" class="container">
+        <!--<div class="dot-wave">
+          <div class="dot-wave__dot"></div>
+          <div class="dot-wave__dot"></div>
+          <div class="dot-wave__dot"></div>
+          <div class="dot-wave__dot"></div>
+        </div>-->
+        <div class="loading" id="loading-text">
+          <div class="loading__letter">L</div>
+          <div class="loading__letter">o</div>
+          <div class="loading__letter">a</div>
+          <div class="loading__letter">d</div>
+          <div class="loading__letter">i</div>
+          <div class="loading__letter">n</div>
+          <div class="loading__letter">g</div>
+          <div class="loading__letter">.</div>
+          <div class="loading__letter">.</div>
+          <div class="loading__letter">.</div>
+        </div>
+      </div>
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
