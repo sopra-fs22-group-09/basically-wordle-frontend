@@ -96,5 +96,8 @@
     "@testing-library/dom": ">=7.21.4",
     "autoprefixer": "^10.0.2",
     "postcss": "^8.1.0"
+  },
+  "resolutions": {
+    "@emotion/react": "^11.9.0"
   }
 }

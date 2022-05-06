@@ -20,7 +20,7 @@ const Layout = ({ children }: LayoutProps) => {
       <Suspense fallback={<Skeleton variant='rectangular'><MuiAppBar /></Skeleton>}>
         <Header />
       </Suspense>
-      <Suspense fallback={<Skeleton variant='rectangular' width='260px'><MuiDrawer /></Skeleton>}>
+      <Suspense fallback={<Skeleton variant='rectangular' width='240px'><MuiDrawer /></Skeleton>}>
         <FriendsList />
       </Suspense>
       <Box

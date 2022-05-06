@@ -50,7 +50,7 @@ const FriendsList = () => {
 
   return (
     <Drawer variant="permanent" open={open}>
-      <Suspense fallback={<Skeleton variant='rectangular'><Friends /></Skeleton>}>
+      <Suspense fallback={<Skeleton variant='rectangular'></Skeleton>}>
         <Friends />
       </Suspense>
       <IconButton onClick={toggleDrawer}

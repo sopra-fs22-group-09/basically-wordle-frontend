@@ -208,7 +208,7 @@ const Game = (gameInfo: GameInformation) => {
           {/*Opponents grid, TODO: l. 118: do that and it will work.*/}
           <Box sx={{width: '30%', mt: '2.5%', mr: '5%', float: 'right' }}>
             {opponentGameRoundData.data?.opponentGameRound.map((round) => (
-              <>
+              <React.Fragment key={round.player.id}>
                 <Box style={{height: '19vh'}}>
                   <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>{round.player.name} -
                       Round {round.currentRound}</Typography>
@@ -218,7 +218,7 @@ const Game = (gameInfo: GameInformation) => {
                     style={{height: '100%'}}/>
                 </Box>
                 <br style={{clear: 'both'}}/>
-              </>
+              </React.Fragment>
             ))}
           </Box>
         </>
