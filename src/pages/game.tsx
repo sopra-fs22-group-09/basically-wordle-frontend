@@ -207,8 +207,8 @@ const Game = (gameInfo: GameInformation) => {
           </Box>
           {/*Opponents grid, TODO: l. 118: do that and it will work.*/}
           <Box sx={{width: '30%', mt: '2.5%', mr: '5%', float: 'right' }}>
-            {opponentGameRoundData.data?.opponentGameRound.map((round) => (
-              <React.Fragment key={round.player.id}>
+            {opponentGameRoundData.data?.opponentGameRound.map((round, i) => (
+              <React.Fragment key={i}>
                 <Box style={{height: '19vh'}}>
                   <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>{round.player.name} -
                       Round {round.currentRound}</Typography>
