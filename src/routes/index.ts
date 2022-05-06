@@ -1,11 +1,6 @@
-import { FC } from 'react';
+import { FC, lazy } from 'react';
 import { Route } from 'react-router-dom';
-import Home from '../pages/home';
-import Profile from '../pages/profile';
 import { DefaultRoute } from './Guard';
-import Tutorial from '../pages/tutorial';
-import Game from '../pages/game';
-import Lobby from '../components/lobby';
 
 /**
  * Main router of your application.
@@ -26,6 +21,12 @@ interface Route {
   // eslint-disable-next-line @typescript-eslint/ban-types
   component: FC<{}>
 }
+
+const Home = lazy(() => import('../pages/home'));
+const Profile = lazy(() => import('../pages/profile'));
+const Tutorial = lazy(() => import('../pages/tutorial'));
+//const Game = lazy(() => import('../pages/game'));
+const Lobby = lazy(() => import('../components/lobby'));
 
 export const routes: Array<Route> = [
   {

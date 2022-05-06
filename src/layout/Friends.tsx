@@ -14,7 +14,7 @@ import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
-export const Friends = () => {
+const Friends = () => {
 
   const myProfile = (
     <ListItem
@@ -201,3 +201,5 @@ export const Friends = () => {
     </List>
   );
 };
+
+export default Friends;

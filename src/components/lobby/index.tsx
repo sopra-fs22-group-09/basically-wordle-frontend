@@ -1,8 +1,6 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import LobbyManagement from '../../pages/lobbyManagement';
-import Game from '../../pages/game';
 import {
   GameCategory,
   GameMode,
@@ -14,7 +12,10 @@ import {
 import { Player } from '../../models/Player';
 import { gql, useMutation, useSubscription } from '@apollo/client';
 import { GameStatus, GameStatusModel } from '../../models/Game';
-import { useLocalStorage } from '@mantine/hooks';
+import { useDebouncedValue, useLocalStorage } from '@mantine/hooks';
+import { ChaoticOrbit, DotWave } from '@uiball/loaders';
+import { useTheme } from '@mui/material';
+import LoaderCenterer from '../loader';
 
 const JOIN_LOBBY = gql`
   mutation joinLobby($id: ID!) {
@@ -79,9 +80,16 @@ const GAME_STATUS = gql`
 const Lobby = () => {
 
   const params = useParams();
+  
+  const LobbyManagement = lazy(() => import('../../pages/lobbyManagement'));
+  const Game = lazy(() => import('../../pages/game'));
+  
+  const theme = useTheme();
 
   const [ownerId, setOwnerId] = React.useState('');
   const [lobbyStatus, setLobbyStatus] = React.useState<LobbyStatus>(LobbyStatus.OPEN);
+  // TODO: Needed? Possibly prevents lobbyStatus stuttering
+  const [debouncedLobbyStatus] = useDebouncedValue(lobbyStatus, 500, { leading: true });
   const [gameStatus, setGameStatus] = React.useState<GameStatus>(GameStatus.NEW);
   const [gameMode, setGameMode] = React.useState<GameMode>(GameMode.WORDSPP);
   const [gameRounds, setGameRounds] = React.useState(0);
@@ -122,9 +130,8 @@ const Lobby = () => {
   const [startGame] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
   const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS);
   useEffect(() => {
-    if (!gameStatusData.loading && gameStatusData.data?.gameStatus && gameStatus != GameStatus.GUESSING) {
+    if (!gameStatusData.loading && gameStatusData.data?.gameStatus) {
       setGameStatus(gameStatusData.data.gameStatus);
-      // Only if we are the owner! TODO: Still called too often!
       if (gameStatusData.data?.gameStatus == GameStatus.SYNCING && ownerId == userId) {
         startGame().then(() => {
           //setLobbyStatus(LobbyStatus.INGAME);
@@ -134,30 +141,35 @@ const Lobby = () => {
         setLobbyStatus(LobbyStatus.INGAME);
       }
     }
-  }, [gameStatusData, startGame, gameStatus, ownerId, userId]);
+  }, [gameStatusData, startGame, ownerId, userId]);
 
   return (
-    lobbyStatus != LobbyStatus.INGAME ?
-      <LobbyManagement
-        name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
-        size={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.size : 0}
-        ownerId={ownerId}
-        gameCategory={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? Object.values(GameCategory)[Object.keys(GameCategory).indexOf(joinLobbyData.data.joinLobbyById.gameCategory)] : GameCategory.PVP}
-        gameMode={gameMode}
-        gameRounds={gameRounds}
-        roundTime={roundTime}
-        players={players}
-        setGameRounds={setGameRounds}
-        setRoundTime={setRoundTime}
-        startGame={startGame}
-      />
+    debouncedLobbyStatus != LobbyStatus.INGAME ?
+      <Suspense fallback={<LoaderCenterer><ChaoticOrbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
+        <LobbyManagement
+          name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
+          size={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.size : 0}
+          ownerId={ownerId}
+          gameCategory={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? Object.values(GameCategory)[Object.keys(GameCategory).indexOf(joinLobbyData.data.joinLobbyById.gameCategory)] : GameCategory.PVP}
+          gameMode={gameMode}
+          gameStatus={gameStatus}
+          gameRounds={gameRounds}
+          roundTime={roundTime}
+          players={players}
+          setGameRounds={setGameRounds}
+          setRoundTime={setRoundTime}
+          startGame={startGame}
+        />
+      </Suspense>
       :
-      <Game
-        name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
-        setStatus={setLobbyStatus}
-        gameStatus={gameStatus}
-        startGame={startGame}
-      />
+      <Suspense fallback={<LoaderCenterer><DotWave size={50} color='#eee' /></LoaderCenterer>}>
+        <Game
+          name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
+          setStatus={setLobbyStatus}
+          gameStatus={gameStatus}
+          startGame={startGame}
+        />
+      </Suspense>
   );
 };
 

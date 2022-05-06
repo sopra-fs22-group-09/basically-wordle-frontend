@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useAppDispatch } from '../redux/hooks';
 import { DataGrid, GridRowId } from '@mui/x-data-grid';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Skeleton } from '@mui/material';
 
 //TODO: get subscription data
 const lobbies = [
@@ -70,40 +70,46 @@ const Home = () => {
       >
         Create New Lobby
       </Button>
-      <DataGrid autoHeight disableSelectionOnClick
-        sx={{
-          '&.MuiDataGrid-root.MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus': { outline:'none' },
-          '.MuiDataGrid-virtualScrollerContent' : {overflowX: 'hidden'}
-        }}
-        onRowClick={((params, event) => {
-          event.defaultMuiPrevented = true;
-          handleLobbyJoin(params.id);
-        })}
-        columns={[
-          {
-            field: 'lobby',
-            headerName: 'Lobby',
-            flex: 1,
-            minWidth: 200,
-          },
-          {
-            field: 'mode',
-            headerName: 'Mode',
-            width: 100,
-          },
-          {
-            field: 'category',
-            headerName: 'Category',
-            width: 100,
-          },
-          {
-            field: 'player',
-            headerName: 'Player',
-            width: 100,
-          },
-        ]}
-        rows={lobbies}
-      />
+      {
+        lobbies ? (
+          <DataGrid autoHeight disableSelectionOnClick
+            sx={{
+              '&.MuiDataGrid-root.MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus': { outline:'none' },
+              '.MuiDataGrid-virtualScrollerContent' : {overflowX: 'hidden'}
+            }}
+            onRowClick={((params, event) => {
+              event.defaultMuiPrevented = true;
+              handleLobbyJoin(params.id);
+            })}
+            columns={[
+              {
+                field: 'lobby',
+                headerName: 'Lobby',
+                flex: 1,
+                minWidth: 200,
+              },
+              {
+                field: 'mode',
+                headerName: 'Mode',
+                width: 100,
+              },
+              {
+                field: 'category',
+                headerName: 'Category',
+                width: 100,
+              },
+              {
+                field: 'player',
+                headerName: 'Player',
+                width: 100,
+              },
+            ]}
+            rows={lobbies}
+          />
+        ) : (
+          <Skeleton variant='rectangular' width={500} height={150} />
+        )
+      }
     </Box>
   );
 };

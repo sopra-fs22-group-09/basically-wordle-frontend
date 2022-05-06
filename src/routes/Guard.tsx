@@ -12,9 +12,9 @@ export const DefaultRoute = () => {
 };
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-type LayoutProps = WithChildren<{}>;
+type GuardProps = WithChildren<{}>;
 
-const Guard = ({ children }: LayoutProps) => {
+const Guard = ({ children }: GuardProps) => {
 
   const [token] = useLocalStorage<string>({ key: 'token' });
 
