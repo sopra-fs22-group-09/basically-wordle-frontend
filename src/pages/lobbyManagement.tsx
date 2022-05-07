@@ -98,7 +98,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
             <Box sx={{ width: '66%!important', float: 'left', border:'solid 2px white' }}>
               <Box sx={{ width: '49%', border:'solid 2px white', float: 'left' }}>
                 <Typography variant='h5'>
-            players
+            Players
                 </Typography>
                 <List>
                   {lobbyInfo.players?.map(player => {
@@ -112,7 +112,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               </Box>
               <Box sx={{ width: '49%', border:'solid 2px white', float: 'right' }}>
                 <Typography variant='h5'>
-            settings
+            Settings
                 </Typography>
                 <FormControl sx={{ minWidth:150, width:'auto', mt:3 }}>
                   <InputLabel>Game Mode</InputLabel>
@@ -152,7 +152,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                 }
                 {lobbyInfo.roundTime != 0 &&
               <Box sx={{ m:'auto', mt:2, width:'80%' }}>
-                <Typography variant='h6'>Time: {lobbyInfo.roundTime}</Typography>
+                <Typography variant='h6'>Time: {lobbyInfo.roundTime} seconds</Typography>
                 <Slider
                   sx={{ m:'auto' }}
                   marks
@@ -217,7 +217,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                 <Button variant="contained" sx={{ mx:2, mt:2 }} disabled={localStorage.getItem('userId') != lobbyInfo.ownerId || lobbyInfo.gameStatus == GameStatus.SYNCING} onClick={() => lobbyInfo.startGame()}>Start Game</Button>
               </Box>
             </Box>
-            <Box sx={{ float: 'right', width: '33%!important', height: 'calc(100vh - 164px)', border:'solid 2px white' }}>
+            <Box sx={{ float: 'right', width: '33%!important', height: 'calc(100vh - 200px)', border:'solid 2px white' }}>
         chat
             </Box>
           </>

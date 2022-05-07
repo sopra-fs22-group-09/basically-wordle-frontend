@@ -96,5 +96,8 @@
   },
   "resolutions": {
     "@emotion/react": "^11.9.0"
+  },
+  "overrides": {
+    "@emotion/react": "^11.9.0"
   }
 }
