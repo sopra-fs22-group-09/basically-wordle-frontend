@@ -3,9 +3,13 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { Box, Typography, useTheme } from '@mui/material';
 import { Orbit, DotWave } from '@uiball/loaders';
 import { LobbyStatus } from '../models/Lobby';
-import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
+import { gql,
+  useMutation,
+  //  useQuery,
+  useSubscription
+} from '@apollo/client';
 import { GameRoundModel,
-  GameStatsModel,
+//  GameStatsModel,
   GameStatus,
   LetterState,
   OpponentGameRoundModel,
@@ -41,7 +45,7 @@ const OPPONENT_GAME_ROUND = gql`
   }
 `;
 
-const CONCLUDE_GAME = gql`
+/*const CONCLUDE_GAME = gql`
   query concludeGame {
     concludeGame {
       targetWord
@@ -51,7 +55,7 @@ const CONCLUDE_GAME = gql`
       rank
     }
   }
-`;
+`;*/
 
 const Game = (gameInfo: GameInformation) => {
   const Grid = lazy(() => import('../components/grid/grid'));
@@ -60,15 +64,15 @@ const Game = (gameInfo: GameInformation) => {
   const theme = useTheme();
 
   const [roundConclusion, setRoundConclusion] = React.useState<boolean>(false);
-  const [gameConclusion, setGameConclusion] = React.useState<boolean>(false);
+  //const [gameConclusion, setGameConclusion] = React.useState<boolean>(false);
   const toggleRoundConclusionModal = () => {
     setRoundConclusion(!roundConclusion);
   };
-  const toggleGameConclusionModal = () => {
+  /*const toggleGameConclusionModal = () => {
     setGameConclusion(!gameConclusion);
-  };
+  };*/
 
-  const [words, setWords] = React.useState<string[]>([]);
+  //const [words, setWords] = React.useState<string[]>([]);
   const [letterState, setLetterState] = React.useState<LetterState[][]>([[]]);
 
   const [letterOnCorrectPosition, setLetterOnCorrectPosition] = useState('');
@@ -140,17 +144,17 @@ const Game = (gameInfo: GameInformation) => {
 
   //TODO Write hooks to initialize an empty state and show this state. then, use useeffect to update the hooks.
   const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND, {
-    onSubscriptionData: a => console.log(a.subscriptionData)
+    //onSubscriptionData: a => console.log(a.subscriptionData)
   });
 
-  function ConcludeGame() {
+  /*function ConcludeGame() {
     const concludeGameData = useQuery<GameStatsModel>(CONCLUDE_GAME, {
       onCompleted(data) {
         //gameInfo.setStatus(LobbyStatus.OPEN);
         console.log('ja');
       }
     });
-  }
+  }*/
 
   const onChar = (value: string) => {if (currentWord.length < 5 && currentGuess <= 6) setCurrentWord(currentWord + value.toLowerCase());};
   const onDelete = () => {if (currentWord.length > 0 && currentGuess <= 6) setCurrentWord(currentWord.substring(0, currentWord.length - 1));};

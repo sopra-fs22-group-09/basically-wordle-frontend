@@ -2,7 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import { WithChildren } from '../utils/utils';
 import { lazy, Suspense } from 'react';
-import { Skeleton, useTheme } from '@mui/material';
+import { Skeleton } from '@mui/material';
 import MuiAppBar from '@mui/material/AppBar';
 import MuiDrawer from '@mui/material/Drawer';
 
