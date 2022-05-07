@@ -3,7 +3,7 @@ import { WithChildren } from '../utils/utils';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../redux/hooks';
 import { useEffect } from 'react';
-import { useLocalStorage } from '@mantine/hooks';
+import { useForceUpdate, useLocalStorage } from '@mantine/hooks';
 
 export const DefaultRoute = () => {
   return (
@@ -16,7 +16,8 @@ type GuardProps = WithChildren<{}>;
 
 const Guard = ({ children }: GuardProps) => {
 
-  const [token] = useLocalStorage<string>({ key: 'token' });
+  const [token] = useLocalStorage<string>({ key: 'userId' });
+  const forceUpdate = useForceUpdate();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -48,9 +49,10 @@ const Guard = ({ children }: GuardProps) => {
     
     if (!token) {
       navigate('/login');
-      window.location.reload();
+      //window.location.reload();
+      forceUpdate();
     }
-  });
+  }, [dispatch, forceUpdate, location.pathname, navigate, token]);
 
   return (
     <>
