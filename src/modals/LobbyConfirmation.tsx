@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { GameCategory, GameCategoryMaxSize, Lobby } from '../models/Lobby';
 import { gql, useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
+import { LoadingOverlay } from '@mantine/core';
 
 export type LobbyInput = {
   size: number;
@@ -82,7 +83,7 @@ const LobbyConfirmation = () => {
           boxShadow: 24,
         }}
       >
-        <Box sx={{ width:'80%', height:'80%', m:'auto', textAlign:'center' }}>
+        <Box sx={{ width:'80%', height:'80%', m:'auto', textAlign:'center', position: 'relative' }}>
           <ToggleButtonGroup
             color='primary'
             value={gameCategory}
@@ -128,6 +129,12 @@ const LobbyConfirmation = () => {
               />
             </Box>
           }
+          <LoadingOverlay
+            style={{ borderRadius: '4px' }}
+            loaderProps={{ size: 'lg', variant: 'dots' }}
+            overlayColor="#2C2E33"
+            visible={loading}
+          />
           <Box sx={{ m:2 }}>
             <Button variant="contained" sx={{ mr:2 }} onClick={toggleModal}>Cancel</Button>
             <Button variant="contained" sx={{ ml:2 }} onClick={() =>
