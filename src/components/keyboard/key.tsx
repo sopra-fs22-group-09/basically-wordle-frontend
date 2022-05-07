@@ -14,7 +14,7 @@ const Key = ({
   onClick,
 
 }: KeyProps) => {
-  const handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {onClick(value);};
+  const handleClick: React.MouseEventHandler<HTMLButtonElement> = () => {onClick(value);};
 
   return (
     <Button
