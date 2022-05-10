@@ -1,19 +1,10 @@
 import * as React from 'react';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { Box, Typography, useTheme } from '@mui/material';
-import { Orbit, DotWave } from '@uiball/loaders';
+import { DotWave, Orbit } from '@uiball/loaders';
 import { LobbyStatus } from '../models/Lobby';
-import { gql,
-  useMutation,
-  //  useQuery,
-  useSubscription
-} from '@apollo/client';
-import { GameRoundModel,
-//  GameStatsModel,
-  GameStatus,
-  LetterState,
-  OpponentGameRoundModel,
-} from '../models/Game';
+import { gql, useLazyQuery, useMutation, useSubscription } from '@apollo/client';
+import { GameRoundModel, GameStatsModel, GameStatus, LetterState, OpponentGameRoundModel, } from '../models/Game';
 import LoaderCenterer from '../components/loader';
 
 interface GameInformation {
@@ -45,7 +36,7 @@ const OPPONENT_GAME_ROUND = gql`
   }
 `;
 
-/*const CONCLUDE_GAME = gql`
+const CONCLUDE_GAME = gql`
   query concludeGame {
     concludeGame {
       targetWord
@@ -55,7 +46,7 @@ const OPPONENT_GAME_ROUND = gql`
       rank
     }
   }
-`;*/
+`;
 
 const Game = (gameInfo: GameInformation) => {
   const Grid = lazy(() => import('../components/grid/grid'));
@@ -72,43 +63,53 @@ const Game = (gameInfo: GameInformation) => {
     setGameConclusion(!gameConclusion);
   };*/
 
-  //const [words, setWords] = React.useState<string[]>([]);
-  const [letterState, setLetterState] = React.useState<LetterState[][]>([[]]);
-
+  // For keyboard
   const [letterOnCorrectPosition, setLetterOnCorrectPosition] = useState('');
   const [letterInWord, setLetterInWord] = useState('');
   const [letterNotInWord, setLetterNotInWord] = useState('');
-  const [currentWord, setCurrentWord] = useState('');
-  const [currentGuess, setCurrentGuess] = useState(0);
-  const [allGuesses, setAllGuesses] = useState<string[]>(['', '', '', '', '', '']);
+
+  // For Grid
+  const [currentlyTypingWord, setCurrentlyTypingWord] = useState('');
+  const [amountGuesses, setAmountGuesses] = useState(0);
+  const [guessHistory, setGuessHistory] = useState(['', '', '', '', '', '']);
+  const [letterState, setLetterState] = useState<LetterState[][]>([[]]);
+
+
+  const [concludeGame, {data}] = useLazyQuery<GameStatsModel>(CONCLUDE_GAME, {
+    onCompleted(data) {
+      alert(data.concludeGame.score);
+      console.log('ja');
+      gameInfo.setStatus(LobbyStatus.OPEN);
+    },
+    fetchPolicy: 'network-only'
+  });
 
   useEffect(() => {
-    if (gameInfo.gameStatus == GameStatus.SYNCING || gameInfo.gameStatus == GameStatus.NEW)
-      gameInfo.startGame();
+    if (gameInfo.gameStatus == GameStatus.SYNCING || gameInfo.gameStatus == GameStatus.NEW) gameInfo.startGame();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);  // Please don't touch!!
+  
+  useEffect(() => {
+    if (gameInfo.gameStatus == GameStatus.FINISHED) concludeGame();
+  }, [concludeGame, gameInfo.gameStatus]);
 
-  const [submitGuess] = useMutation<GameRoundModel>(SUBMIT_GUESS, {
+  const [submitGuess, {loading}] = useMutation<GameRoundModel>(SUBMIT_GUESS, {
     variables: {
-      word: currentWord
+      word: currentlyTypingWord
     },
     onCompleted(data) {
       if (data?.submitGuess) {
-        //console.log(data.submitGuess.targetWord);
-        //setWords(data.submitGuess.words);
-        // TODO Just a temporary fix since the broken backend:
-        //  The backend returns null when submitting the last guess and there are still rounds left
-        //  Remove "? data.submitGuess.letterStates : letterState" once backend is fixed
-        setLetterState(data.submitGuess.letterStates ? data.submitGuess.letterStates : letterState);
+        // Grid coloring magic
+        setGuessHistory(data.submitGuess.words);
+        setLetterState(data.submitGuess.letterStates);
 
+        // Keyboard coloring magic
         let corr = letterOnCorrectPosition;
         let inWord = letterInWord;
         let wrong = letterNotInWord;
-        const row = data.submitGuess.letterStates[currentGuess];
-
+        const row = data.submitGuess.letterStates[amountGuesses];
         for (let i = 0; i < row.length; ++i) {
-          const letter = data.submitGuess.words[currentGuess].substring(i, i + 1);
-
+          const letter = data.submitGuess.words[amountGuesses].substring(i, i + 1);
           if (row[i] === LetterState.CORRECTPOSITION && !letterOnCorrectPosition.includes(letter)) {
             corr += letter;
             inWord = inWord.replaceAll(letter, '');
@@ -122,9 +123,8 @@ const Game = (gameInfo: GameInformation) => {
         setLetterInWord(inWord);
         setLetterNotInWord(wrong);
 
-
         //TODO: This section needs refactoring based on gamestatus subscription(update)
-        if (currentGuess >= 5) {
+        if (amountGuesses >= 5) {
           toggleRoundConclusionModal();
         }
         let allRight = true;
@@ -147,73 +147,71 @@ const Game = (gameInfo: GameInformation) => {
     //onSubscriptionData: a => console.log(a.subscriptionData)
   });
 
-  /*function ConcludeGame() {
-    const concludeGameData = useQuery<GameStatsModel>(CONCLUDE_GAME, {
-      onCompleted(data) {
-        //gameInfo.setStatus(LobbyStatus.OPEN);
-        console.log('ja');
-      }
-    });
-  }*/
-
-  const onChar = (value: string) => {if (currentWord.length < 5 && currentGuess <= 6) setCurrentWord(currentWord + value.toLowerCase());};
-  const onDelete = () => {if (currentWord.length > 0 && currentGuess <= 6) setCurrentWord(currentWord.substring(0, currentWord.length - 1));};
+  const onChar = (value: string) => {if (!loading && currentlyTypingWord.length < 5 && amountGuesses <= 6) setCurrentlyTypingWord(currentlyTypingWord + value.toLowerCase());};
+  const onDelete = () => {if (!loading && currentlyTypingWord.length > 0 && amountGuesses <= 6) setCurrentlyTypingWord(currentlyTypingWord.substring(0, currentlyTypingWord.length - 1));};
   const onEnter = () => {
-    if (currentWord.length === 5 && currentGuess <= 6) {
-      const tmp:string[] = allGuesses;
-      tmp[currentGuess] = currentWord;
-      setAllGuesses(tmp);
+    if (!loading && currentlyTypingWord.length === 5 && amountGuesses <= 6) {
       submitGuess().then(() => {
-        setCurrentWord('');
-        setCurrentGuess(currentGuess + 1);
+        setCurrentlyTypingWord('');
+        setAmountGuesses(amountGuesses + 1);
       });
     }
   };
 
   return (
     <>
-      {(gameInfo.gameStatus == GameStatus.SYNCING) && 
+      {gameInfo.gameStatus == GameStatus.FINISHED &&
+          <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>Score: {data?.concludeGame.score}</Typography>
+      }
+      {(gameInfo.gameStatus == GameStatus.SYNCING) &&
         <LoaderCenterer>
-          <DotWave 
+          <DotWave
             size={50}
-            speed={1} 
+            speed={1}
             color='#eee'
           />
         </LoaderCenterer>
       }
-      {(gameInfo.gameStatus == GameStatus.GUESSING) &&
+      {gameInfo.gameStatus == GameStatus.WAITING &&
+          <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>Waiting for other players to finish</Typography>
+      }
+      {(gameInfo.gameStatus == GameStatus.GUESSING || gameInfo.gameStatus == GameStatus.WAITING) &&
         <>
-          <Box sx={{
+          <Box  sx={{
             width: '60%',
             mx: 'auto',
             mt: '2.5%',
             textAlign: 'center',
             float: 'left'
-          }}>
+          }}
+          >
             <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
               <Grid
-                currentRow={currentGuess}
-                allGuesses={allGuesses}
-                currentWord={currentWord}
-                allLetterStates={letterState}/>
-            </Suspense> 
-            <br style={{clear: 'both'}}/>
-            <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
-              <Keyboard
-                onChar={onChar}
-                onDelete={onDelete}
-                onEnter={onEnter}
-                letterOnCorrectPosition={letterOnCorrectPosition}
-                letterInWord={letterInWord}
-                letterNotInWord={letterNotInWord}
+                currentRow={amountGuesses}
+                allGuesses={guessHistory}
+                currentWord={currentlyTypingWord}
+                allLetterStates={letterState}
               />
             </Suspense>
+            {gameInfo.gameStatus == GameStatus.WAITING ? (<br style={{clear: 'both'}} />) : (<br />)}
+            {gameInfo.gameStatus == GameStatus.GUESSING &&
+                <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main}/></LoaderCenterer>}>
+                  <Keyboard
+                    onChar={onChar}
+                    onDelete={onDelete}
+                    onEnter={onEnter}
+                    letterOnCorrectPosition={letterOnCorrectPosition}
+                    letterInWord={letterInWord}
+                    letterNotInWord={letterNotInWord}
+                  />
+                </Suspense>
+            }
           </Box>
           {/*Opponents grid, TODO: l. 118: do that and it will work.*/}
-          <Box sx={{width: '30%', mt: '2.5%', mr: '5%', float: 'right' }}>
+          <Box sx={{width: '30%', mt: '2.5%', mr: '5%', float: gameInfo.gameStatus == GameStatus.GUESSING ? 'right' : '' }}>
             {opponentGameRoundData.data?.opponentGameRound.map((round, i) => (
               <React.Fragment key={i}>
-                <Box style={{height: '19vh'}}>
+                <Box sx={{height: '19vh', float: gameInfo.gameStatus == GameStatus.WAITING ? 'right' : '' }}>
                   <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>{round.player.name} -
                       Round {round.currentRound}</Typography>
                   <Grid

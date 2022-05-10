@@ -157,7 +157,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                   sx={{ m:'auto' }}
                   marks
                   step={10}
-                  min={0}
+                  min={10}
                   max={300}
                   valueLabelDisplay='auto'
                   value={lobbyInfo.roundTime}
@@ -199,8 +199,8 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                   variant='outlined'
                   InputProps={{ readOnly: true,
                     endAdornment: (
-                      <InputAdornment position="end">
-                        <Tooltip title={'Copied to clipboard!'} open={copied} leaveDelay={1500} onClose={() => setCopied(false)}>
+                      <InputAdornment position='end'>
+                        <Tooltip title='Copied to clipboard!' open={copied} leaveDelay={1500} onClose={() => setCopied(false)}>
                           <Button variant='contained' onClick={() => {
                             navigator.clipboard.writeText(window.location.href)
                               .then(() => setCopied(true));

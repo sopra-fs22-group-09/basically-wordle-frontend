@@ -15,6 +15,24 @@ function App() {
         colors: {
           main: '#234F20'
         }
+      },
+      GameColoring: {
+        colors: {
+          correctPosition: '#00b300',
+          inWord: 'orange',
+          notInWord: 'black',
+          notUsed: '#808080',
+        }
+      }
+    },
+    breakpoints: {
+      values: {
+        mobile: 1000,
+        xs: 0,
+        sm: 600,
+        md: 900,
+        lg: 1200,
+        xl: 1536,
       }
     },
     palette: {
