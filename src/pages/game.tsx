@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Button, Typography, useTheme } from '@mui/material';
 import { DotWave, Orbit } from '@uiball/loaders';
 import { LobbyStatus } from '../models/Lobby';
 import { gql, useLazyQuery, useMutation, useSubscription } from '@apollo/client';
@@ -12,6 +12,7 @@ interface GameInformation {
   setStatus: (status: LobbyStatus) => void
   gameStatus?: GameStatus
   startGame: () => void
+  ownerId: string //TODO
 }
 
 const SUBMIT_GUESS = gql`
@@ -52,16 +53,45 @@ const Game = (gameInfo: GameInformation) => {
   const Grid = lazy(() => import('../components/grid/grid'));
   const Keyboard = lazy(() => import('../components/keyboard/keyboard'));
 
+  const useCountdown = (targetDate: number) => {
+    const countDownDate = new Date(targetDate).getTime();
+
+    const [countDown, setCountDown] = useState(
+      countDownDate - new Date().getTime()
+    );
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCountDown(countDownDate - new Date().getTime());
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }, [countDownDate]);
+
+    return getReturnValues(countDown);
+  };
+
+  const getReturnValues = (countDown: number) => {
+    // calculate time left
+    const seconds = Math.floor((countDown % (1000 * 60)) / 1000);
+
+    return [seconds];
+  };
+
+  const countdown = useCountdown(3 * 60 * 1000);
+
   const theme = useTheme();
 
-  const [roundConclusion, setRoundConclusion] = React.useState<boolean>(false);
-  //const [gameConclusion, setGameConclusion] = React.useState<boolean>(false);
-  const toggleRoundConclusionModal = () => {
-    setRoundConclusion(!roundConclusion);
-  };
-  /*const toggleGameConclusionModal = () => {
-    setGameConclusion(!gameConclusion);
-  };*/
+  // const [roundConclusion, setRoundConclusion] = React.useState<boolean>(false);
+  // const [gameConclusion, setGameConclusion] = React.useState<boolean>(false);
+  // const toggleRoundConclusionModal = () => {
+  //   setRoundConclusion(!roundConclusion);
+  // };
+  // const toggleGameConclusionModal = () => {
+  //   setGameConclusion(!gameConclusion);
+  // };
+
+  const [currentRound, setCurrentRound] = useState(1);
 
   // For keyboard
   const [letterOnCorrectPosition, setLetterOnCorrectPosition] = useState('');
@@ -78,7 +108,7 @@ const Game = (gameInfo: GameInformation) => {
   const [concludeGame, {data}] = useLazyQuery<GameStatsModel>(CONCLUDE_GAME, {
     onCompleted(data) {
       alert(data.concludeGame.score);
-      console.log('ja');
+      //console.log('ja');
       gameInfo.setStatus(LobbyStatus.OPEN);
     },
     fetchPolicy: 'network-only'
@@ -99,6 +129,8 @@ const Game = (gameInfo: GameInformation) => {
     },
     onCompleted(data) {
       if (data?.submitGuess) {
+        setCurrentRound(data.submitGuess.currentRound);
+
         // Grid coloring magic
         setGuessHistory(data.submitGuess.words);
         setLetterState(data.submitGuess.letterStates);
@@ -123,21 +155,23 @@ const Game = (gameInfo: GameInformation) => {
         setLetterInWord(inWord);
         setLetterNotInWord(wrong);
 
-        //TODO: This section needs refactoring based on gamestatus subscription(update)
-        if (amountGuesses >= 5) {
-          toggleRoundConclusionModal();
-        }
-        let allRight = true;
-        //console.log(row);
-        for (const letterState of row) {
-          //console.log(letterState);
-          if (letterState != LetterState.CORRECTPOSITION) {
-            allRight = false;
-          }
-        }
-        if (allRight) {
-          toggleRoundConclusionModal();
-        }
+
+        // if (gameInfo.gameStatus == GameStatus.FINISHED) toggleGameConclusionModal();
+
+        // if (amountGuesses >= 5) {
+        //   toggleRoundConclusionModal();
+        // }
+        // let allRight = true;
+        // //console.log(row);
+        // for (const letterState of row) {
+        //   //console.log(letterState);
+        //   if (letterState != LetterState.CORRECTPOSITION) {
+        //     allRight = false;
+        //   }
+        // }
+        // if (allRight) {
+        //   toggleRoundConclusionModal();
+        // }
       }
     }
   });
@@ -158,11 +192,21 @@ const Game = (gameInfo: GameInformation) => {
     }
   };
 
+  //TODO: Still in production, big changes should come in the next weeks
   return (
     <>
       {gameInfo.gameStatus == GameStatus.FINISHED &&
-          <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>Score: {data?.concludeGame.score}</Typography>
+          <>
+            <Typography variant={'h1'} sx={{fontSize: '48px', textAlign: 'center'}}>Game is finished</Typography>
+            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Score: {data?.concludeGame.score}</Typography>
+            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Rank: {data?.concludeGame.rank}</Typography>
+            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Target word: {data?.concludeGame.targetWord}</Typography>
+            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Rounds taken: {data?.concludeGame.roundsTaken}</Typography>
+            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Time taken: {data?.concludeGame.timeTaken}</Typography>
+            {/*TODO <Button variant="contained" sx={{ mx:2, mt:2 }} disabled={localStorage.getItem('userId') != ownerId} onClick={() => setStatus(LobbyStatus.OPEN)}>Back to Lobby</Button>*/}
+          </>
       }
+
       {(gameInfo.gameStatus == GameStatus.SYNCING) &&
         <LoaderCenterer>
           <DotWave
@@ -172,17 +216,21 @@ const Game = (gameInfo: GameInformation) => {
           />
         </LoaderCenterer>
       }
-      {gameInfo.gameStatus == GameStatus.WAITING &&
-          <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>Waiting for other players to finish</Typography>
-      }
       {(gameInfo.gameStatus == GameStatus.GUESSING || gameInfo.gameStatus == GameStatus.WAITING) &&
         <>
+          <Box sx={{display: 'inline-block', width: '100%'}}>
+            <Typography variant={'h3'} sx={{fontSize: '24px', textAlign: 'left', display: 'inline-block'}}>Round: {currentRound}</Typography>
+            {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
+            <Typography variant={'h3'} sx={{fontSize: '24px', textAlign: 'right', display: 'inline-block', float: 'right'}}>Time: {countdown} seconds</Typography>
+            {gameInfo.gameStatus == GameStatus.WAITING && <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>Waiting for other players to finish...</Typography>}
+          </Box>
           <Box  sx={{
-            width: '60%',
+            width: gameInfo.gameStatus == GameStatus.WAITING ? '100%' : '60%',
             mx: 'auto',
             mt: '2.5%',
             textAlign: 'center',
-            float: 'left'
+            //float: gameInfo.gameStatus == GameStatus.GUESSING ? 'left' : 'none'
+            display: 'inline-block'
           }}
           >
             <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
@@ -193,7 +241,7 @@ const Game = (gameInfo: GameInformation) => {
                 allLetterStates={letterState}
               />
             </Suspense>
-            {gameInfo.gameStatus == GameStatus.WAITING ? (<br style={{clear: 'both'}} />) : (<br />)}
+            <br style={{clear: 'both'}} />
             {gameInfo.gameStatus == GameStatus.GUESSING &&
                 <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main}/></LoaderCenterer>}>
                   <Keyboard
@@ -208,10 +256,10 @@ const Game = (gameInfo: GameInformation) => {
             }
           </Box>
           {/*Opponents grid, TODO: l. 118: do that and it will work.*/}
-          <Box sx={{width: '30%', mt: '2.5%', mr: '5%', float: gameInfo.gameStatus == GameStatus.GUESSING ? 'right' : '' }}>
+          <Box sx={{width: gameInfo.gameStatus == GameStatus.WAITING ? '100%' : '30%', mt: '2.5%', mr: '5%', display: 'inline-block', textAlign: 'center'}}>
             {opponentGameRoundData.data?.opponentGameRound.map((round, i) => (
               <React.Fragment key={i}>
-                <Box sx={{height: '19vh', float: gameInfo.gameStatus == GameStatus.WAITING ? 'right' : '' }}>
+                <Box sx={{height: '19vh', display: gameInfo.gameStatus == GameStatus.WAITING ? 'inline-block' : 'block'}}>
                   <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>{round.player.name} -
                       Round {round.currentRound}</Typography>
                   <Grid
@@ -219,7 +267,7 @@ const Game = (gameInfo: GameInformation) => {
                     allGuesses={['', '', '', '', '', '']}
                     style={{height: '100%'}}/>
                 </Box>
-                <br style={{clear: 'both'}}/>
+                {gameInfo.gameStatus == GameStatus.GUESSING && <br style={{clear: 'both'}}/>}
               </React.Fragment>
             ))}
           </Box>
