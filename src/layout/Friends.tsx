@@ -85,20 +85,28 @@ const Friends = () => {
         height: 75
       }}
     >
-      <ListItemAvatar>
-        <Avatar sx={{ outline: 'white solid 5px' }}>
-          <FaceIcon />
-        </Avatar>
-      </ListItemAvatar>
-      <ListItemText primary={localStorage.getItem('userName')} secondary="Online" />
-      <IconButton
-        color="inherit"
-        onClick={() => {alert('Still waiting to be implemented...');}} /*TODO: Show notification menu*/
-      >
-        <Badge badgeContent={'99+'} color="primary" >
-          <NotificationsIcon />
-        </Badge>
-      </IconButton>
+      {
+        loading ? (
+          <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
+        ) : (
+          <>
+            <ListItemAvatar>
+              <Avatar sx={{ outline: 'white solid 5px' }}>
+                <FaceIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={localStorage.getItem('userName')} secondary="Online" />
+            <IconButton
+              color="inherit"
+              onClick={() => { alert('Still waiting to be implemented...'); } } /*TODO: Show notification menu*/
+            >
+              <Badge badgeContent={'99+'} color="primary">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          </>
+        )
+      }
     </ListItem>
   );
 
@@ -130,13 +138,15 @@ const Friends = () => {
                 <ListItemText primary={f.username} secondary={f.status.charAt(0) + f.status.substring(1).toLowerCase()} />
                 {/* TODO: only if creating non-solo lobby */
                   match && (f.status == UserStatus.ONLINE || f.status == UserStatus.AWAY) &&
-                  <Button onClick={() => inviteToLobby(f.id, match.params.id!)}>Invite</Button>
+                  <Button onClick={() => inviteToLobby(f.id, match.params.id as string)}>Invite</Button>
                 }</>
-              )}
+              )
+            }
           </ListItem>
           <Divider variant="inset" component="li" />
         </React.Fragment>
       ))}
+      {/* TODO: Remove this asap! */}
       <ListItem>
         {
           loading ? (

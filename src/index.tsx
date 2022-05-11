@@ -1,4 +1,6 @@
 import { ApolloProvider } from '@apollo/client';
+//import { MantineProvider } from '@mantine/core';
+import { NotificationsProvider } from '@mantine/notifications';
 import React from 'react';
 //import { createRoot } from 'react-dom/client';
 import ReactDOM from 'react-dom';
@@ -13,7 +15,9 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <ApolloProvider client={api}>
-        <App />
+        <NotificationsProvider>
+          <App />
+        </NotificationsProvider>
       </ApolloProvider>
     </Provider>
   </React.StrictMode>,
