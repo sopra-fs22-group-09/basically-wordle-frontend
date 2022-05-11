@@ -13,8 +13,36 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import { gql, useMutation, useQuery } from '@apollo/client';
+import { Maybe } from '../models';
+import { MutationAddFriendArgs, User, UserStatus } from '../models/User';
+import { Skeleton } from '@mui/material';
+//import { useLocalStorage } from '@mantine/hooks';
+
+const ALL_FRIENDS = gql`
+  query getAllFriends {
+    allFriends {
+      id
+      username
+      status
+    }
+  }
+`;
+
+const ADD_FRIEND = gql`
+  mutation addFriend($friendId: ID!) {
+	  addFriend (friendId: $friendId)
+  }
+`;
+
+interface AllUsersQuery {
+  friendsByStatus: Array<Maybe<User>>;
+}
 
 const Friends = () => {
+
+  const { loading, data, error } = useQuery<AllUsersQuery>(ALL_FRIENDS, {skip: !localStorage.getItem('token')});
+  const addFriend = useMutation<MutationAddFriendArgs>(ADD_FRIEND);
 
   const myProfile = (
     <ListItem
@@ -55,6 +83,25 @@ const Friends = () => {
       }}
     >
       {myProfile}
+      <Divider variant="inset" component="li" />
+      {data?.friendsByStatus?.flatMap(f => f ? [f] : []).sort((f1, _) => f1.status == UserStatus.ONLINE ? 1 : f1.status == UserStatus.AWAY ? 0 : -1).map((f, i) => (
+        <React.Fragment key={i}>
+          <ListItem>
+            {
+              loading ? (
+                <><Skeleton animation='wave' variant='circular' width={30} height={30} /><Skeleton animation='wave' variant='text' /></>
+              ) : (
+                <><ListItemAvatar>
+                  <Avatar>
+                    <ImageIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={f.username} secondary={f.status} /></>
+              )}
+          </ListItem>
+          <Divider variant="inset" component="li" />
+        </React.Fragment>
+      ))}
       <ListItem>
         <ListItemAvatar>
           <Avatar sx={{ outline:'green solid 5px' }}>
@@ -70,7 +117,7 @@ const Friends = () => {
             <ImageIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend1" secondary="Online" />
+        <ListItemText primary="Friend1" secondary="Offline" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -79,7 +126,7 @@ const Friends = () => {
             <WorkIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend2" secondary="Online" />
+        <ListItemText primary="Friend2" secondary="Offline" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -88,7 +135,7 @@ const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend3" secondary="Online" />
+        <ListItemText primary="Friend3" secondary="Offline" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -97,7 +144,7 @@ const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend4" secondary="Online" />
+        <ListItemText primary="Friend4" secondary="Offline" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -106,7 +153,7 @@ const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend5" secondary="Online" />
+        <ListItemText primary="Friend5" secondary="Offline" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -115,7 +162,7 @@ const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend6" secondary="Online" />
+        <ListItemText primary="Friend6" secondary="Offline" />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
@@ -124,79 +171,7 @@ const Friends = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Friend7" secondary="Online" />
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <BeachAccessIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Friend8" secondary="Online" />
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <BeachAccessIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Friend9" secondary="Online" />
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <BeachAccessIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Friend10" secondary="Online" />
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <BeachAccessIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Friend11" secondary="Online" />
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <BeachAccessIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Friend12" secondary="Online" />
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <BeachAccessIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Friend13" secondary="Online" />
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <BeachAccessIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Friend14" secondary="Online" />
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <BeachAccessIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Friend15" secondary="Online" />
+        <ListItemText primary="Friend7" secondary="Offline" />
       </ListItem>
     </List>
   );
