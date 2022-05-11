@@ -167,7 +167,6 @@ const Lobby = () => {
           setStatus={setLobbyStatus}
           gameStatus={gameStatus}
           startGame={startGame}
-          ownerId={ownerId}
         />
       </Suspense>
   );

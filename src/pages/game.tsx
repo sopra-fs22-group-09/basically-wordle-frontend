@@ -12,7 +12,6 @@ interface GameInformation {
   setStatus: (status: LobbyStatus) => void
   gameStatus?: GameStatus
   startGame: () => void
-  ownerId: string //TODO
 }
 
 const SUBMIT_GUESS = gql`
@@ -53,32 +52,10 @@ const Game = (gameInfo: GameInformation) => {
   const Grid = lazy(() => import('../components/grid/grid'));
   const Keyboard = lazy(() => import('../components/keyboard/keyboard'));
 
-  const useCountdown = (targetDate: number) => {
-    const countDownDate = new Date(targetDate).getTime();
-
-    const [countDown, setCountDown] = useState(
-      countDownDate - new Date().getTime()
-    );
-
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setCountDown(countDownDate - new Date().getTime());
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }, [countDownDate]);
-
-    return getReturnValues(countDown);
-  };
-
-  const getReturnValues = (countDown: number) => {
-    // calculate time left
-    const seconds = Math.floor((countDown % (1000 * 60)) / 1000);
-
-    return [seconds];
-  };
-
-  const countdown = useCountdown(3 * 60 * 1000);
+  const [stopwatch, setStopwatch] = useState(0);
+  useEffect(() => {
+    setTimeout(() => setStopwatch(stopwatch + 1), 1000);
+  }, [stopwatch]);
 
   const theme = useTheme();
 
@@ -221,7 +198,7 @@ const Game = (gameInfo: GameInformation) => {
           <Box sx={{display: 'inline-block', width: '100%'}}>
             <Typography variant={'h3'} sx={{fontSize: '24px', textAlign: 'left', display: 'inline-block'}}>Round: {currentRound}</Typography>
             {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
-            <Typography variant={'h3'} sx={{fontSize: '24px', textAlign: 'right', display: 'inline-block', float: 'right'}}>Time: {countdown} seconds</Typography>
+            <Typography variant={'h3'} sx={{fontSize: '24px', textAlign: 'right', display: 'inline-block', float: 'right'}}>Time: {stopwatch} seconds</Typography>
             {gameInfo.gameStatus == GameStatus.WAITING && <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>Waiting for other players to finish...</Typography>}
           </Box>
           <Box  sx={{
@@ -255,7 +232,6 @@ const Game = (gameInfo: GameInformation) => {
                 </Suspense>
             }
           </Box>
-          {/*Opponents grid, TODO: l. 118: do that and it will work.*/}
           <Box sx={{width: gameInfo.gameStatus == GameStatus.WAITING ? '100%' : '30%', mt: '2.5%', mr: '5%', display: 'inline-block', textAlign: 'center'}}>
             {opponentGameRoundData.data?.opponentGameRound.map((round, i) => (
               <React.Fragment key={i}>
