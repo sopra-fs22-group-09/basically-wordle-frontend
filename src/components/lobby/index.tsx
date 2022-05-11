@@ -66,7 +66,6 @@ const ANNOUNCE_START = gql`
     announceStandby {
       amountRounds
       roundTime
-      targetWords
     }
   }
 `;
