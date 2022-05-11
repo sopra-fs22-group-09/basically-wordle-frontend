@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { Box, Button, Typography, useTheme } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import { DotWave, Orbit } from '@uiball/loaders';
 import { LobbyStatus } from '../models/Lobby';
 import { gql, useLazyQuery, useMutation, useSubscription } from '@apollo/client';
