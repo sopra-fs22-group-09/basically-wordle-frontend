@@ -74,7 +74,7 @@ const Layout = ({ children }: LayoutProps) => {
         showInvitation(data.subscriptionData.data.lobbyInvites);
       }
     },
-    shouldResubscribe: true
+    //shouldResubscribe: true
   });
 
   return (

@@ -32,22 +32,45 @@ const ALL_FRIENDS = gql`
   }
 `;
 
+const UPDATE_FRIENDS_SUBSCRIPTION = gql`
+  subscription getFriendsUpdates {
+    friendsUpdates {
+      id
+      username
+      status
+    }
+  }
+`;
+
 const LOBBY_INVITE = gql`
   mutation sendLobbyInvite($input: LobbyInviteInput!) {
     inviteToLobby (input: $input)
   }
 `;
 
-interface AllUsersQuery {
+interface AllFriendsQuery {
   allFriends: Array<Maybe<User>>;
+}
+
+interface FriendsUpdatesSubscription {
+  friendsUpdates: User;
 }
 
 const Friends = () => {
 
-  const { loading, data } = useQuery<AllUsersQuery>(ALL_FRIENDS, {skip: !localStorage.getItem('token')});
+  const { loading, data, subscribeToMore } = useQuery<AllFriendsQuery>(ALL_FRIENDS, {
+    skip: !localStorage.getItem('token')
+  });
   const [sendLobbyInvite] = useMutation<{ inviteToLobby: boolean }, MutationInviteToLobbyArgs>(LOBBY_INVITE);
 
   const match = useMatch('/lobby/:id');
+
+  React.useEffect(() => {
+    const unsubscribe = subscribeToMore<FriendsUpdatesSubscription>({
+      document: UPDATE_FRIENDS_SUBSCRIPTION
+    });
+    return unsubscribe();
+  }, []);
 
   const inviteToLobby = (userId: string, lobbyId: string) => {
     sendLobbyInvite({
@@ -108,6 +131,7 @@ const Friends = () => {
     >
       {myProfile}
       <Divider variant="inset" component="li" />
+      {/* I don't get the sorting */}
       {data?.allFriends.flatMap(f => f ? [f] : []).sort((f1, _) => f1.status == UserStatus.ONLINE ? 1 : f1.status == UserStatus.AWAY ? 0 : -1).map((f, i) => (
         <React.Fragment key={i}>
           <ListItem>
