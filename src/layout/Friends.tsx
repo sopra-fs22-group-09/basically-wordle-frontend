@@ -7,7 +7,7 @@ import Avatar from '@mui/material/Avatar';
 import FaceIcon from '@mui/icons-material/Face';
 import PersonIcon from '@mui/icons-material/Person';
 import ImageIcon from '@mui/icons-material/Image';
-import WorkIcon from '@mui/icons-material/Work';
+//import WorkIcon from '@mui/icons-material/Work';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
@@ -19,6 +19,7 @@ import { Button, Skeleton } from '@mui/material';
 //import { useEffect } from 'react';
 import { MutationInviteToLobbyArgs } from '../models/Lobby';
 import { useMatch } from 'react-router-dom';
+import { range } from '@mantine/hooks';
 //import { useLocalStorage } from '@mantine/hooks';
 
 const ALL_FRIENDS = gql`
@@ -131,7 +132,7 @@ const Friends = () => {
           <Divider variant="inset" component="li" />
         </React.Fragment>
       ))}
-      {/* TODO: Remove this asap! */}
+      {/* TODO: Remove this! */}
       <ListItem>
         {
           loading ? (
@@ -146,117 +147,26 @@ const Friends = () => {
         }
       </ListItem>
       <Divider variant="inset" component="li" />
-      <ListItem>
-        {
-          loading ? (
-            <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
-          ) : (
-            <><ListItemAvatar>
-              <Avatar>
-                <ImageIcon />
-              </Avatar>
-            </ListItemAvatar><ListItemText primary="Friend1" secondary="Offline" /></>
-          )
-        }
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        {
-          loading ? (
-            <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
-          ) : (
-            <><ListItemAvatar>
-              <Avatar>
-                <WorkIcon />
-              </Avatar>
-            </ListItemAvatar><ListItemText primary="Friend2" secondary="Offline" /></>
-          )
-        }
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        {
-          loading ? (
-            <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
-          ) : (
-            <><ListItemAvatar>
-              <Avatar>
-                <ImageIcon />
-              </Avatar>
-            </ListItemAvatar><ListItemText primary="Friend3" secondary="Offline" /></>
-          )
-        }
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        {
-          loading ? (
-            <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
-          ) : (
-            <><ListItemAvatar>
-              <Avatar>
-                <ImageIcon />
-              </Avatar>
-            </ListItemAvatar><ListItemText primary="Friend4" secondary="Offline" /></>
-          )
-        }
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        {
-          loading ? (
-            <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
-          ) : (
-            <><ListItemAvatar>
-              <Avatar>
-                <ImageIcon />
-              </Avatar>
-            </ListItemAvatar><ListItemText primary="Friend5" secondary="Offline" /></>
-          )
-        }
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        {
-          loading ? (
-            <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
-          ) : (
-            <><ListItemAvatar>
-              <Avatar>
-                <ImageIcon />
-              </Avatar>
-            </ListItemAvatar><ListItemText primary="Friend6" secondary="Offline" /></>
-          )
-        }
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        {
-          loading ? (
-            <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
-          ) : (
-            <><ListItemAvatar>
-              <Avatar>
-                <ImageIcon />
-              </Avatar>
-            </ListItemAvatar><ListItemText primary="Friend7" secondary="Offline" /></>
-          )
-        }
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem>
-        {
-          loading ? (
-            <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
-          ) : (
-            <><ListItemAvatar>
-              <Avatar>
-                <ImageIcon />
-              </Avatar>
-            </ListItemAvatar><ListItemText primary="Friend8" secondary="Offline" /></>
-          )
-        }
-      </ListItem>
+      {
+        range(1, 18).map((l, i) => (
+          <React.Fragment key={'a' + i}>
+            <ListItem>
+              {
+                loading ? (
+                  <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
+                ) : (
+                  <><ListItemAvatar>
+                    <Avatar>
+                      <ImageIcon />
+                    </Avatar>
+                  </ListItemAvatar><ListItemText primary={'Friend' + i} secondary="Offline" /></>
+                )
+              }
+            </ListItem>
+            <Divider variant="inset" component="li" />
+          </React.Fragment>
+        ))
+      }
     </List>
   );
 };

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import { WithChildren } from '../utils/utils';
+import { READ_USERNAME, WithChildren } from '../utils/utils';
 import { lazy, Suspense } from 'react';
 import { Skeleton, useTheme } from '@mui/material';
 import MuiAppBar from '@mui/material/AppBar';
@@ -23,12 +23,6 @@ const INVITATION_SUBSCRIPTION = gql`
       lobbyId
       senderId
     }
-  }
-`;
-
-export const READ_USERNAME = gql`
-  fragment Friend on User {
-    username
   }
 `;
 

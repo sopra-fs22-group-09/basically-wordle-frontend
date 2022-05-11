@@ -39,7 +39,7 @@ import { GameStatus } from '../models/Game';
 import { MutationAddFriendArgs, User } from '../models/User';
 import { useLocalStorage } from '@mantine/hooks';
 import api from '../services/api';
-import { READ_USERNAME } from '../layout/Layout';
+import { READ_USERNAME } from '../utils/utils';
 
 interface LobbyInformation {
   name: string
@@ -138,7 +138,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                           ) : (
                             <>
                               <ListItemText primary={player.name} />
-                              {
+                              {/* FIXME: Non-friends only! */
                                 userId != player.id && !isFriend(player.id) &&
                                 <Button onClick={() => sendFriendRequest(player.id)}>Add Friend</Button>
                               }
@@ -152,7 +152,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               </Box>
               <Box sx={{ width: '49%', border:'solid 2px white', float: 'right' }}>
                 <Typography variant='h5'>
-            Settings
+                  Settings
                 </Typography>
                 <FormControl sx={{ minWidth:150, width:'auto', mt:3 }}>
                   <InputLabel>Game Mode</InputLabel>
