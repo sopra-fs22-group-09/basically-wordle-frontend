@@ -8,14 +8,13 @@ import FaceIcon from '@mui/icons-material/Face';
 import PersonIcon from '@mui/icons-material/Person';
 import ImageIcon from '@mui/icons-material/Image';
 import WorkIcon from '@mui/icons-material/Work';
-import BeachAccessIcon from '@mui/icons-material/BeachAccess';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { Maybe } from '../models';
-import { MutationAddFriendArgs, User, UserStatus } from '../models/User';
+import { User, UserStatus } from '../models/User';
 import { Button, Skeleton } from '@mui/material';
 //import { useEffect } from 'react';
 import { MutationInviteToLobbyArgs } from '../models/Lobby';
@@ -32,12 +31,6 @@ const ALL_FRIENDS = gql`
   }
 `;
 
-const ADD_FRIEND = gql`
-  mutation addFriend($friendId: ID!) {
-	  addFriend (friendId: $friendId)
-  }
-`;
-
 const LOBBY_INVITE = gql`
   mutation sendLobbyInvite($input: LobbyInviteInput!) {
     inviteToLobby (input: $input)
@@ -50,19 +43,10 @@ interface AllUsersQuery {
 
 const Friends = () => {
 
-  const { loading, data, error } = useQuery<AllUsersQuery>(ALL_FRIENDS, {skip: !localStorage.getItem('token')});
-  const [addFriend] = useMutation<MutationAddFriendArgs>(ADD_FRIEND);
+  const { loading, data } = useQuery<AllUsersQuery>(ALL_FRIENDS, {skip: !localStorage.getItem('token')});
   const [sendLobbyInvite] = useMutation<{ inviteToLobby: boolean }, MutationInviteToLobbyArgs>(LOBBY_INVITE);
 
   const match = useMatch('/lobby/:id');
-
-  const sendFriendRequest = (userId: string) => {
-    addFriend({
-      variables: {
-        friendId: userId
-      },
-    });
-  };
 
   const inviteToLobby = (userId: string, lobbyId: string) => {
     sendLobbyInvite({

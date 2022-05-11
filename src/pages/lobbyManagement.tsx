@@ -11,8 +11,10 @@ import {
   InputLabel,
   List,
   ListItem,
+  ListItemText,
   MenuItem,
   Select,
+  Skeleton,
   Slider,
   TextField,
   Tooltip,
@@ -34,6 +36,7 @@ import { gql, useMutation } from '@apollo/client';
 import { ChaoticOrbit } from '@uiball/loaders';
 import LoaderCenterer from '../components/loader';
 import { GameStatus } from '../models/Game';
+import { MutationAddFriendArgs } from '../models/User';
 
 interface LobbyInformation {
   name: string
@@ -58,6 +61,12 @@ const CHANGE_LOBBY = gql`
   }
 `;
 
+const ADD_FRIEND = gql`
+  mutation addFriend($friendId: ID!) {
+	  addFriend (friendId: $friendId)
+  }
+`;
+
 const LobbyManagement = (lobbyInfo: LobbyInformation) => {
 
   const navigate = useNavigate();
@@ -67,6 +76,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
 
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [changeLobby, { data, loading, error }] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
+  const [addFriend] = useMutation<MutationAddFriendArgs>(ADD_FRIEND);
   const changeLobbySettings = (gameMode: GameMode, amountRounds: number, roundTime: number) => {
     changeLobby({
       variables: {
@@ -79,6 +89,14 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
     });
   };
   const [stateDebounceLobbyChange] = React.useState(() => debounce(changeLobbySettings, 250));
+  
+  const sendFriendRequest = (userId: string) => {
+    addFriend({
+      variables: {
+        friendId: userId
+      },
+    });
+  };
 
   return (
     <Box
@@ -104,7 +122,16 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                   {lobbyInfo.players?.map(player => {
                     return (
                       <ListItem key={player.id}>
-                        {player.name}
+                        {/* hmm */
+                          loading ? (
+                            <Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} />
+                          ) : (
+                            <>
+                              <ListItemText primary={player.name} />
+                              <Button onClick={() => sendFriendRequest(player.id)}>Add Friend</Button>
+                            </>
+                          )
+                        }
                       </ListItem>
                     );
                   })}

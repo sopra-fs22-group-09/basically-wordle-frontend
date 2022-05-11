@@ -77,7 +77,6 @@ const Layout = ({ children }: LayoutProps) => {
   useSubscription<{ lobbyInvites: LobbyInvite }>(INVITATION_SUBSCRIPTION, {
     onSubscriptionData: data => {
       if (data.subscriptionData.data) {
-        console.log(data);
         showInvitation(data.subscriptionData.data.lobbyInvites);
       }
     },
