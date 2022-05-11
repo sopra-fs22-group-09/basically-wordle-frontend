@@ -77,6 +77,43 @@ const GAME_STATUS = gql`
   }
 `;
 
+const ADD_GUEST = gql`
+    mutation {
+        createGuest {
+            id
+            name
+        }
+    }
+`;
+
+const JOIN_LOBBY_AS_GUEST = gql`
+    mutation joinLobbyAsGuest($id: ID!) {
+        guestJoinLobbyById(id: $id) {
+            id
+            name
+            size
+            owner {
+                id
+            }
+            status
+            gameCategory
+            gameMode
+            game {
+                amountRounds
+                roundTime
+            }
+            players {
+                id
+                name
+            }
+        }
+    }
+`;
+
+interface GuestType {
+  createGuest: Player;
+}
+
 const Lobby = () => {
 
   const params = useParams();
@@ -98,21 +135,59 @@ const Lobby = () => {
   const [userId] = useLocalStorage<string>({ key: 'userId' });
 
   const [joinLobby, joinLobbyData] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY);
+  const [createGuest, { data: guestData, loading: guestLoading, error: guestError }] = useMutation<GuestType>(ADD_GUEST);
+  const [joinLobbyAsGuest, joinGuestLobbyData] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY_AS_GUEST);
+
   useEffect(() => {
-    joinLobby({
-      variables: {
-        id: params.id as string
-      }
-    }).then(r => {
-      if (r.data?.joinLobbyById) {
-        setOwnerId(r.data.joinLobbyById.owner.id);
-        setLobbyStatus(r.data.joinLobbyById.status);
-        setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.joinLobbyById.gameMode)]);
-        setGameRounds(r.data.joinLobbyById.game.amountRounds);
-        setRoundTime(r.data.joinLobbyById.game.roundTime);
-        setPlayers(r.data.joinLobbyById.players);
-      }
-    });
+    if (!localStorage.getItem('userId')) {
+      createGuest({
+        onCompleted(data) {
+          if (data.createGuest) {
+            localStorage.setItem('userId', data.createGuest.id);
+            localStorage.setItem('userName', data.createGuest.name);
+            localStorage.setItem('guest', 'yes');
+          }
+        }
+      });
+    }
+  });
+
+  useEffect(() => {
+    if (localStorage.getItem('guest') == 'yes') {
+      joinLobbyAsGuest({
+        variables: {
+          id: params.id as string
+        }
+      }).then(r => {
+        if (r.data?.guestJoinLobbyById) {
+          setOwnerId(r.data.guestJoinLobbyById.owner.id);
+          setLobbyStatus(r.data.guestJoinLobbyById.status);
+          setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.guestJoinLobbyById.gameMode)]);
+          setGameRounds(r.data.guestJoinLobbyById.game.amountRounds);
+          setRoundTime(r.data.guestJoinLobbyById.game.roundTime);
+          setPlayers(r.data.guestJoinLobbyById.players);
+        }
+      });
+    }
+  }, [joinLobbyAsGuest, params.id]);
+
+  useEffect(() => {
+    if (!localStorage.getItem('guest') && localStorage.getItem('userId')) {
+      joinLobby({
+        variables: {
+          id: params.id as string
+        }
+      }).then(r => {
+        if (r.data?.joinLobbyById) {
+          setOwnerId(r.data.joinLobbyById.owner.id);
+          setLobbyStatus(r.data.joinLobbyById.status);
+          setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.joinLobbyById.gameMode)]);
+          setGameRounds(r.data.joinLobbyById.game.amountRounds);
+          setRoundTime(r.data.joinLobbyById.game.roundTime);
+          setPlayers(r.data.joinLobbyById.players);
+        }
+      });
+    }
   }, [joinLobby, params.id]);
 
   const subscribeLobbyData = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION);

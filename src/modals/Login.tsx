@@ -20,10 +20,6 @@ interface LoginType {
   login: User;
 }
 
-interface GuestType {
-  createGuest: User;
-}
-
 const LOGIN_USER = gql`
   mutation signIn($input: LoginInput!) {
     login(input: $input) {
@@ -35,16 +31,6 @@ const LOGIN_USER = gql`
   }
 `;
 
-const ADD_GUEST = gql`
-    mutation {
-        createGuest {
-            id
-            username
-            email
-        }
-    }
-`;
-
 const Login = () => {
 
   const navigate = useNavigate();
@@ -53,7 +39,6 @@ const Login = () => {
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'login');
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [loginUser, { data, loading, error }] = useMutation<LoginType, MutationLoginArgs>(LOGIN_USER);
-  const [signUpAsGuest, { data: guestData, loading: guestLoading, error: guestError }] = useMutation<GuestType>(ADD_GUEST);
   
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -69,21 +54,6 @@ const Login = () => {
         if (data.login) {
           localStorage.setItem('userId', data.login.id);
           localStorage.setItem('userName', data.login.username);
-        }
-      }
-    }).then(() => {
-      navigate('/');
-      dispatch({type: 'modal/setState', payload: {isOpen: false}});
-      window.location.reload();
-    });
-  };
-
-  const handleGuestSubmit = () => {
-    signUpAsGuest({
-      onCompleted(data) {
-        if (data.createGuest) {
-          localStorage.setItem('userId', data.createGuest.id);
-          localStorage.setItem('userName', data.createGuest.username);
         }
       }
     }).then(() => {
@@ -161,14 +131,6 @@ const Login = () => {
                 sx={{ mt: 3, mb: 2 }}
               >
                 Sign In
-              </Button>
-              <Button
-                onClick={handleGuestSubmit}
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Continue as guest
               </Button>
               <LoadingOverlay
                 style={{ borderRadius: '4px' }}

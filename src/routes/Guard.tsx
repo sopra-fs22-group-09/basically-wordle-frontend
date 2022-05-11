@@ -22,32 +22,32 @@ const Guard = ({ children }: GuardProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const href = window.location.href;
 
   useEffect(() => {
     switch (location.pathname) {
     case '/login':
       if (!token) {
-        dispatch({ type: 'modal/setState', payload: { isOpen: true, modalWindow: 'login' } });
+        dispatch({type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'}});
       }
       return;
     case '/register':
       if (!token) {
-        dispatch({ type: 'modal/setState', payload: { isOpen: true, modalWindow: 'register' } });
+        dispatch({type: 'modal/setState', payload: {isOpen: true, modalWindow: 'register'}});
       }
       return;
     case '/reset':
-      dispatch({ type: 'modal/setState', payload: { isOpen: true, modalWindow: 'reset' } });
+      dispatch({type: 'modal/setState', payload: {isOpen: true, modalWindow: 'reset'}});
       return;
     case '/reset/tokenEntry':
-      dispatch({ type: 'modal/setState', payload: { isOpen: true, modalWindow: 'tokenEntry' } });
+      dispatch({type: 'modal/setState', payload: {isOpen: true, modalWindow: 'tokenEntry'}});
       /*default:
-      if (location.pathname.startsWith('/reset/')) {
-        dispatch({ type: 'modal/setState', payload: { isOpen: true, modalWindow: 'tokenEntry' } });
-      }*/
+        if (location.pathname.startsWith('/reset/')) {
+          dispatch({ type: 'modal/setState', payload: { isOpen: true, modalWindow: 'tokenEntry' } });
+        }*/
       return;
     }
-    
-    if (!token) {
+    if (!token && !href.includes('/lobby')) {
       navigate('/login');
       //window.location.reload();
       forceUpdate();

@@ -15,6 +15,7 @@ import { GameRoundModel,
   OpponentGameRoundModel,
 } from '../models/Game';
 import LoaderCenterer from '../components/loader';
+import GameRoundConclusion from '../modals/GameRoundConclusion';
 
 interface GameInformation {
   name: string
@@ -181,6 +182,7 @@ const Game = (gameInfo: GameInformation) => {
           />
         </LoaderCenterer>
       }
+      {/*<GameRoundConclusion open={roundConclusion} toggle={toggleRoundConclusionModal}/>*/}
       {(gameInfo.gameStatus == GameStatus.GUESSING) &&
         <>
           <Box sx={{
