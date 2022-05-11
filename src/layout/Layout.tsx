@@ -26,7 +26,7 @@ const INVITATION_SUBSCRIPTION = gql`
   }
 `;
 
-const READ_USERNAME = gql`
+export const READ_USERNAME = gql`
   fragment Friend on User {
     username
   }

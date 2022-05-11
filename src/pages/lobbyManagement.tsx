@@ -36,7 +36,10 @@ import { gql, useMutation } from '@apollo/client';
 import { ChaoticOrbit } from '@uiball/loaders';
 import LoaderCenterer from '../components/loader';
 import { GameStatus } from '../models/Game';
-import { MutationAddFriendArgs } from '../models/User';
+import { MutationAddFriendArgs, User } from '../models/User';
+import { useLocalStorage } from '@mantine/hooks';
+import api from '../services/api';
+import { READ_USERNAME } from '../layout/Layout';
 
 interface LobbyInformation {
   name: string
@@ -71,6 +74,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
 
   const navigate = useNavigate();
   const [copied, setCopied] = React.useState(false);
+  const [ userId ] = useLocalStorage({ key: 'userId' });
 
   const theme = useTheme();
 
@@ -89,6 +93,10 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
     });
   };
   const [stateDebounceLobbyChange] = React.useState(() => debounce(changeLobbySettings, 250));
+  const { username: friendName } = api.readFragment<User>({
+    fragment: READ_USERNAME,
+    id: 'User:' + userId
+  }) ?? { username: 'unknown' };
   
   const sendFriendRequest = (userId: string) => {
     addFriend({
@@ -128,7 +136,10 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                           ) : (
                             <>
                               <ListItemText primary={player.name} />
-                              <Button onClick={() => sendFriendRequest(player.id)}>Add Friend</Button>
+                              {
+                                userId != player.id && friendName && friendName == 'unknown' &&
+                                <Button onClick={() => sendFriendRequest(player.id)}>Add Friend</Button>
+                              }
                             </>
                           )
                         }
