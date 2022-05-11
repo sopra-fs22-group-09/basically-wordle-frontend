@@ -93,11 +93,13 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
     });
   };
   const [stateDebounceLobbyChange] = React.useState(() => debounce(changeLobbySettings, 250));
-  const { username: friendName } = api.readFragment<User>({
-    fragment: READ_USERNAME,
-    id: 'User:' + userId
-  }) ?? { username: 'unknown' };
-  
+  const isFriend = (lookupUserId: string) => {
+    return api.readFragment<User>({
+      fragment: READ_USERNAME,
+      id: 'User:' + lookupUserId
+    })?.username ? true : false;
+  };
+
   const sendFriendRequest = (userId: string) => {
     addFriend({
       variables: {
@@ -137,7 +139,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                             <>
                               <ListItemText primary={player.name} />
                               {
-                                userId != player.id && friendName && friendName == 'unknown' &&
+                                userId != player.id && !isFriend(player.id) &&
                                 <Button onClick={() => sendFriendRequest(player.id)}>Add Friend</Button>
                               }
                             </>

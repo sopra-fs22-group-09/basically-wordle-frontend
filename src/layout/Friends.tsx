@@ -115,7 +115,8 @@ const Friends = () => {
                 <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
               ) : (
                 <><ListItemAvatar>
-                  <Avatar sx={{ outline: f.status == UserStatus.ONLINE ? 'green solid 5px' : f.status == UserStatus.AWAY ? 'orange solid 5px' : '' }}>
+                  <Avatar sx={{ outline: f.status == UserStatus.ONLINE ? 'green solid 5px' : f.status == UserStatus.AWAY ? 'orange solid 5px'
+                    : f.status == UserStatus.INGAME ? 'red solid 5px' : '' }}>
                     <PersonIcon />
                   </Avatar>
                 </ListItemAvatar>
