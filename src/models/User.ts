@@ -10,11 +10,11 @@ export type User = {
 };
 
 export enum UserStatus {
-  ONLINE = 'Online',
-  CREATINGLOBBY = 'Creating Lobby',
-  INGAME = 'InGame',
-  AWAY = 'Away',
-  OFFLINE = 'Offline'
+  ONLINE = 'ONLINE',
+  CREATINGLOBBY = 'CREATINGLOBBY',
+  INGAME = 'INGAME',
+  AWAY = 'AWAY',
+  OFFLINE = 'OFFLINE'
 }
 
 export type QueryFriendsByStatusArgs = {

@@ -40,7 +40,7 @@ export type MutationUpdateLobbySettingsArgs = {
 };
 
 export type MutationInviteToLobbyArgs = {
-  input?: InputMaybe<LobbyInviteInput>;
+  input: LobbyInviteInput;
 };
 
 export type GameSettingsInput = {
