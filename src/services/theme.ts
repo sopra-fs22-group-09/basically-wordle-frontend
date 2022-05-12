@@ -11,8 +11,17 @@ declare module '@mui/material/styles' {
           main: string;
         }
       }
+      GameColoring: {
+        colors: {
+          correctPosition: string;
+          inWord: string;
+          notInWord: string;
+          notUsed: string;
+        }
+      }
     };
   }
+
   // allow configuration using `createTheme`
   interface ThemeOptions {
     additional?: {
@@ -21,7 +30,19 @@ declare module '@mui/material/styles' {
           main?: string;
         }
       }
+      GameColoring: {
+        colors: {
+          correctPosition: string;
+          inWord: string;
+          notInWord: string;
+          notUsed: string;
+        }
+      }
     };
+  }
+
+  interface BreakpointOverrides {
+    mobile: true;
   }
 }
 
