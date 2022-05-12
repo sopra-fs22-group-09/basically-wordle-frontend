@@ -69,7 +69,7 @@ const Friends = () => {
     const unsubscribe = subscribeToMore<FriendsUpdatesSubscription>({
       document: UPDATE_FRIENDS_SUBSCRIPTION
     });
-    return unsubscribe();
+    return () => unsubscribe();
   }, []);
 
   const inviteToLobby = (userId: string, lobbyId: string) => {
