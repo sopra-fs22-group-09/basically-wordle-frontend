@@ -42,8 +42,8 @@ const JOIN_LOBBY = gql`
 `;
 
 const LOBBY_SUBSCRIPTION = gql`
-  subscription subscribeLobby {
-    lobby {
+  subscription subscribeLobby($id: ID!) {
+    lobby(id: $id) {
       owner {
         id
       }
@@ -115,7 +115,11 @@ const Lobby = () => {
     });
   }, [joinLobby, params.id]);
 
-  const subscribeLobbyData = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION);
+  const subscribeLobbyData = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION, {
+    variables: {
+      id: params.id as string
+    }
+  });
   useEffect(() => {
     if (!subscribeLobbyData.loading && subscribeLobbyData.data?.lobby) {
       setOwnerId(subscribeLobbyData.data.lobby.owner.id);
