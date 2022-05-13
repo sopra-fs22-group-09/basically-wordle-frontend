@@ -67,7 +67,7 @@ const httpAuthLink = new ApolloLink((operation, forward) => {
   operation.setContext(({ headers = {} }) => ({
     headers: {
       ...headers,
-      authorization: `Bearer ${getSession().token}`
+      Authorization: `Bearer ${getSession().token}`
     }
   }));
 
