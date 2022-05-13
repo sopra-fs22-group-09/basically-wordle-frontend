@@ -32,7 +32,9 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <ApolloProvider client={api}>
-        <App />
+        <NotificationsProvider>
+          <App />
+        </NotificationsProvider>
       </ApolloProvider>
     </Provider>
   </React.StrictMode>

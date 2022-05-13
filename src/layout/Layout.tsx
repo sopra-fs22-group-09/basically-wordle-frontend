@@ -74,6 +74,7 @@ const Layout = ({ children }: LayoutProps) => {
         showInvitation(data.subscriptionData.data.lobbyInvites);
       }
     },
+    skip: !localStorage.getItem('token')
     //shouldResubscribe: true
   });
 

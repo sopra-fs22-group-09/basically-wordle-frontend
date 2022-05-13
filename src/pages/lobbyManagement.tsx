@@ -78,11 +78,10 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
 
   const theme = useTheme();
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  const [changeLobby, { data, loading, error }] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
+  const [changeLobby, { loading }] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
   const [addFriend] = useMutation<MutationAddFriendArgs>(ADD_FRIEND);
-  const changeLobbySettings = (gameMode: GameMode, amountRounds: number, roundTime: number) => {
-    changeLobby({
+  const changeLobbySettings = async (gameMode: GameMode, amountRounds: number, roundTime: number) => {
+    await changeLobby({
       variables: {
         input: {
           gameMode: Object.keys(GameMode)[Object.values(GameMode).indexOf(gameMode)] as GameMode,
@@ -254,7 +253,8 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                   }}
                 />
                 <Button variant="contained" sx={{ mx:2, mt:2 }} onClick={() => navigate('/')}>Leave Lobby</Button>
-                <Button variant="contained" sx={{ mx:2, mt:2 }} disabled={localStorage.getItem('userId') != lobbyInfo.ownerId || lobbyInfo.gameStatus == GameStatus.SYNCING} onClick={() => lobbyInfo.startGame()}>Start Game</Button>
+                <Button variant="contained" sx={{ mx:2, mt:2 }} disabled={localStorage.getItem('userId') != lobbyInfo.ownerId
+                || lobbyInfo.gameStatus == GameStatus.SYNCING} onClick={() => lobbyInfo.startGame()}>Start Game</Button>
               </Box>
             </Box>
             <Box sx={{ float: 'right', width: '33%!important', height: 'calc(100vh - 200px)', border:'solid 2px white' }}>

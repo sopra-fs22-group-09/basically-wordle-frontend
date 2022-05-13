@@ -42,10 +42,10 @@ const Register = () => {
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [addUser, { data, loading, error }] = useMutation<RegisterType, MutationRegisterArgs>(ADD_USER);
   
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    addUser({
+    await addUser({
       variables: {
         input: {
           username: formData.get('username'),
@@ -59,10 +59,10 @@ const Register = () => {
           localStorage.setItem('userName', data.register.username);
         }
       }
-    }).then(() => {
+    }).then(async () => {
       navigate('/');
       dispatch({type: 'modal/setState', payload: {isOpen: false}});
-      window.location.reload();
+      //window.location.reload();
     });
   };
 

@@ -16,11 +16,10 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import { Maybe } from '../models';
 import { User, UserStatus } from '../models/User';
 import { Button, Skeleton } from '@mui/material';
-//import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { MutationInviteToLobbyArgs } from '../models/Lobby';
 import { useMatch } from 'react-router-dom';
 import { range } from '@mantine/hooks';
-//import { useLocalStorage } from '@mantine/hooks';
 
 const ALL_FRIENDS = gql`
   query getAllFriends {
@@ -58,19 +57,22 @@ interface FriendsUpdatesSubscription {
 
 const Friends = () => {
 
+  const token = localStorage.getItem('token');
   const { loading, data, subscribeToMore } = useQuery<AllFriendsQuery>(ALL_FRIENDS, {
-    skip: !localStorage.getItem('token')
+    skip: !token
   });
   const [sendLobbyInvite] = useMutation<{ inviteToLobby: boolean }, MutationInviteToLobbyArgs>(LOBBY_INVITE);
 
   const match = useMatch('/lobby/:id');
 
-  React.useEffect(() => {
-    const unsubscribe = subscribeToMore<FriendsUpdatesSubscription>({
-      document: UPDATE_FRIENDS_SUBSCRIPTION
-    });
-    return () => unsubscribe();
-  }, []);
+  useEffect(() => {
+    if (token) {
+      const unsubscribe = subscribeToMore<FriendsUpdatesSubscription>({
+        document: UPDATE_FRIENDS_SUBSCRIPTION
+      });
+      return () => unsubscribe();
+    }
+  }, [subscribeToMore, token]);
 
   const inviteToLobby = (userId: string, lobbyId: string) => {
     sendLobbyInvite({
@@ -103,6 +105,7 @@ const Friends = () => {
                 <FaceIcon />
               </Avatar>
             </ListItemAvatar>
+            {/* TODO: Show own real status */}
             <ListItemText primary={localStorage.getItem('userName')} secondary="Online" />
             <IconButton
               color="inherit"
