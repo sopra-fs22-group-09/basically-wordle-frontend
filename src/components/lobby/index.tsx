@@ -165,8 +165,10 @@ const Lobby = () => {
         <Game
           name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
           setStatus={setLobbyStatus}
+          setGameStatus={setGameStatus}
           gameStatus={gameStatus}
           startGame={startGame}
+          ownerId={ownerId.toString()}
         />
       </Suspense>
   );

@@ -2,13 +2,14 @@ import * as React from 'react';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { Box, Button, Typography, useTheme } from '@mui/material';
 import { DotWave, Orbit } from '@uiball/loaders';
-import { LobbyStatus } from '../models/Lobby';
+import { LobbyModels, LobbyStatus } from '../models/Lobby';
 import { gql, useLazyQuery, useMutation, useSubscription } from '@apollo/client';
 import {
   GameRoundModel,
   GameStatsModel,
   GameStatus,
-  LeaveGameArgs, LeaveType,
+  LeaveGameArgs,
+  LeaveType,
   LetterState,
   OpponentGameRoundModel,
 } from '../models/Game';
@@ -17,7 +18,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 interface GameInformation {
   name: string
+  ownerId: string
   setStatus: (status: LobbyStatus) => void
+  setGameStatus: (status: GameStatus) => void
   gameStatus?: GameStatus
   startGame: () => void
 }
@@ -60,6 +63,30 @@ const LEAVE_GAME = gql`
     mutation leaveGame($id: ID!) {
         leaveGame(id: $id) 
 }
+`;
+
+const BACK_TO_LOBBY = gql`
+    mutation goBackToLobby {
+        goBackToLobby {
+            id
+            name
+            size
+            owner {
+                id
+            }
+            status
+            gameCategory
+            gameMode
+            game {
+                amountRounds
+                roundTime
+            }
+            players {
+                id
+                name
+            }
+        }
+    }
 `;
 
 const Game = (gameInfo: GameInformation) => {
@@ -125,6 +152,17 @@ const Game = (gameInfo: GameInformation) => {
       },
       onCompleted() {
         navigate('/');
+      }
+    });
+  };
+
+  const [goBackToLobby, LobbyData] = useMutation<LobbyModels>(BACK_TO_LOBBY);
+
+  const handleRematch = () => {
+    goBackToLobby({variables: {},
+      onCompleted() {
+        gameInfo.setStatus(LobbyStatus.OPEN);
+        gameInfo.setGameStatus(GameStatus.NEW);
       }
     });
   };
@@ -209,7 +247,12 @@ const Game = (gameInfo: GameInformation) => {
             <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Target word: {data?.concludeGame.targetWord}</Typography>
             <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Rounds taken: {data?.concludeGame.roundsTaken}</Typography>
             <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Time taken: {data?.concludeGame.timeTaken}</Typography>
-            {/*TODO <Button variant="contained" sx={{ mx:2, mt:2 }} disabled={localStorage.getItem('userId') != ownerId} onClick={() => setStatus(LobbyStatus.OPEN)}>Back to Lobby</Button>*/}
+            {localStorage.getItem('userId') != gameInfo.ownerId &&
+                <Button variant="contained" sx={{ mx:69, mt:2 }} disabled={localStorage.getItem('userId') == gameInfo.ownerId} onClick={() => {gameInfo.setStatus(LobbyStatus.OPEN); gameInfo.setGameStatus(GameStatus.NEW);}}>Back to Lobby</Button>
+            }
+            {localStorage.getItem('userId') == gameInfo.ownerId &&
+                <Button variant="contained" sx={{ mx:69, mt:2 }} disabled={localStorage.getItem('userId') != gameInfo.ownerId} onClick={handleRematch}>Back to Lobby</Button>
+            }
           </>
       }
 
