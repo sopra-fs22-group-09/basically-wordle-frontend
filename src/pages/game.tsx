@@ -1,11 +1,19 @@
 import * as React from 'react';
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Button, Typography, useTheme } from '@mui/material';
 import { DotWave, Orbit } from '@uiball/loaders';
 import { LobbyStatus } from '../models/Lobby';
 import { gql, useLazyQuery, useMutation, useSubscription } from '@apollo/client';
-import { GameRoundModel, GameStatsModel, GameStatus, LetterState, OpponentGameRoundModel, } from '../models/Game';
+import {
+  GameRoundModel,
+  GameStatsModel,
+  GameStatus,
+  LeaveGameArgs, LeaveType,
+  LetterState,
+  OpponentGameRoundModel,
+} from '../models/Game';
 import LoaderCenterer from '../components/loader';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface GameInformation {
   name: string
@@ -48,6 +56,12 @@ const CONCLUDE_GAME = gql`
   }
 `;
 
+const LEAVE_GAME = gql`
+    mutation leaveGame($id: ID!) {
+        leaveGame(id: $id) 
+}
+`;
+
 const Game = (gameInfo: GameInformation) => {
   const Grid = lazy(() => import('../components/grid/grid'));
   const Keyboard = lazy(() => import('../components/keyboard/keyboard'));
@@ -58,6 +72,8 @@ const Game = (gameInfo: GameInformation) => {
   }, [stopwatch]);
 
   const theme = useTheme();
+  const navigate = useNavigate();
+  const params = useParams();
 
   // const [roundConclusion, setRoundConclusion] = React.useState<boolean>(false);
   // const [gameConclusion, setGameConclusion] = React.useState<boolean>(false);
@@ -99,6 +115,19 @@ const Game = (gameInfo: GameInformation) => {
   useEffect(() => {
     if (gameInfo.gameStatus == GameStatus.FINISHED) concludeGame();
   }, [concludeGame, gameInfo.gameStatus]);
+
+  const [leaveGame, leaveGameData] = useMutation<LeaveType, LeaveGameArgs>(LEAVE_GAME);
+
+  const handleLeaveGame = () => {
+    leaveGame({
+      variables: {
+        id: params.id as string
+      },
+      onCompleted() {
+        navigate('/');
+      }
+    });
+  };
 
   const [submitGuess, {loading}] = useMutation<GameRoundModel>(SUBMIT_GUESS, {
     variables: {
@@ -233,6 +262,17 @@ const Game = (gameInfo: GameInformation) => {
             }
           </Box>
           <Box sx={{width: gameInfo.gameStatus == GameStatus.WAITING ? '100%' : '30%', mt: '2.5%', mr: '5%', display: 'inline-block', textAlign: 'center'}}>
+            <Button
+              variant="contained"
+              onClick={handleLeaveGame}
+              sx={{
+                display: 'block', // Margin does not apply without this line
+                mx: 'auto',
+                mb: '2.5%'
+              }}
+            >
+                  Leave game
+            </Button>
             {opponentGameRoundData.data?.opponentGameRound.map((round, i) => (
               <React.Fragment key={i}>
                 <Box sx={{height: '19vh', display: gameInfo.gameStatus == GameStatus.WAITING ? 'inline-block' : 'block'}}>

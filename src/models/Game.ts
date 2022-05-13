@@ -18,9 +18,17 @@ export interface GameStatusModel {
   gameStatus: GameStatus
 }
 
+export interface LeaveType {
+  left: boolean
+}
+
 export interface OpponentGameRoundModel {
   opponentGameRound: Array<GameRound>
 }
+
+export type LeaveGameArgs = {
+  id: Scalars['ID'];
+};
 
 export type Game = {
   __typename?: 'Game';
