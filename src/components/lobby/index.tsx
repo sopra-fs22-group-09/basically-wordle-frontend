@@ -134,7 +134,7 @@ const Lobby = () => {
     }
   }, [subscribeLobbyData.loading, subscribeLobbyData.data]);
 
-  const [startGame, { called }] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
+  const [startGame, { called: _called }] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
   const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {
     variables: {
       id: params.id as string
@@ -160,7 +160,7 @@ const Lobby = () => {
   }, [gameStatusData, startGame, ownerId, userId]);
 
   return (
-    debouncedLobbyStatus != LobbyStatus.INGAME || called ? // FIXME: If the lobby screen won't appear you have to use loading here instead of called.
+    debouncedLobbyStatus != LobbyStatus.INGAME ? // FIXME: If the lobby screen won't appear you have to use loading here instead of called.
       <Suspense fallback={<LoaderCenterer><ChaoticOrbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
         <LobbyManagement
           name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
