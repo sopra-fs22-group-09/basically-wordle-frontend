@@ -6,7 +6,18 @@ export interface LobbyModels {
   joinLobbyById: Lobby
   lobby: Lobby
   updateLobbySettings: Lobby
+  getLobbies: Array<Lobby>
+  lobbyList: Array<Lobby>
 }
+
+export type LobbyOverview = {
+  __typename?: 'LobbyOverview';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  category: GameCategory;
+  mode: GameMode;
+  players: Scalars['String'];
+};
 
 export type Lobby = {
   __typename?: 'Lobby';
