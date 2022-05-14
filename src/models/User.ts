@@ -11,7 +11,7 @@ export type User = {
 
 export enum UserStatus {
   ONLINE = 'ONLINE',
-  CREATINGLOBBY = 'CREATINGLOBBY',
+  CREATING_LOBBY = 'CREATING_LOBBY',
   INGAME = 'INGAME',
   AWAY = 'AWAY',
   OFFLINE = 'OFFLINE'

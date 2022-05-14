@@ -144,11 +144,11 @@ const Friends = () => {
               ) : (
                 <><ListItemAvatar>
                   <Avatar sx={{ outline: f.status == UserStatus.ONLINE ? 'green solid 5px' : f.status == UserStatus.AWAY ? 'orange solid 5px'
-                    : f.status == UserStatus.INGAME ? 'red solid 5px' : '' }}>
+                    : f.status == UserStatus.INGAME || f.status == UserStatus.CREATING_LOBBY ? 'red solid 5px' : '' }}>
                     <PersonIcon />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={f.username} secondary={f.status.charAt(0) + f.status.substring(1).toLowerCase()} />
+                <ListItemText primary={f.username} secondary={f.status.charAt(0) + f.status.substring(1).toLowerCase().replace('_', ' ')} />
                 {/* TODO: only if creating non-solo lobby */
                   match && (f.status == UserStatus.ONLINE || f.status == UserStatus.AWAY) &&
                   <Button onClick={() => inviteToLobby(f.id, match.params.id as string)}>Invite</Button>
