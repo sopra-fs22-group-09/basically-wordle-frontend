@@ -11,8 +11,10 @@ import {
   InputLabel,
   List,
   ListItem,
+  ListItemText,
   MenuItem,
   Select,
+  Skeleton,
   Slider,
   TextField,
   Tooltip,
@@ -34,6 +36,10 @@ import { gql, useMutation } from '@apollo/client';
 import { ChaoticOrbit } from '@uiball/loaders';
 import LoaderCenterer from '../components/loader';
 import { GameStatus } from '../models/Game';
+import { MutationAddFriendArgs, User } from '../models/User';
+import { useLocalStorage } from '@mantine/hooks';
+import api from '../services/api';
+import { READ_USERNAME } from '../utils/utils';
 
 interface LobbyInformation {
   name: string
@@ -58,16 +64,23 @@ const CHANGE_LOBBY = gql`
   }
 `;
 
+const ADD_FRIEND = gql`
+  mutation addFriend($friendId: ID!) {
+	  addFriend (friendId: $friendId)
+  }
+`;
+
 const LobbyManagement = (lobbyInfo: LobbyInformation) => {
 
   const theme = useTheme();
   const navigate = useNavigate();
   const [copied, setCopied] = React.useState(false);
+  const [ userId ] = useLocalStorage({ key: 'userId' });
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  const [changeLobby, { data, loading, error }] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
-  const changeLobbySettings = (gameMode: GameMode, amountRounds: number, roundTime: number) => {
-    changeLobby({
+  const [changeLobby, { loading }] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
+  const [addFriend] = useMutation<MutationAddFriendArgs>(ADD_FRIEND);
+  const changeLobbySettings = async (gameMode: GameMode, amountRounds: number, roundTime: number) => {
+    await changeLobby({
       variables: {
         input: {
           gameMode: Object.keys(GameMode)[Object.values(GameMode).indexOf(gameMode)] as GameMode,
@@ -78,6 +91,20 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
     });
   };
   const [stateDebounceLobbyChange] = React.useState(() => debounce(changeLobbySettings, 250));
+  const isFriend = (lookupUserId: string) => {
+    return api.readFragment<User>({
+      fragment: READ_USERNAME,
+      id: 'User:' + lookupUserId
+    })?.username ? true : false;
+  };
+
+  const sendFriendRequest = (userId: string) => {
+    addFriend({
+      variables: {
+        friendId: userId
+      },
+    });
+  };
 
   return (
     <Box
@@ -103,7 +130,19 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                   {lobbyInfo.players?.map(player => {
                     return (
                       <ListItem key={player.id}>
-                        {player.name}
+                        {/* hmm */
+                          loading ? (
+                            <Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} />
+                          ) : (
+                            <>
+                              <ListItemText primary={player.name} />
+                              {/* FIXME: Non-friends only! */
+                                userId != player.id && !isFriend(player.id) &&
+                                <Button onClick={() => sendFriendRequest(player.id)}>Add Friend</Button>
+                              }
+                            </>
+                          )
+                        }
                       </ListItem>
                     );
                   })}
@@ -111,7 +150,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               </Box>
               <Box sx={{ width: '49%', border:'solid 2px white', float: 'right' }}>
                 <Typography variant='h5'>
-            Settings
+                  Settings
                 </Typography>
                 <FormControl sx={{ minWidth:150, width:'auto', mt:3 }}>
                   <InputLabel>Game Mode</InputLabel>
@@ -213,7 +252,8 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                   }}
                 />
                 <Button variant="contained" sx={{ mx:2, mt:2 }} onClick={() => navigate('/')}>Leave Lobby</Button>
-                <Button variant="contained" sx={{ mx:2, mt:2 }} disabled={localStorage.getItem('userId') != lobbyInfo.ownerId || lobbyInfo.gameStatus == GameStatus.SYNCING} onClick={() => lobbyInfo.startGame()}>Start Game</Button>
+                <Button variant="contained" sx={{ mx:2, mt:2 }} disabled={localStorage.getItem('userId') != lobbyInfo.ownerId
+                || lobbyInfo.gameStatus == GameStatus.SYNCING} onClick={() => lobbyInfo.startGame()}>Start Game</Button>
               </Box>
             </Box>
             <Box sx={{ float: 'right', width: '33%!important', height: 'calc(100vh - 200px)', border:'solid 2px white' }}>

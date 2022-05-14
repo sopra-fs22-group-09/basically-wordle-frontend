@@ -1,4 +1,4 @@
-import { Maybe, Scalars } from '.';
+import { InputMaybe, Maybe, Scalars } from '.';
 import { Player } from './Player';
 import { Game } from './Game';
 
@@ -50,10 +50,19 @@ export type MutationUpdateLobbySettingsArgs = {
   input: GameSettingsInput;
 };
 
+export type MutationInviteToLobbyArgs = {
+  input: LobbyInviteInput;
+};
+
 export type GameSettingsInput = {
   gameMode: GameMode;
   amountRounds: Scalars['Int'];
   roundTime: Scalars['Int'];
+};
+
+export type LobbyInviteInput = {
+  recipientId?: InputMaybe<Scalars['ID']>;
+  lobbyId: Scalars['ID'];
 };
 
 export enum GameCategory {
@@ -109,3 +118,11 @@ export const WordCategories = [
   { category: 'cows' },
   { category: 'dunno' }
 ];
+
+export type LobbyInvite = {
+  __typename?: 'LobbyInvite';
+  id?: Maybe<Scalars['ID']>;
+  lobbyId: Scalars['ID'];
+  senderId?: Maybe<Scalars['ID']>;
+  recipientId?: Maybe<Scalars['ID']>;
+};

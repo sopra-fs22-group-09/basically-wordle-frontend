@@ -19,6 +19,7 @@ function getSession() {
   return token;
 }
 
+// Did this ever work as intended?
 function authHeader() {
   const session = getSession();
   if (!session) {
@@ -30,17 +31,19 @@ function authHeader() {
 }
 
 const httpApi = new HttpLink({
+  //uri: 'https://wordlepvp-backend-staging.oxv.io/graphql',
   uri: `${getHttpDomain()}/graphql`,
   headers: {
-    ...authHeader(),
+    //...authHeader(),
     ...commonHeaders,
   }
 });
 
 const wsApi = new GraphQLWsLink(
   createClient({
+    //url: 'wss://wordlepvp-backend-staging.oxv.io/graphqlws',
     url: `${getWsDomain()}/graphqlws`,
-    connectionParams: authHeader()
+    connectionParams: () => authHeader()
   })
 );
 
@@ -58,6 +61,17 @@ const afterwareLink = new ApolloLink((operation, forward) => {
 
     return response;
   });
+});
+
+const httpAuthLink = new ApolloLink((operation, forward) => {
+  operation.setContext(({ headers = {} }) => ({
+    headers: {
+      ...headers,
+      Authorization: `Bearer ${getSession().token}`
+    }
+  }));
+
+  return forward(operation);
 });
 
 const logoutLink = onError(({ networkError, graphQLErrors }) => {
@@ -100,7 +114,7 @@ const splitApi = split(
     return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
   },
   wsApi,
-  httpApi
+  httpAuthLink.concat(httpApi)
 );
 
 const api = new ApolloClient({
