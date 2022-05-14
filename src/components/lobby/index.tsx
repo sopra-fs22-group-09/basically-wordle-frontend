@@ -12,7 +12,7 @@ import {
 import { Player } from '../../models/Player';
 import { gql, useMutation, useSubscription } from '@apollo/client';
 import { GameStatus, GameStatusModel } from '../../models/Game';
-import { useDebouncedValue, useLocalStorage } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import { ChaoticOrbit, DotWave } from '@uiball/loaders';
 import { useTheme } from '@mui/material';
 import LoaderCenterer from '../loader';
@@ -42,8 +42,8 @@ const JOIN_LOBBY = gql`
 `;
 
 const LOBBY_SUBSCRIPTION = gql`
-  subscription subscribeLobby {
-    lobby {
+  subscription subscribeLobby($id: ID!) {
+    lobby(id: $id) {
       owner {
         id
       }
@@ -66,14 +66,13 @@ const ANNOUNCE_START = gql`
     announceStandby {
       amountRounds
       roundTime
-      targetWords
     }
   }
 `;
 
 const GAME_STATUS = gql`
-  subscription gameStatus {
-    gameStatus
+  subscription gameStatus($id: ID!) {
+    gameStatus(id: $id)
   }
 `;
 
@@ -122,6 +121,8 @@ const Lobby = () => {
   const Game = lazy(() => import('../../pages/game'));
   
   const theme = useTheme();
+  const userId = localStorage.getItem('userId');
+  const guest = localStorage.getItem('guest');
 
   const [ownerId, setOwnerId] = React.useState('');
   const [lobbyStatus, setLobbyStatus] = React.useState<LobbyStatus>(LobbyStatus.OPEN);
@@ -132,14 +133,13 @@ const Lobby = () => {
   const [gameRounds, setGameRounds] = React.useState(0);
   const [roundTime, setRoundTime] = React.useState(0);
   const [players, setPlayers] = React.useState<Player[]>([]);
-  const [userId] = useLocalStorage<string>({ key: 'userId' });
 
   const [joinLobby, joinLobbyData] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY);
-  const [createGuest, { data: guestData, loading: guestLoading, error: guestError }] = useMutation<GuestType>(ADD_GUEST);
-  const [joinLobbyAsGuest, joinGuestLobbyData] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY_AS_GUEST);
+  const [createGuest, { data: _guestData, loading: _guestLoading, error: _guestError }] = useMutation<GuestType>(ADD_GUEST);
+  const [joinLobbyAsGuest] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY_AS_GUEST);
 
   useEffect(() => {
-    if (!localStorage.getItem('userId')) {
+    if (!userId) {
       createGuest({
         onCompleted(data) {
           if (data.createGuest) {
@@ -153,7 +153,7 @@ const Lobby = () => {
   });
 
   useEffect(() => {
-    if (localStorage.getItem('guest') == 'yes') {
+    if (guest == 'yes') {
       joinLobbyAsGuest({
         variables: {
           id: params.id as string
@@ -169,28 +169,36 @@ const Lobby = () => {
         }
       });
     }
-  }, [joinLobbyAsGuest, params.id]);
+  }, [joinLobbyAsGuest, params.id, guest]);
 
   useEffect(() => {
-    if (!localStorage.getItem('guest') && localStorage.getItem('userId')) {
-      joinLobby({
-        variables: {
-          id: params.id as string
-        }
-      }).then(r => {
-        if (r.data?.joinLobbyById) {
-          setOwnerId(r.data.joinLobbyById.owner.id);
-          setLobbyStatus(r.data.joinLobbyById.status);
-          setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.joinLobbyById.gameMode)]);
-          setGameRounds(r.data.joinLobbyById.game.amountRounds);
-          setRoundTime(r.data.joinLobbyById.game.roundTime);
-          setPlayers(r.data.joinLobbyById.players);
-        }
-      });
+    let isSubscribed = true;
+    if (!guest && userId) {
+      (async () => {
+        joinLobby({
+          variables: {
+            id: params.id as string
+          }
+        }).then(r => {
+          if (r.data?.joinLobbyById && isSubscribed) {
+            setOwnerId(r.data.joinLobbyById.owner.id);
+            setLobbyStatus(r.data.joinLobbyById.status);
+            setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.joinLobbyById.gameMode)]);
+            setGameRounds(r.data.joinLobbyById.game.amountRounds);
+            setRoundTime(r.data.joinLobbyById.game.roundTime);
+            setPlayers(r.data.joinLobbyById.players);
+          }
+        });
+      })();
     }
-  }, [joinLobby, params.id]);
+    return () => { isSubscribed = false; };
+  }, [joinLobby, params.id, guest]);
 
-  const subscribeLobbyData = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION);
+  const subscribeLobbyData = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION, {
+    variables: {
+      id: params.id as string
+    }
+  });
   useEffect(() => {
     if (!subscribeLobbyData.loading && subscribeLobbyData.data?.lobby) {
       setOwnerId(subscribeLobbyData.data.lobby.owner.id);
@@ -202,24 +210,33 @@ const Lobby = () => {
     }
   }, [subscribeLobbyData.loading, subscribeLobbyData.data]);
 
-  const [startGame] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
-  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS);
-  useEffect(() => {
-    if (!gameStatusData.loading && gameStatusData.data?.gameStatus) {
-      setGameStatus(gameStatusData.data.gameStatus);
-      if (gameStatusData.data?.gameStatus == GameStatus.SYNCING && ownerId == userId) {
-        startGame().then(() => {
-          //setLobbyStatus(LobbyStatus.INGAME);
-        });
-      } else if (gameStatusData.data?.gameStatus == GameStatus.SYNCING ||
-        gameStatusData.data?.gameStatus == GameStatus.GUESSING) {
-        setLobbyStatus(LobbyStatus.INGAME);
-      }
+  const [startGame, { called: _called }] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
+  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {
+    variables: {
+      id: params.id as string
     }
+  });
+  useEffect(() => {
+    let isSubscribed = true;
+    (async () => {
+      if (!gameStatusData.loading && gameStatusData.data?.gameStatus && isSubscribed) {
+        setGameStatus(gameStatusData.data.gameStatus);
+        if (gameStatusData.data?.gameStatus == GameStatus.SYNCING && ownerId == userId) {
+          await startGame().then(() => {
+            //setLobbyStatus(LobbyStatus.INGAME);
+          });
+        } else if (gameStatusData.data?.gameStatus == GameStatus.SYNCING
+          || gameStatusData.data?.gameStatus == GameStatus.GUESSING
+          && isSubscribed) {
+          setLobbyStatus(LobbyStatus.INGAME);
+        }
+      }
+    })();
+    return () => { isSubscribed = false; };
   }, [gameStatusData, startGame, ownerId, userId]);
 
   return (
-    debouncedLobbyStatus != LobbyStatus.INGAME ?
+    debouncedLobbyStatus != LobbyStatus.INGAME ? // FIXME: If the lobby screen won't appear you have to use loading here instead of called.
       <Suspense fallback={<LoaderCenterer><ChaoticOrbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
         <LobbyManagement
           name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}

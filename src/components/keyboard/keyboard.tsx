@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import Key from './key';
 import { useEffect } from 'react';
 
@@ -20,12 +20,13 @@ const Keyboard = ({
   letterInWord,
   letterNotInWord
 }: KeyboardProps) => {
+  const theme = useTheme();
   
   const getColorForLetter = (letter: string) => {
-    if (letterOnCorrectPosition.toUpperCase().includes(letter.toUpperCase())) return '#00b300';
-    else if (letterInWord.toUpperCase().includes(letter.toUpperCase())) return 'orange';
-    else if (letterNotInWord.toUpperCase().includes(letter.toUpperCase())) return 'black';
-    else return '#808080';
+    if (letterOnCorrectPosition.toUpperCase().includes(letter.toUpperCase())) return theme.additional.GameColoring.colors.correctPosition;
+    else if (letterInWord.toUpperCase().includes(letter.toUpperCase())) return theme.additional.GameColoring.colors.inWord;
+    else if (letterNotInWord.toUpperCase().includes(letter.toUpperCase())) return theme.additional.GameColoring.colors.notInWord;
+    else return theme.additional.GameColoring.colors.notUsed;
   };
 
   const onClick = (value: string) => {

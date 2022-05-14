@@ -27,10 +27,10 @@ const GameConclusion = (open: GameConclusionInformation) => {
         }}
       >
         <Box sx={{ width:'80%', height:'80%', m:'auto', textAlign:'center' }}>
-          <Typography variant='h2' sx={{fontSize: 48}}>
+          <Typography variant='h1' sx={{fontSize: 48}}>
             Game finished!
           </Typography>
-          <Typography variant='h4' sx={{fontSize: 24, mt:10}}>
+          <Typography variant='h2' sx={{fontSize: 24, mt:10}}>
             Check here later again for Game Stats!
           </Typography>
         </Box>

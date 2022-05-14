@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import Cell from './cell';
 import { LetterState } from '../../models/Game';
 import { v4 as uuid } from 'uuid';
@@ -16,11 +16,12 @@ const Row = ({
   letterStates
 
 }: RowProps) => {
+  const theme = useTheme();
 
   const getColorForLetter = (n: number) => {
-    if (letterStates[n] === LetterState.CORRECTPOSITION) return '#00b300';
-    else if (letterStates[n] === LetterState.INWORD) return 'orange';
-    else if (letterStates[n] === LetterState.WRONG) return 'black';
+    if (letterStates[n] === LetterState.CORRECTPOSITION) return theme.additional.GameColoring.colors.correctPosition;
+    else if (letterStates[n] === LetterState.INWORD) return theme.additional.GameColoring.colors.inWord;
+    else if (letterStates[n] === LetterState.WRONG) return theme.additional.GameColoring.colors.notInWord;
     else return 'transparent';
   };
 

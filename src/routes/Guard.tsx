@@ -3,7 +3,6 @@ import { WithChildren } from '../utils/utils';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../redux/hooks';
 import { useEffect } from 'react';
-import { useForceUpdate, useLocalStorage } from '@mantine/hooks';
 
 export const DefaultRoute = () => {
   return (
@@ -16,21 +15,22 @@ type GuardProps = WithChildren<{}>;
 
 const Guard = ({ children }: GuardProps) => {
 
-  const [token] = useLocalStorage<string>({ key: 'userId' });
-  const forceUpdate = useForceUpdate();
+  //const forceUpdate = useForceUpdate();
 
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const href = window.location.href;
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     switch (location.pathname) {
     case '/login':
       if (!token) {
-        dispatch({type: 'modal/setState', payload: {isOpen: true, modalWindow: 'login'}});
+        dispatch({ type: 'modal/setState', payload: { isOpen: true, modalWindow: 'login' } });
+        return;
       }
-      return;
+      break;
     case '/register':
       if (!token) {
         dispatch({type: 'modal/setState', payload: {isOpen: true, modalWindow: 'register'}});
@@ -47,12 +47,15 @@ const Guard = ({ children }: GuardProps) => {
         }*/
       return;
     }
+    // FIXME: Fix this!
     if (!token && !href.includes('/lobby')) {
       navigate('/login');
       //window.location.reload();
-      forceUpdate();
+      //forceUpdate();
     }
-  }, [dispatch, forceUpdate, location.pathname, navigate, token]);
+
+    //return () => ;
+  }, [dispatch, location.pathname, navigate, token, href]);
 
   return (
     <>

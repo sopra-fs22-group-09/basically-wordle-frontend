@@ -1,3 +1,4 @@
+export type InputMaybe<T> = Maybe<T>;
 export type Maybe<T> = T | null;
 
 export type Scalars = {
