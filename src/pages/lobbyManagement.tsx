@@ -72,11 +72,10 @@ const ADD_FRIEND = gql`
 
 const LobbyManagement = (lobbyInfo: LobbyInformation) => {
 
+  const theme = useTheme();
   const navigate = useNavigate();
   const [copied, setCopied] = React.useState(false);
   const [ userId ] = useLocalStorage({ key: 'userId' });
-
-  const theme = useTheme();
 
   const [changeLobby, { loading }] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
   const [addFriend] = useMutation<MutationAddFriendArgs>(ADD_FRIEND);
@@ -196,7 +195,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                   sx={{ m:'auto' }}
                   marks
                   step={10}
-                  min={10}
+                  min={60}
                   max={300}
                   valueLabelDisplay='auto'
                   value={lobbyInfo.roundTime}

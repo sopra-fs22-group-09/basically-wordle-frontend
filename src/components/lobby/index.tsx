@@ -71,8 +71,8 @@ const ANNOUNCE_START = gql`
 `;
 
 const GAME_STATUS = gql`
-  subscription gameStatus {
-    gameStatus
+  subscription gameStatus($id: ID!) {
+    gameStatus(id: $id)
   }
 `;
 
@@ -135,7 +135,11 @@ const Lobby = () => {
   }, [subscribeLobbyData.loading, subscribeLobbyData.data]);
 
   const [startGame, { called }] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
-  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS);
+  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {
+    variables: {
+      id: params.id as string
+    }
+  });
   useEffect(() => {
     let isSubscribed = true;
     (async () => {
