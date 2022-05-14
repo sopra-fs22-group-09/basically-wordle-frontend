@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BottomNavigation, BottomNavigationAction, Box, Slider, Stack, Tooltip } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
@@ -11,8 +11,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import IconButton from '@mui/material/IconButton';
 import { VolumeDown, VolumeUp } from '@mui/icons-material';
-import { gql, useMutation } from '@apollo/client';
-import { useAppSelector } from '../redux/hooks';
+import { gql, useApolloClient, useMutation } from '@apollo/client';
 import { useLocalStorage } from '@mantine/hooks';
 
 interface LogoutType {
@@ -28,19 +27,28 @@ const LOGOUT_USER = gql`
 export const NavigationBar = () => {
   const [tab, setTab] = useState(0);
   const [logoutUser] = useMutation<LogoutType>(LOGOUT_USER);
-  const [token] = useLocalStorage<string>({ key: 'token' });
+  const token = localStorage.getItem('token');
   const [volume, setVolume] = useLocalStorage<number>({ key: 'volume', defaultValue: 30 });
-  const _open = useAppSelector(state => state.drawer.isOpen);
+
+  const client = useApolloClient();
 
   const handleVolumeChange = (event: Event, newValue: number | number[]) => {
     setVolume(newValue as number);
   };
 
-  function logout() {
-    localStorage.clear();
-    logoutUser().then(() =>
-      window.location.reload()
-    );
+  useEffect(() => {
+    const unsubscribe = client.onResetStore(async () => {
+      localStorage.clear();
+    });
+    return () => unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function logout() {
+    await logoutUser().then(async () => {
+      await client.resetStore();
+      //window.location.reload();
+    });
   }
 
   const toolbar = (

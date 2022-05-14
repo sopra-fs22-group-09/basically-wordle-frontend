@@ -42,8 +42,8 @@ const JOIN_LOBBY = gql`
 `;
 
 const LOBBY_SUBSCRIPTION = gql`
-  subscription subscribeLobby {
-    lobby {
+  subscription subscribeLobby($id: ID!) {
+    lobby(id: $id) {
       owner {
         id
       }
@@ -71,8 +71,8 @@ const ANNOUNCE_START = gql`
 `;
 
 const GAME_STATUS = gql`
-  subscription gameStatus {
-    gameStatus
+  subscription gameStatus($id: ID!) {
+    gameStatus(id: $id)
   }
 `;
 
@@ -98,23 +98,31 @@ const Lobby = () => {
 
   const [joinLobby, joinLobbyData] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY);
   useEffect(() => {
-    joinLobby({
-      variables: {
-        id: params.id as string
-      }
-    }).then(r => {
-      if (r.data?.joinLobbyById) {
-        setOwnerId(r.data.joinLobbyById.owner.id);
-        setLobbyStatus(r.data.joinLobbyById.status);
-        setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.joinLobbyById.gameMode)]);
-        setGameRounds(r.data.joinLobbyById.game.amountRounds);
-        setRoundTime(r.data.joinLobbyById.game.roundTime);
-        setPlayers(r.data.joinLobbyById.players);
-      }
-    });
+    let isSubscribed = true;
+    (async () => {
+      joinLobby({
+        variables: {
+          id: params.id as string
+        }
+      }).then(r => {
+        if (r.data?.joinLobbyById && isSubscribed) {
+          setOwnerId(r.data.joinLobbyById.owner.id);
+          setLobbyStatus(r.data.joinLobbyById.status);
+          setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.joinLobbyById.gameMode)]);
+          setGameRounds(r.data.joinLobbyById.game.amountRounds);
+          setRoundTime(r.data.joinLobbyById.game.roundTime);
+          setPlayers(r.data.joinLobbyById.players);
+        }
+      });
+    })();
+    return () => { isSubscribed = false; };
   }, [joinLobby, params.id]);
 
-  const subscribeLobbyData = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION);
+  const subscribeLobbyData = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION, {
+    variables: {
+      id: params.id as string
+    }
+  });
   useEffect(() => {
     if (!subscribeLobbyData.loading && subscribeLobbyData.data?.lobby) {
       setOwnerId(subscribeLobbyData.data.lobby.owner.id);
@@ -126,24 +134,33 @@ const Lobby = () => {
     }
   }, [subscribeLobbyData.loading, subscribeLobbyData.data]);
 
-  const [startGame] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
-  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS);
-  useEffect(() => {
-    if (!gameStatusData.loading && gameStatusData.data?.gameStatus) {
-      setGameStatus(gameStatusData.data.gameStatus);
-      if (gameStatusData.data?.gameStatus == GameStatus.SYNCING && ownerId == userId) {
-        startGame().then(() => {
-          //setLobbyStatus(LobbyStatus.INGAME);
-        });
-      } else if (gameStatusData.data?.gameStatus == GameStatus.SYNCING ||
-        gameStatusData.data?.gameStatus == GameStatus.GUESSING) {
-        setLobbyStatus(LobbyStatus.INGAME);
-      }
+  const [startGame, { called: _called }] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
+  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {
+    variables: {
+      id: params.id as string
     }
+  });
+  useEffect(() => {
+    let isSubscribed = true;
+    (async () => {
+      if (!gameStatusData.loading && gameStatusData.data?.gameStatus && isSubscribed) {
+        setGameStatus(gameStatusData.data.gameStatus);
+        if (gameStatusData.data?.gameStatus == GameStatus.SYNCING && ownerId == userId) {
+          await startGame().then(() => {
+            //setLobbyStatus(LobbyStatus.INGAME);
+          });
+        } else if (gameStatusData.data?.gameStatus == GameStatus.SYNCING
+          || gameStatusData.data?.gameStatus == GameStatus.GUESSING
+          && isSubscribed) {
+          setLobbyStatus(LobbyStatus.INGAME);
+        }
+      }
+    })();
+    return () => { isSubscribed = false; };
   }, [gameStatusData, startGame, ownerId, userId]);
 
   return (
-    debouncedLobbyStatus != LobbyStatus.INGAME ?
+    debouncedLobbyStatus != LobbyStatus.INGAME ? // FIXME: If the lobby screen won't appear you have to use loading here instead of called.
       <Suspense fallback={<LoaderCenterer><ChaoticOrbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
         <LobbyManagement
           name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}

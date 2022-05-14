@@ -1,4 +1,4 @@
-import { Scalars } from '.';
+import { InputMaybe, Scalars } from '.';
 
 export type User = {
   __typename?: 'User';
@@ -10,9 +10,17 @@ export type User = {
 };
 
 export enum UserStatus {
-  ONLINE = 'Online',
-  CREATINGLOBBY = 'Creating Lobby',
-  INGAME = 'InGame',
-  AWAY = 'Away',
-  OFFLINE = 'Offline'
+  ONLINE = 'ONLINE',
+  CREATING_LOBBY = 'CREATING_LOBBY',
+  INGAME = 'INGAME',
+  AWAY = 'AWAY',
+  OFFLINE = 'OFFLINE'
 }
+
+export type QueryFriendsByStatusArgs = {
+  status?: InputMaybe<UserStatus>;
+};
+
+export type MutationAddFriendArgs = {
+  friendId: Scalars['ID'];
+};

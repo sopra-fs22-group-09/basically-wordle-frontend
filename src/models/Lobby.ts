@@ -1,4 +1,4 @@
-import { Maybe, Scalars } from '.';
+import { InputMaybe, Maybe, Scalars } from '.';
 import { Player } from './Player';
 import { Game } from './Game';
 
@@ -6,7 +6,18 @@ export interface LobbyModels {
   joinLobbyById: Lobby
   lobby: Lobby
   updateLobbySettings: Lobby
+  getLobbies: Array<Lobby>
+  lobbyList: Array<Lobby>
 }
+
+export type LobbyOverview = {
+  __typename?: 'LobbyOverview';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  category: GameCategory;
+  mode: GameMode;
+  players: Scalars['String'];
+};
 
 export type Lobby = {
   __typename?: 'Lobby';
@@ -39,10 +50,19 @@ export type MutationUpdateLobbySettingsArgs = {
   input: GameSettingsInput;
 };
 
+export type MutationInviteToLobbyArgs = {
+  input: LobbyInviteInput;
+};
+
 export type GameSettingsInput = {
   gameMode: GameMode;
   amountRounds: Scalars['Int'];
   roundTime: Scalars['Int'];
+};
+
+export type LobbyInviteInput = {
+  recipientId?: InputMaybe<Scalars['ID']>;
+  lobbyId: Scalars['ID'];
 };
 
 export enum GameCategory {
@@ -98,3 +118,11 @@ export const WordCategories = [
   { category: 'cows' },
   { category: 'dunno' }
 ];
+
+export type LobbyInvite = {
+  __typename?: 'LobbyInvite';
+  id?: Maybe<Scalars['ID']>;
+  lobbyId: Scalars['ID'];
+  senderId?: Maybe<Scalars['ID']>;
+  recipientId?: Maybe<Scalars['ID']>;
+};

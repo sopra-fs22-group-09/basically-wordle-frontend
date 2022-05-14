@@ -5,6 +5,7 @@ import { GameCategory, GameCategoryMaxSize, Lobby } from '../models/Lobby';
 import { gql, useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { LoadingOverlay } from '@mantine/core';
+import { useEffect } from 'react';
 
 export type LobbyInput = {
   size: number;
@@ -35,19 +36,23 @@ const LobbyConfirmation = () => {
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const username = localStorage.getItem('userName');
 
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'lobbyConfirmation');
   const [size, setSize] = React.useState(2);
-  const [name, setName] = React.useState(localStorage.getItem('userName') + '\'s Game');
+  const [name, setName] = React.useState('');
   const [gameCategory, setGameCategory] = React.useState(Object.values(GameCategory)[0]);
   const toggleModal = () => {
     dispatch({ type: 'modal/toggle', payload: 'lobbyConfirmation' });
   };
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  const [createLobby, { data, loading, error }] = useMutation<LobbyType, MutationCreateLobbyArgs>(LOBBY_CREATION);
-  const handleLobbyConfirmation = (size: number, name: string, gameCategory: GameCategory) => {
-    createLobby({
+  useEffect(() => {
+    setName(username + '\'s Game');
+  }, [setName, username]);
+
+  const [createLobby, { loading }] = useMutation<LobbyType, MutationCreateLobbyArgs>(LOBBY_CREATION);
+  const handleLobbyConfirmation = async (size: number, name: string, gameCategory: GameCategory) => {
+    await createLobby({
       variables: {
         input: {
           size: gameCategory == GameCategory.SOLO ? 1 : size,
@@ -125,7 +130,7 @@ const LobbyConfirmation = () => {
                 max={GameCategoryMaxSize.get(gameCategory)}
                 valueLabelDisplay='auto'
                 value={size}
-                onChange={(event, newSize) => setSize(newSize as number)}
+                onChange={(_, newSize) => setSize(newSize as number)}
               />
             </Box>
           }
