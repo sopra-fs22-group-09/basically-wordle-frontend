@@ -83,6 +83,7 @@ const Home = () => {
     }
   }, [subscribeLobbiesData]);
 
+  // noinspection RequiredAttributes
   return (
     <Box sx={{
       width:'90%',
