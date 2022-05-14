@@ -60,10 +60,9 @@ const CHANGE_LOBBY = gql`
 
 const LobbyManagement = (lobbyInfo: LobbyInformation) => {
 
+  const theme = useTheme();
   const navigate = useNavigate();
   const [copied, setCopied] = React.useState(false);
-
-  const theme = useTheme();
 
   // eslint-disable-next-line unused-imports/no-unused-vars
   const [changeLobby, { data, loading, error }] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
@@ -157,7 +156,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                   sx={{ m:'auto' }}
                   marks
                   step={10}
-                  min={10}
+                  min={60}
                   max={300}
                   valueLabelDisplay='auto'
                   value={lobbyInfo.roundTime}

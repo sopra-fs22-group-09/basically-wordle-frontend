@@ -1,58 +1,89 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import { useAppDispatch } from '../redux/hooks';
-import { DataGrid, GridRowId } from '@mui/x-data-grid';
-import { Box, Button, Skeleton } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
+import { Box, Button, useTheme } from '@mui/material';
+import { gql, useQuery, useSubscription } from '@apollo/client';
+import { GameCategory, GameMode, LobbyModels, LobbyOverview } from '../models/Lobby';
+import { ChaoticOrbit } from '@uiball/loaders';
+import LoaderCenterer from '../components/loader';
+import { useNavigate } from 'react-router-dom';
 
-//TODO: get subscription data
-const lobbies = [
-  {
-    id: '5ig540vrtj',
-    lobby: 'jemaie\'s Game',
-    mode: 'Words++',
-    category: 'PvP',
-    player: '2/4',
-  },
-  {
-    id: 'd493gn434j',
-    lobby: 'compilomatic\'s Game',
-    mode: 'Sonic Fast',
-    category: 'PvP',
-    player: '2/3',
-  },
-  {
-    id: '84nbl02snt',
-    lobby: 'mp.\'s Game',
-    mode: 'Together',
-    category: 'Co-op',
-    player: '2/2',
-  },
-  {
-    id: '17fngptndv',
-    lobby: 'bzns\'s Game',
-    mode: 'Party',
-    category: 'PvP',
-    player: '2/6',
-  },
-  {
-    id: '17adgptndv',
-    lobby: 'Its Britney Bitch\'s Game',
-    mode: 'Time Reset',
-    category: 'PvP',
-    player: '2/4',
-  },
-];
+const GET_LOBBIES = gql`
+  query getAllLobbies {
+    getLobbies {
+      id
+      name
+      gameCategory
+      gameMode
+      players {
+        id
+      }
+      size
+    }
+  }
+`;
+
+const LOBBIES_SUBSCRIPTION = gql`
+  subscription subscribeLobbies {
+    lobbyList {
+      id
+      name
+      gameCategory
+      gameMode
+      players {
+        id
+      }
+      size
+    }
+  }
+`;
 
 const Home = () => {
 
+  const theme = useTheme();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [lobbies, setLobbies] = React.useState<LobbyOverview[]>();
 
   const toggleModal = () => {
     dispatch({ type: 'modal/toggle', payload: 'lobbyConfirmation' });
   };
-  const handleLobbyJoin = (lobbyId: GridRowId) => {
-    alert('JOIN LOBBY WITH ID: ' + lobbyId);
-  };
 
+  useQuery<LobbyModels>(GET_LOBBIES, {
+    onCompleted(data) {
+      setLobbies(data.getLobbies.map(l => {
+        return (
+          {
+            id: l.id,
+            name: l.name,
+            mode: Object.values(GameMode)[Object.keys(GameMode).indexOf(l.gameMode)],
+            category: Object.values(GameCategory)[Object.keys(GameCategory).indexOf(l.gameCategory)],
+            players: l.players.length + '/' + l.size
+          }
+        );
+      }));
+    }
+  });
+
+  const subscribeLobbiesData = useSubscription<LobbyModels>(LOBBIES_SUBSCRIPTION);
+  useEffect(() => {
+    if (!subscribeLobbiesData.loading && subscribeLobbiesData.data?.lobbyList) {
+      setLobbies(subscribeLobbiesData.data.lobbyList.map(l => {
+        return (
+          {
+            id: l.id,
+            name: l.name,
+            mode: Object.values(GameMode)[Object.keys(GameMode).indexOf(l.gameMode)],
+            category: Object.values(GameCategory)[Object.keys(GameCategory).indexOf(l.gameCategory)],
+            players: l.players.length + '/' + l.size
+          }
+        );
+      }));
+    }
+  }, [subscribeLobbiesData]);
+
+  // noinspection RequiredAttributes
   return (
     <Box sx={{
       width:'90%',
@@ -79,11 +110,11 @@ const Home = () => {
             }}
             onRowClick={((params, event) => {
               event.defaultMuiPrevented = true;
-              handleLobbyJoin(params.id);
+              navigate('/lobby/' + params.id);
             })}
             columns={[
               {
-                field: 'lobby',
+                field: 'name',
                 headerName: 'Lobby',
                 flex: 1,
                 minWidth: 200,
@@ -99,15 +130,15 @@ const Home = () => {
                 width: 100,
               },
               {
-                field: 'player',
-                headerName: 'Player',
+                field: 'players',
+                headerName: 'Players',
                 width: 100,
               },
             ]}
             rows={lobbies}
           />
         ) : (
-          <Skeleton variant='rectangular' width={500} height={150} />
+          <LoaderCenterer><ChaoticOrbit size={50} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>
         )
       }
     </Box>

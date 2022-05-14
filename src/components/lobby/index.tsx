@@ -42,8 +42,8 @@ const JOIN_LOBBY = gql`
 `;
 
 const LOBBY_SUBSCRIPTION = gql`
-  subscription subscribeLobby {
-    lobby {
+  subscription subscribeLobby($id: ID!) {
+    lobby(id: $id) {
       owner {
         id
       }
@@ -71,8 +71,8 @@ const ANNOUNCE_START = gql`
 `;
 
 const GAME_STATUS = gql`
-  subscription gameStatus {
-    gameStatus
+  subscription gameStatus($id: ID!) {
+    gameStatus(id: $id)
   }
 `;
 
@@ -114,7 +114,11 @@ const Lobby = () => {
     });
   }, [joinLobby, params.id]);
 
-  const subscribeLobbyData = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION);
+  const subscribeLobbyData = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION, {
+    variables: {
+      id: params.id as string
+    }
+  });
   useEffect(() => {
     if (!subscribeLobbyData.loading && subscribeLobbyData.data?.lobby) {
       setOwnerId(subscribeLobbyData.data.lobby.owner.id);
@@ -127,7 +131,11 @@ const Lobby = () => {
   }, [subscribeLobbyData.loading, subscribeLobbyData.data]);
 
   const [startGame] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
-  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS);
+  const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {
+    variables: {
+      id: params.id as string
+    }
+  });
   useEffect(() => {
     if (!gameStatusData.loading && gameStatusData.data?.gameStatus) {
       setGameStatus(gameStatusData.data.gameStatus);
