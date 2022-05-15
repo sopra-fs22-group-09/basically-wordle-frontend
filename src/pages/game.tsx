@@ -104,6 +104,9 @@ const Game = (gameInfo: GameInformation) => {
     variables: {
       word: currentlyTypingWord
     },
+    onError: error => {
+      alert(error.message); //TODO sött nid als alert cho aber wüsst grad nid was susch, vllt het epper e idee
+    },
     onCompleted(data) {
       if (data?.submitGuess) {
         setCurrentRound(data.submitGuess.currentRound);

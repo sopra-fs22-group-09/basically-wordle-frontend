@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { lazy, Suspense, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   GameCategory,
   GameMode,
@@ -78,12 +78,12 @@ const GAME_STATUS = gql`
 
 const Lobby = () => {
 
+  const theme = useTheme();
   const params = useParams();
-  
+  const navigate = useNavigate();
+
   const LobbyManagement = lazy(() => import('../../pages/lobbyManagement'));
   const Game = lazy(() => import('../../pages/game'));
-  
-  const theme = useTheme();
 
   const [ownerId, setOwnerId] = React.useState('');
   const [lobbyStatus, setLobbyStatus] = React.useState<LobbyStatus>(LobbyStatus.OPEN);
@@ -103,6 +103,10 @@ const Lobby = () => {
       joinLobby({
         variables: {
           id: params.id as string
+        },
+        onError: error => {
+          alert(error.message);
+          navigate('/');
         }
       }).then(r => {
         if (r.data?.joinLobbyById && isSubscribed) {
