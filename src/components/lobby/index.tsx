@@ -76,6 +76,43 @@ const GAME_STATUS = gql`
   }
 `;
 
+const ADD_GUEST = gql`
+    mutation createGuest{
+        createGuest {
+            id
+            name
+        }
+    }
+`;
+
+const JOIN_LOBBY_AS_GUEST = gql`
+    mutation joinLobbyAsGuest($id: ID!) {
+        guestJoinLobbyById(id: $id) {
+            id
+            name
+            size
+            owner {
+                id
+            }
+            status
+            gameCategory
+            gameMode
+            game {
+                amountRounds
+                roundTime
+            }
+            players {
+                id
+                name
+            }
+        }
+    }
+`;
+
+interface GuestType {
+  createGuest: Player;
+}
+
 const Lobby = () => {
 
   const params = useParams();
@@ -94,10 +131,44 @@ const Lobby = () => {
   const [gameRounds, setGameRounds] = React.useState(0);
   const [roundTime, setRoundTime] = React.useState(0);
   const [players, setPlayers] = React.useState<Player[]>([]);
+  const [guestCreated, setGuestCreated] = React.useState(false);
   const [userId] = useLocalStorage<string>({ key: 'userId' });
 
   const [joinLobby, joinLobbyData] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY);
+  const [createGuest, { data: guestData, loading: guestLoading, error: guestError }] = useMutation<GuestType>(ADD_GUEST);
+  const [joinLobbyAsGuest, joinGuestLobbyData] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY_AS_GUEST);
+
+  /*useEffect(() => {
+    if (!localStorage.getItem('userId') && !guestCreated) {
+      createGuest({
+        onCompleted(data) {
+          if (data.createGuest) {
+            localStorage.setItem('userId', data.createGuest.id);
+            localStorage.setItem('userName', data.createGuest.name);
+            localStorage.setItem('guest', 'yes');
+            setGuestCreated(true);
+          }
+        }
+      }).then(r1 => {
+        joinLobbyAsGuest({
+          variables: {
+            id: params.id as string
+          }
+        }).then(r => {
+          if (r.data?.guestJoinLobbyById) {
+            setOwnerId(r.data.guestJoinLobbyById.owner.id);
+            setLobbyStatus(r.data.guestJoinLobbyById.status);
+            setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.guestJoinLobbyById.gameMode)]);
+            setGameRounds(r.data.guestJoinLobbyById.game.amountRounds);
+            setRoundTime(r.data.guestJoinLobbyById.game.roundTime);
+            setPlayers(r.data.guestJoinLobbyById.players);
+          }
+        });
+      });
+    }
+  }, [createGuest, guestCreated, joinLobbyAsGuest, params.id]);*/
   useEffect(() => {
+    /*if (!guestCreated) {*/
     let isSubscribed = true;
     (async () => {
       joinLobby({
@@ -115,9 +186,12 @@ const Lobby = () => {
         }
       });
     })();
-    return () => { isSubscribed = false; };
+    return () => {
+      isSubscribed = false;
+    };
+    /*}*/
   }, [joinLobby, params.id]);
-
+  
   const subscribeLobbyData = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION, {
     variables: {
       id: params.id as string
@@ -126,7 +200,7 @@ const Lobby = () => {
   useEffect(() => {
     if (!subscribeLobbyData.loading && subscribeLobbyData.data?.lobby) {
       setOwnerId(subscribeLobbyData.data.lobby.owner.id);
-      //setLobbyStatus(subscribeLobbyData.data.lobby.status);
+      //setLobbyStatus(debouncedLobbyStatus);
       setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(subscribeLobbyData.data.lobby.gameMode)]);
       setGameRounds(subscribeLobbyData.data.lobby.game.amountRounds);
       setRoundTime(subscribeLobbyData.data.lobby.game.roundTime);
@@ -160,7 +234,7 @@ const Lobby = () => {
   }, [gameStatusData, startGame, ownerId, userId]);
 
   return (
-    debouncedLobbyStatus != LobbyStatus.INGAME ? // FIXME: If the lobby screen won't appear you have to use loading here instead of called.
+    gameStatus == GameStatus.NEW ? // FIXME: If the lobby screen won't appear you have to use loading here instead of called.
       <Suspense fallback={<LoaderCenterer><ChaoticOrbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
         <LobbyManagement
           name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
@@ -184,6 +258,8 @@ const Lobby = () => {
           setStatus={setLobbyStatus}
           gameStatus={gameStatus}
           startGame={startGame}
+          ownerId={ownerId.toString()}
+          setGameMode={setGameMode}
         />
       </Suspense>
   );

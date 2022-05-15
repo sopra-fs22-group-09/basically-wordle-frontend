@@ -1,17 +1,28 @@
 import * as React from 'react';
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Typography, Button, useTheme } from '@mui/material';
 import { DotWave, Orbit } from '@uiball/loaders';
-import { LobbyStatus } from '../models/Lobby';
+import { GameMode, LobbyStatus } from '../models/Lobby';
 import { gql, useLazyQuery, useMutation, useSubscription } from '@apollo/client';
-import { GameRoundModel, GameStatsModel, GameStatus, LetterState, OpponentGameRoundModel, } from '../models/Game';
+import {
+  GameRoundModel,
+  GameStatsModel,
+  GameStatus, GameStatusModel,
+  LeaveGameArgs, LeaveType,
+  LetterState,
+  OpponentGameRoundModel, PlayAgainType,
+} from '../models/Game';
 import LoaderCenterer from '../components/loader';
+import { useNavigate, useParams } from 'react-router-dom';
+import GameRoundConclusion from '../modals/GameRoundConclusion';
 
 interface GameInformation {
   name: string
   setStatus: (status: LobbyStatus) => void
   gameStatus?: GameStatus
   startGame: () => void
+  ownerId: string
+  setGameMode: (gameMode: GameMode) => void
 }
 
 const SUBMIT_GUESS = gql`
@@ -48,6 +59,21 @@ const CONCLUDE_GAME = gql`
   }
 `;
 
+const LEAVE_GAME = gql`
+    mutation leaveGame($id: ID!) {
+        leaveGame(id: $id)
+    }
+`;
+
+const PLAY_AGAIN = gql`
+    mutation playAgain {
+        playAgain{
+            amountRounds
+            roundTime
+        }
+    }
+`;
+
 const Game = (gameInfo: GameInformation) => {
   const Grid = lazy(() => import('../components/grid/grid'));
   const Keyboard = lazy(() => import('../components/keyboard/keyboard'));
@@ -58,6 +84,8 @@ const Game = (gameInfo: GameInformation) => {
   }, [stopwatch]);
 
   const theme = useTheme();
+  const navigate = useNavigate();
+  const params = useParams();
 
   // const [roundConclusion, setRoundConclusion] = React.useState<boolean>(false);
   // const [gameConclusion, setGameConclusion] = React.useState<boolean>(false);
@@ -80,6 +108,10 @@ const Game = (gameInfo: GameInformation) => {
   const [amountGuesses, setAmountGuesses] = useState(0);
   const [guessHistory, setGuessHistory] = useState(['', '', '', '', '', '']);
   const [letterState, setLetterState] = useState<LetterState[][]>([[]]);
+  const [open, setOpen] = React.useState<boolean>(true);
+  const toggleModal = () => {
+    setOpen(!open);
+  };
 
 
   const [concludeGame, {data}] = useLazyQuery<GameStatsModel>(CONCLUDE_GAME, {
@@ -99,6 +131,30 @@ const Game = (gameInfo: GameInformation) => {
   useEffect(() => {
     if (gameInfo.gameStatus == GameStatus.FINISHED) concludeGame();
   }, [concludeGame, gameInfo.gameStatus]);
+
+  const [leaveGame, leaveGameData] = useMutation<LeaveType, LeaveGameArgs>(LEAVE_GAME);
+
+  const handleLeaveGame = () => {
+    leaveGame({
+      variables: {
+        id: params.id as string
+      },
+      onCompleted() {
+        navigate('/');
+      }
+    });
+  };
+
+  const [playAgain, playData] = useMutation<PlayAgainType>(PLAY_AGAIN);
+
+  const handleRematch = () => {
+    playAgain({variables: {
+    },
+    onCompleted() {
+      const a = '';
+    }
+    });
+  };
 
   const [submitGuess, {loading}] = useMutation<GameRoundModel>(SUBMIT_GUESS, {
     variables: {
@@ -174,13 +230,12 @@ const Game = (gameInfo: GameInformation) => {
     <>
       {gameInfo.gameStatus == GameStatus.FINISHED &&
           <>
-            <Typography variant={'h1'} sx={{fontSize: '48px', textAlign: 'center'}}>Game is finished</Typography>
-            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Score: {data?.concludeGame.score}</Typography>
-            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Rank: {data?.concludeGame.rank}</Typography>
-            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Target word: {data?.concludeGame.targetWord}</Typography>
-            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Rounds taken: {data?.concludeGame.roundsTaken}</Typography>
-            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Time taken: {data?.concludeGame.timeTaken}</Typography>
-            {/*TODO <Button variant="contained" sx={{ mx:2, mt:2 }} disabled={localStorage.getItem('userId') != ownerId} onClick={() => setStatus(LobbyStatus.OPEN)}>Back to Lobby</Button>*/}
+            {localStorage.getItem('userId') == gameInfo.ownerId &&
+                <GameRoundConclusion open={open} toggle={toggleModal} owner={true} handleRematch={handleRematch} data={data}/>
+            }
+            {localStorage.getItem('userId') != gameInfo.ownerId &&
+                <GameRoundConclusion open={open} toggle={toggleModal} owner={false} handleRematch={handleRematch} data={data}/>
+            }
           </>
       }
 
@@ -233,6 +288,17 @@ const Game = (gameInfo: GameInformation) => {
             }
           </Box>
           <Box sx={{width: gameInfo.gameStatus == GameStatus.WAITING ? '100%' : '30%', mt: '2.5%', mr: '5%', display: 'inline-block', textAlign: 'center'}}>
+            <Button
+              variant="contained"
+              onClick={handleLeaveGame}
+              sx={{
+                display: 'block', // Margin does not apply without this line
+                mx: 'auto',
+                mb: '2.5%'
+              }}
+            >
+                  Leave game
+            </Button>
             {opponentGameRoundData.data?.opponentGameRound.map((round, i) => (
               <React.Fragment key={i}>
                 <Box sx={{height: '19vh', display: gameInfo.gameStatus == GameStatus.WAITING ? 'inline-block' : 'block'}}>

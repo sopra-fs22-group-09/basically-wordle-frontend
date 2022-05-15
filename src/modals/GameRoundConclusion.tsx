@@ -1,9 +1,13 @@
 import * as React from 'react';
-import { Box, Modal, Typography } from '@mui/material';
+import { Box, Button, Modal, Typography } from '@mui/material';
+import { GameStatsModel } from '../models/Game';
 
 interface GameConclusionInformation {
   open: boolean
   toggle: () => void
+  handleRematch: () => void
+  owner: boolean
+  data?: GameStatsModel
 }
 
 const GameRoundConclusion = (open: GameConclusionInformation) => {
@@ -30,9 +34,12 @@ const GameRoundConclusion = (open: GameConclusionInformation) => {
           <Typography variant='h2' sx={{fontSize: 48}}>
             Game finished!
           </Typography>
-          <Typography variant='h4' sx={{fontSize: 24, mt:10}}>
-            Check here later again for Game Stats!
-          </Typography>
+          <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Score: {open.data?.concludeGame.score}</Typography>
+          <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Rank: {open.data?.concludeGame.rank}</Typography>
+          <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Target word: {open.data?.concludeGame.targetWord}</Typography>
+          <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Rounds taken: {open.data?.concludeGame.roundsTaken}</Typography>
+          <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Time taken: {open.data?.concludeGame.timeTaken}</Typography>
+          {open.owner && <Button variant="contained" sx={{ mb:2, mt:3 }} onClick={open.handleRematch}>Back to Lobby</Button>}
         </Box>
       </Box>
     </Modal>

@@ -4,6 +4,7 @@ import { Game } from './Game';
 
 export interface LobbyModels {
   joinLobbyById: Lobby
+  guestJoinLobbyById: Lobby
   lobby: Lobby
   updateLobbySettings: Lobby
   getLobbies: Array<Lobby>
