@@ -8,14 +8,14 @@ import { isProduction } from './isProduction';
  */
 export const getHttpDomain = (): string => {
   const prodUrl = 'https://wordlepvp-backend.oxv.io';
-  const devUrl = 'http://localhost:8080';
+  const devUrl = process.env.REACT_APP_IP ? 'http://' + process.env.REACT_APP_SERVER_IP + ':8080' : 'http://localhost:8080';
 
   return isProduction() ? prodUrl : devUrl;
 };
 
 export const getWsDomain = (): string => {
   const prodUrl = 'wss://wordlepvp-backend.oxv.io';
-  const devUrl = 'ws://localhost:8080';
+  const devUrl = process.env.REACT_APP_IP ? 'ws://' + process.env.REACT_APP_SERVER_IP + ':8080' : 'ws://localhost:8080';
 
   return isProduction() ? prodUrl : devUrl;
 };
