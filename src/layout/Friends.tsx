@@ -43,7 +43,7 @@ const UPDATE_FRIENDS_SUBSCRIPTION = gql`
 
 const LOBBY_INVITE = gql`
   mutation sendLobbyInvite($input: LobbyInviteInput!) {
-    inviteToLobby (input: $input)
+    inviteToLobby(input: $input)
   }
 `;
 
@@ -56,10 +56,9 @@ interface FriendsUpdatesSubscription {
 }
 
 const Friends = () => {
-
   const token = localStorage.getItem('token');
   const { loading, data, subscribeToMore } = useQuery<AllFriendsQuery>(ALL_FRIENDS, {
-    skip: !token
+    skip: !token,
   });
   const [sendLobbyInvite] = useMutation<{ inviteToLobby: boolean }, MutationInviteToLobbyArgs>(LOBBY_INVITE);
 
@@ -68,7 +67,7 @@ const Friends = () => {
   useEffect(() => {
     if (token) {
       const unsubscribe = subscribeToMore<FriendsUpdatesSubscription>({
-        document: UPDATE_FRIENDS_SUBSCRIPTION
+        document: UPDATE_FRIENDS_SUBSCRIPTION,
       });
       return () => unsubscribe();
     }
@@ -79,9 +78,9 @@ const Friends = () => {
       variables: {
         input: {
           lobbyId: lobbyId,
-          recipientId: userId
-        }
-      }
+          recipientId: userId,
+        },
+      },
     });
   };
 
@@ -92,32 +91,35 @@ const Friends = () => {
         top: 0,
         backgroundColor: 'primary.dark',
         zIndex: 1,
-        height: 75
+        height: 75,
       }}
     >
-      {
-        loading ? (
-          <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
-        ) : (
-          <>
-            <ListItemAvatar>
-              <Avatar sx={{ outline: 'white solid 5px' }}>
-                <FaceIcon />
-              </Avatar>
-            </ListItemAvatar>
-            {/* TODO: Show own real status */}
-            <ListItemText primary={localStorage.getItem('userName')} secondary="Online" />
-            <IconButton
-              color="inherit"
-              onClick={() => { alert('Still waiting to be implemented...'); } } /*TODO: Show notification menu*/
-            >
-              <Badge badgeContent={'99+'} color="primary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </>
-        )
-      }
+      {loading ? (
+        <>
+          <Skeleton animation="pulse" variant="circular" width={40} height={40} />
+          <Skeleton animation="wave" variant="text" sx={{ ml: '15px' }} width={120} />
+        </>
+      ) : (
+        <>
+          <ListItemAvatar>
+            <Avatar sx={{ outline: 'white solid 5px' }}>
+              <FaceIcon />
+            </Avatar>
+          </ListItemAvatar>
+          {/* TODO: Show own real status */}
+          <ListItemText primary={localStorage.getItem('userName')} secondary="Online" />
+          <IconButton
+            color="inherit"
+            onClick={() => {
+              alert('Still waiting to be implemented...');
+            }} /*TODO: Show notification menu*/
+          >
+            <Badge badgeContent={'99+'} color="primary">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+        </>
+      )}
     </ListItem>
   );
 
@@ -135,65 +137,92 @@ const Friends = () => {
       {myProfile}
       <Divider variant="inset" component="li" />
       {/* I don't get the sorting */}
-      {data?.allFriends.flatMap(f => f ? [f] : []).sort((f1, _) => f1.status == UserStatus.ONLINE ? 1 : f1.status == UserStatus.AWAY ? 0 : -1).map((f, i) => (
-        <React.Fragment key={i}>
-          <ListItem>
-            {
-              loading ? (
-                <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
+      {data?.allFriends
+        .flatMap((f) => (f ? [f] : []))
+        .sort((f1, _) => (f1.status == UserStatus.ONLINE ? 1 : f1.status == UserStatus.AWAY ? 0 : -1))
+        .map((f, i) => (
+          <React.Fragment key={i}>
+            <ListItem>
+              {loading ? (
+                <>
+                  <Skeleton animation="pulse" variant="circular" width={40} height={40} />
+                  <Skeleton animation="wave" variant="text" sx={{ ml: '15px' }} width={120} />
+                </>
               ) : (
-                <><ListItemAvatar>
-                  <Avatar sx={{ outline: f.status == UserStatus.ONLINE ? 'green solid 5px' : f.status == UserStatus.AWAY ? 'orange solid 5px'
-                    : f.status == UserStatus.INGAME || f.status == UserStatus.CREATING_LOBBY ? 'red solid 5px' : '' }}>
-                    <PersonIcon />
+                <>
+                  <ListItemAvatar>
+                    <Avatar
+                      sx={{
+                        outline:
+                          f.status == UserStatus.ONLINE
+                            ? 'green solid 5px'
+                            : f.status == UserStatus.AWAY
+                              ? 'orange solid 5px'
+                              : f.status == UserStatus.INGAME || f.status == UserStatus.CREATING_LOBBY
+                                ? 'red solid 5px'
+                                : '',
+                      }}
+                    >
+                      <PersonIcon />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={f.username}
+                    secondary={f.status.charAt(0) + f.status.substring(1).toLowerCase().replace('_', ' ')}
+                  />
+                  {
+                    /* TODO: only if creating non-solo lobby */
+                    match && (f.status == UserStatus.ONLINE || f.status == UserStatus.AWAY) && (
+                      <Button onClick={() => inviteToLobby(f.id, match.params.id as string)}>Invite</Button>
+                    )
+                  }
+                </>
+              )}
+            </ListItem>
+            <Divider variant="inset" component="li" />
+          </React.Fragment>
+        ))}
+      {/* TODO: Remove this! */}
+      <ListItem>
+        {loading ? (
+          <>
+            <Skeleton animation="pulse" variant="circular" width={40} height={40} />
+            <Skeleton animation="wave" variant="text" sx={{ ml: '15px' }} width={120} />
+          </>
+        ) : (
+          <>
+            <ListItemAvatar>
+              <Avatar sx={{ outline: 'orange solid 5px' }}>
+                <PersonIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary="It's Britney Bitch" secondary="Away" />
+          </>
+        )}
+      </ListItem>
+      <Divider variant="inset" component="li" />
+      {range(1, 18).map((l, i) => (
+        <React.Fragment key={'a' + i}>
+          <ListItem>
+            {loading ? (
+              <>
+                <Skeleton animation="pulse" variant="circular" width={40} height={40} />
+                <Skeleton animation="wave" variant="text" sx={{ ml: '15px' }} width={120} />
+              </>
+            ) : (
+              <>
+                <ListItemAvatar>
+                  <Avatar>
+                    <ImageIcon />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={f.username} secondary={f.status.charAt(0) + f.status.substring(1).toLowerCase().replace('_', ' ')} />
-                {/* TODO: only if creating non-solo lobby */
-                  match && (f.status == UserStatus.ONLINE || f.status == UserStatus.AWAY) &&
-                  <Button onClick={() => inviteToLobby(f.id, match.params.id as string)}>Invite</Button>
-                }</>
-              )
-            }
+                <ListItemText primary={'Friend' + i} secondary="Offline" />
+              </>
+            )}
           </ListItem>
           <Divider variant="inset" component="li" />
         </React.Fragment>
       ))}
-      {/* TODO: Remove this! */}
-      <ListItem>
-        {
-          loading ? (
-            <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
-          ) : (
-            <><ListItemAvatar>
-              <Avatar sx={{ outline: 'orange solid 5px' }}>
-                <PersonIcon />
-              </Avatar>
-            </ListItemAvatar><ListItemText primary="It's Britney Bitch" secondary="Away" /></>
-          )
-        }
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      {
-        range(1, 18).map((l, i) => (
-          <React.Fragment key={'a' + i}>
-            <ListItem>
-              {
-                loading ? (
-                  <><Skeleton animation='pulse' variant='circular' width={40} height={40} /><Skeleton animation='wave' variant='text' sx={{ml: '15px'}} width={120} /></>
-                ) : (
-                  <><ListItemAvatar>
-                    <Avatar>
-                      <ImageIcon />
-                    </Avatar>
-                  </ListItemAvatar><ListItemText primary={'Friend' + i} secondary="Offline" /></>
-                )
-              }
-            </ListItem>
-            <Divider variant="inset" component="li" />
-          </React.Fragment>
-        ))
-      }
     </List>
   );
 };
