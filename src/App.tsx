@@ -86,7 +86,7 @@ function App() {
               </Layout>
             </Suspense>
             <Footer sx={{position: 'fixed', backgroundColor: 'rgba(50, 50, 50, 0.8)', textAlign: 'center', border: 'none', boxShadow: '0 -4px 8px 0 rgb(0 0 0 / 40%), 0 -6px 20px 0 rgb(0 0 0 / 50%)'}} height={'25px'}>
-              <Typography>Build: {process.env.GIT_REV}</Typography>
+              <Typography>Build: {process.env.REACT_APP_GIT_REV} ({process.env.NODE_ENV})</Typography>
             </Footer>
           </Guard>
         </Suspense>
