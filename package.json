@@ -37,7 +37,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "export REACT_APP_GIT_REV=$(dokku config:get wordlepvp-frontend GIT_REV) && react-scripts build",
+    "build": "export REACT_APP_GIT_REV=$(GIT_REV) && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
