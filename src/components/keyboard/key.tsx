@@ -14,8 +14,8 @@ const Key = ({
 
 }: KeyProps) => {
   const handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
-    onClick(value);
     event.currentTarget.blur();
+    onClick(value);
   };
 
   const theme = useTheme();

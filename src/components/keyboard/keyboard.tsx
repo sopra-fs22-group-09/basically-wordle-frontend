@@ -31,7 +31,6 @@ const Keyboard = ({
   };
 
   const onClick = (value: string) => {
-    document.getElementById(document.activeElement ? document.activeElement.id : 'app')?.blur();
     if (value === 'Enter') onEnter();
     else if (value === 'Del') onDelete();
     else onChar(value);
@@ -40,7 +39,10 @@ const Keyboard = ({
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
       if (e.code === 'Enter') onEnter();
-      else if (e.code === 'Backspace' || e.code === 'Delete') onDelete();
+      else if (e.code === 'Backspace' || e.code === 'Delete') {
+        e.preventDefault();
+        onDelete();
+      }
       else if (e.key.length === 1 && e.key >= 'a' && e.key <= 'z') onChar(e.key.toUpperCase());
     };
     window.addEventListener('keyup', listener);

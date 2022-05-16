@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Box } from '@mui/material';
 import Row from './row';
 import { LetterState } from '../../models/Game';
-import { v4 as uuid } from 'uuid';
 
 type GridProps = {
   currentRow?: number
@@ -22,8 +21,8 @@ const Grid = ({
     <Box sx={{minWidth: '200px', maxWidth: '312px', m: 'auto'}}>
       {allGuesses?.map((word, i) => (
         <Row
+          key={i}
           word={currentRow === i ? currentWord : allGuesses[i]}
-          key={uuid()}
           letterStates={allLetterStates[i] ? allLetterStates[i] : []}
         />
       ))}

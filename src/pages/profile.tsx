@@ -3,7 +3,14 @@ import { Box, Paper, Typography } from '@mui/material';
 
 const Profile = () => {
   return (
-    <Box>
+    <Box
+      sx={{
+        width:'90%',
+        mx:'auto',
+        mt: '2.5%',
+        textAlign: 'center'
+      }}
+    >
       <Paper
         sx={{ padding: '1rem', backgroundColor: 'primary.dark', width: '80%', textAlign: 'center', m: 'auto', mb: '100px' }}
       >
