@@ -133,6 +133,19 @@ const api = new ApolloClient({
           },
         },
       },
+      // This makes sure that Apollo recognizes that two different queries return the same object
+      //User: {
+      //  fields: {
+      //    friendsUpdates: {
+      //      read(_, { args, toReference }) {
+      //        return toReference({
+      //          __typename: 'User',
+      //          id: args?.id,
+      //        });
+      //      }
+      //    }
+      //  }
+      //}
     },
   }),
 });
