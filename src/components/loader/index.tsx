@@ -9,8 +9,8 @@ const LoaderCenterer = ({ children }: LoaderProps) => {
   return (
     <Box 
       display="flex"
-      height='100vh'
-      width='100vw'
+      height="100vh"
+      width="100vw"
       alignItems="center"
       justifyContent="center">
       {children}
