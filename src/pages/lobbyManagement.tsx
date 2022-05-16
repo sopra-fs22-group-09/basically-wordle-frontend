@@ -81,7 +81,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
   const [userId] = useLocalStorage({ key: 'userId' });
 
   const [changeLobby, { loading }] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
-  const [addFriend, { called }] = useMutation<MutationAddFriendArgs>(ADD_FRIEND);
+  const [addFriend] = useMutation<MutationAddFriendArgs>(ADD_FRIEND);
   const changeLobbySettings = async (gameMode: GameMode, amountRounds: number, roundTime: number) => {
     await changeLobby({
       variables: {
@@ -109,6 +109,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
         friendId: userId,
       },
       refetchQueries: ['getAllFriends'],
+      //onError: (error) => (error.graphQLErrors.at(0)?.extensions.code == 'BAD_REQUEST' ? isFriend(userId) : false),
       errorPolicy: 'ignore',
     });
   };
@@ -143,7 +144,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                             <ListItemText primary={player.name} />
                             {
                               /* FIXME: Non-friends only! */
-                              userId != player.id && !isFriend(player.id) && !called && (
+                              userId != player.id && !isFriend(player.id) && (
                                 <Button onClick={() => sendFriendRequest(player.id)}>Add Friend</Button>
                               )
                             }
