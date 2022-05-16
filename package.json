@@ -36,9 +36,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "export REACT_APP_GIT_REV=$(git rev-parse HEAD) && react-scripts start",
-    "build": "export REACT_APP_GIT_REV=$(git rev-parse HEAD) && react-scripts build",
-    "test": "export REACT_APP_GIT_REV=$(git rev-parse HEAD) && react-scripts test --env=jsdom",
+    "start": "react-scripts start",
+    "build": "export REACT_APP_GIT_REV=eval $(dokku config:get wordlepvp-frontend GIT_REV) && react-scripts build",
+    "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint-prod": "eslint -c .eslintrc.prod.js . --ext .js,.jsx,.ts,.tsx",
