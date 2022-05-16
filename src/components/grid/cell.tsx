@@ -12,24 +12,21 @@ const Cell = ({
   style,
 
 }: CellProps) => {
-
   return (
     <Box
       sx={{
         width: '18%',
-        maxWidth: '60px',
-        aspectRatio: '6/1',
-        height: '100%',
-        maxHeight: '60px',
+        minHeight: '100%',
+        verticalAlign: 'middle',
+        aspectRatio: '1/1',
         m: '2px',
-        p: '10px 0',
+        py: '2%',
         border: '2px solid white',
         borderRadius: '5px',
-        color: 'white',
         fontWeight: 'bold',
         fontSize: '24px',
         textAlign: 'center',
-        float: 'left',
+        display: 'inline-block',
         ...style
       }}
     >

@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Button } from '@mui/material';
-
+import { Button, useMediaQuery, useTheme } from '@mui/material';
 
 type KeyProps = {
   value: string
@@ -14,17 +13,26 @@ const Key = ({
   onClick,
 
 }: KeyProps) => {
-  const handleClick: React.MouseEventHandler<HTMLButtonElement> = () => {onClick(value);};
+  const handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
+    onClick(value);
+    event.currentTarget.blur();
+  };
+
+  const theme = useTheme();
+  const smallScreen = !useMediaQuery(theme.breakpoints.up('mobile')); //screen smaller than defined size
 
   return (
     <Button
       variant="contained"
       sx={{
-        m: '2px',
         width: '8%',
-        minWidth: '24.5px',
-        height: '60px',
+        minWidth: 0, /*Prevent MUI magic*/
+        height: smallScreen ? '40px' : '60px',
+        m: '2px',
+        p: 0,
         color: 'white',
+        display: 'inline-block',
+        fontSize: smallScreen ? '12px' : '14px',
         ...style
       }}
       onClick={handleClick}

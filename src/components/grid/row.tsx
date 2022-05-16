@@ -6,13 +6,11 @@ import { v4 as uuid } from 'uuid';
 
 type RowProps = {
   word?: string
-  style?: React.CSSProperties
   letterStates: LetterState[]
 }
 
 const Row = ({
   word,
-  style,
   letterStates
 
 }: RowProps) => {
@@ -25,27 +23,17 @@ const Row = ({
     else return 'transparent';
   };
 
+  const emptyCells = (amount: number) => {
+    const tmp = [];
+    let i: number;
+    for (i = 0; i < amount; ++i) tmp.push(<Cell key={uuid()} style={{backgroundColor: `${getColorForLetter(i)}`}} />);
+    return tmp;
+  };
+
   return (
-    <Box
-      sx={{
-        my: '2px',
-        mx: 'auto',
-        maxWidth: '100%',
-        aspectRatio: '6/1',
-        height: '16%',
-        maxHeight: '60px',
-        textAlign: 'center',
-        clear: 'both',
-        ...style
-      }}
-    >
-      {word?.split('').map((letter, i) => (
-        <Cell value={letter} key={uuid()} style={{backgroundColor: `${getColorForLetter(i)}`}} />
-      ))}
-      {/* TODO do it better (if you find time) */}
-      {'     '.substring(0, 5 - (word ? word.length : 0)).split('').map((_, i) => (
-        <Cell key={uuid()} style={{backgroundColor: `${getColorForLetter(i)}`}} />
-      ))}
+    <Box>
+      {word?.split('').map((letter, i) => (<Cell value={letter} key={uuid()} style={{backgroundColor: `${getColorForLetter(i)}`}} />))}
+      {emptyCells(5 - (word ? word.length : 0))}
     </Box>
   );
 };

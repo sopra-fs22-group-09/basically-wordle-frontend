@@ -38,7 +38,7 @@ const Layout = ({ children }: LayoutProps) => {
     hideNotification('invite-' + invite.senderId);
     navigate('/lobby/' + invite.lobbyId);
   };
-  
+
   const showInvitation = (invite: LobbyInvite) => {
     const { username: friendName } = api.readFragment<User>({
       fragment: READ_USERNAME,
@@ -80,10 +80,10 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <Box sx={{display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      <Suspense fallback={<Skeleton variant='rectangular'><MuiAppBar /></Skeleton>}>
+      <Suspense fallback={<Skeleton variant="rectangular"><MuiAppBar /></Skeleton>}>
         <Header />
       </Suspense>
-      <Suspense fallback={<Skeleton variant='rectangular' width='240px'><MuiDrawer /></Skeleton>}>
+      <Suspense fallback={<Skeleton variant="rectangular" width="240px"><MuiDrawer /></Skeleton>}>
         <FriendsList />
       </Suspense>
       <Box

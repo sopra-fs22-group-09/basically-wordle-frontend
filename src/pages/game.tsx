@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Typography, useTheme, useMediaQuery } from '@mui/material';
 import { DotWave, Orbit } from '@uiball/loaders';
 import { LobbyStatus } from '../models/Lobby';
 import { gql, useLazyQuery, useMutation, useSubscription } from '@apollo/client';
@@ -52,12 +52,13 @@ const Game = (gameInfo: GameInformation) => {
   const Grid = lazy(() => import('../components/grid/grid'));
   const Keyboard = lazy(() => import('../components/keyboard/keyboard'));
 
-  const [stopwatch, setStopwatch] = useState(0);
+  const [stopwatch, setStopwatch] = useState(0); //TODO renders everytime whole grid
   useEffect(() => {
     setTimeout(() => setStopwatch(stopwatch + 1), 1000);
   }, [stopwatch]);
 
   const theme = useTheme();
+  const smallScreen = !useMediaQuery(theme.breakpoints.up('mobile')); //screen smaller than defined size
 
   // const [roundConclusion, setRoundConclusion] = React.useState<boolean>(false);
   // const [gameConclusion, setGameConclusion] = React.useState<boolean>(false);
@@ -95,7 +96,7 @@ const Game = (gameInfo: GameInformation) => {
     if (gameInfo.gameStatus == GameStatus.SYNCING || gameInfo.gameStatus == GameStatus.NEW) gameInfo.startGame();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);  // Please don't touch!!
-  
+
   useEffect(() => {
     if (gameInfo.gameStatus == GameStatus.FINISHED) concludeGame();
   }, [concludeGame, gameInfo.gameStatus]);
@@ -161,7 +162,7 @@ const Game = (gameInfo: GameInformation) => {
     //onSubscriptionData: a => console.log(a.subscriptionData)
   });
 
-  const onChar = (value: string) => {if (!loading && currentlyTypingWord.length < 5 && amountGuesses <= 6) setCurrentlyTypingWord(currentlyTypingWord + value.toLowerCase());};
+  const onChar = (value: string) => {if (!loading && currentlyTypingWord.length < 5 && amountGuesses <= 6) setCurrentlyTypingWord(currentlyTypingWord + value);};
   const onDelete = () => {if (!loading && currentlyTypingWord.length > 0 && amountGuesses <= 6) setCurrentlyTypingWord(currentlyTypingWord.substring(0, currentlyTypingWord.length - 1));};
   const onEnter = () => {
     if (!loading && currentlyTypingWord.length === 5 && amountGuesses <= 6) {
@@ -183,7 +184,7 @@ const Game = (gameInfo: GameInformation) => {
             <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Target word: {data?.concludeGame.targetWord}</Typography>
             <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Rounds taken: {data?.concludeGame.roundsTaken}</Typography>
             <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Time taken: {data?.concludeGame.timeTaken}</Typography>
-            {/*TODO <Button variant="contained" sx={{ mx:2, mt:2 }} disabled={localStorage.getItem('userId') != ownerId} onClick={() => setStatus(LobbyStatus.OPEN)}>Back to Lobby</Button>*/}
+            {/*TODO <Button variant='contained' sx={{ mx:2, mt:2 }} disabled={localStorage.getItem('userId') != ownerId} onClick={() => setStatus(LobbyStatus.OPEN)}>Back to Lobby</Button>*/}
           </>
       }
 
@@ -199,13 +200,13 @@ const Game = (gameInfo: GameInformation) => {
       {(gameInfo.gameStatus == GameStatus.GUESSING || gameInfo.gameStatus == GameStatus.WAITING) &&
         <>
           <Box sx={{display: 'inline-block', width: '100%'}}>
-            <Typography variant={'h3'} sx={{fontSize: '24px', textAlign: 'left', display: 'inline-block'}}>Round: {currentRound}</Typography>
+            <Typography variant="h3" sx={{fontSize: '24px', textAlign: 'left', display: 'inline-block'}}>Round: {currentRound}</Typography>
             {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
-            <Typography variant={'h3'} sx={{fontSize: '24px', textAlign: 'right', display: 'inline-block', float: 'right'}}>Time: {stopwatch} seconds</Typography>
+            <Typography variant="h3" sx={{fontSize: '24px', textAlign: 'right', display: 'inline-block', float: 'right'}}>Time: {stopwatch} seconds</Typography>
             {gameInfo.gameStatus == GameStatus.WAITING && <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>Waiting for other players to finish...</Typography>}
           </Box>
           <Box  sx={{
-            width: gameInfo.gameStatus == GameStatus.WAITING ? '100%' : '60%',
+            width: gameInfo.gameStatus == GameStatus.WAITING ? '100%' : smallScreen ? '100%' : '50%',
             mx: 'auto',
             mt: '2.5%',
             textAlign: 'center',
@@ -221,7 +222,6 @@ const Game = (gameInfo: GameInformation) => {
                 allLetterStates={letterState}
               />
             </Suspense>
-            <br style={{clear: 'both'}} />
             {gameInfo.gameStatus == GameStatus.GUESSING &&
                 <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main}/></LoaderCenterer>}>
                   <Keyboard
@@ -235,21 +235,30 @@ const Game = (gameInfo: GameInformation) => {
                 </Suspense>
             }
           </Box>
-          <Box sx={{width: gameInfo.gameStatus == GameStatus.WAITING ? '100%' : '30%', mt: '2.5%', mr: '5%', display: 'inline-block', textAlign: 'center'}}>
-            {opponentGameRoundData.data?.opponentGameRound.map((round, i) => (
-              <React.Fragment key={i}>
-                <Box sx={{height: '19vh', display: gameInfo.gameStatus == GameStatus.WAITING ? 'inline-block' : 'block'}}>
-                  <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>{round.player.name} -
-                      Round {round.currentRound}</Typography>
-                  <Grid
-                    allLetterStates={round.letterStates}
-                    allGuesses={['', '', '', '', '', '']}
-                    style={{height: '100%'}}/>
+          {opponentGameRoundData.data &&
+            <Box
+              sx={{
+                width: gameInfo.gameStatus == GameStatus.WAITING ? '100%' : smallScreen ? '100%' : '40%',
+                mr: gameInfo.gameStatus == GameStatus.WAITING ? 'auto' : smallScreen ? 'auto' : '5%',
+                float: 'right',
+                textAlign: 'center'
+              }}
+            >
+              {opponentGameRoundData.data.opponentGameRound.map((round, i) => (
+                <Box
+                  key={i}
+                  sx={{
+                    display: 'inline-block',
+                    mb: '5%',
+                    mx: '2.5%',
+                  }}
+                >
+                  <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>{round.player.name} - Round {round.currentRound}</Typography>
+                  <Grid allLetterStates={round.letterStates} allGuesses={['', '', '', '', '', '']}/>
                 </Box>
-                {gameInfo.gameStatus == GameStatus.GUESSING && <br style={{clear: 'both'}}/>}
-              </React.Fragment>
-            ))}
-          </Box>
+              ))}
+            </Box>
+          }
         </>
       }
     </>

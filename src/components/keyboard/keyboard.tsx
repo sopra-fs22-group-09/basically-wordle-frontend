@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, useTheme } from '@mui/material';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import Key from './key';
 import { useEffect } from 'react';
 
@@ -21,90 +21,50 @@ const Keyboard = ({
   letterNotInWord
 }: KeyboardProps) => {
   const theme = useTheme();
+  const smallScreen = !useMediaQuery(theme.breakpoints.up('mobile')); //screen smaller than defined size
   
   const getColorForLetter = (letter: string) => {
-    if (letterOnCorrectPosition.toUpperCase().includes(letter.toUpperCase())) return theme.additional.GameColoring.colors.correctPosition;
-    else if (letterInWord.toUpperCase().includes(letter.toUpperCase())) return theme.additional.GameColoring.colors.inWord;
-    else if (letterNotInWord.toUpperCase().includes(letter.toUpperCase())) return theme.additional.GameColoring.colors.notInWord;
+    if (letterOnCorrectPosition.includes(letter)) return theme.additional.GameColoring.colors.correctPosition;
+    else if (letterInWord.includes(letter)) return theme.additional.GameColoring.colors.inWord;
+    else if (letterNotInWord.includes(letter)) return theme.additional.GameColoring.colors.notInWord;
     else return theme.additional.GameColoring.colors.notUsed;
   };
 
   const onClick = (value: string) => {
+    document.getElementById(document.activeElement ? document.activeElement.id : 'app')?.blur();
     if (value === 'Enter') onEnter();
-    else if (value === 'Delete') onDelete();
+    else if (value === 'Del') onDelete();
     else onChar(value);
   };
 
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
       if (e.code === 'Enter') onEnter();
-      else if (e.code === 'Backspace') onDelete();
-      else {
-        const key = e.key.toLowerCase();
-        if (key.length === 1 && key >= 'a' && key <= 'z') onChar(key);
-      }
+      else if (e.code === 'Backspace' || e.code === 'Delete') onDelete();
+      else if (e.key.length === 1 && e.key >= 'a' && e.key <= 'z') onChar(e.key.toUpperCase());
     };
     window.addEventListener('keyup', listener);
-    return () => {
-      window.removeEventListener('keyup', listener);
-    };
+    return () => {window.removeEventListener('keyup', listener);};
   }, [onEnter, onDelete, onChar]);
 
   return (
-    <Box sx={{minWidth: '380px'}}>
+    <Box sx={{maxWidth: '700px', mt: '2%', mb: '5%', mx: 'auto'}}>
       <Box>
         {['Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P'].map((key) => (
-          <Key
-            value={key}
-            key={key}
-            onClick={onClick}
-            style={{
-              backgroundColor: `${getColorForLetter(key)}`,
-            }}
-          />
+          <Key value={key} key={key} onClick={onClick} style={{ backgroundColor: `${getColorForLetter(key)}`}}/>
         ))}
       </Box>
       <Box>
         {['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'].map((key) => (
-          <Key
-            value={key}
-            key={key}
-            onClick={onClick}
-            style={{
-              backgroundColor: `${getColorForLetter(key)}`,
-            }}
-          />
+          <Key value={key} key={key} onClick={onClick} style={{ backgroundColor: `${getColorForLetter(key)}` }}/>
         ))}
       </Box>
       <Box>
-        <Key
-          value="Delete"
-          onClick={onClick}
-          style={{
-            width: '12%',
-            minWidth: '60px',
-            backgroundColor: `${getColorForLetter('Delete')}`
-          }}
-        />
+        <Key value='Del' onClick={onClick} style={{ width: smallScreen ? '10%' : '14%', backgroundColor: `${getColorForLetter('Delete')}` }}/>
         {['Y', 'X', 'C', 'V', 'B', 'N', 'M'].map((key) => (
-          <Key
-            value={key}
-            key={key}
-            onClick={onClick}
-            style={{
-              backgroundColor: `${getColorForLetter(key)}`,
-            }}
-          />
+          <Key value={key} key={key} onClick={onClick} style={{ backgroundColor: `${getColorForLetter(key)}` }}/>
         ))}
-        <Key
-          value="Enter"
-          onClick={onClick}
-          style={{
-            width: '12%',
-            minWidth: '60px',
-            backgroundColor: `${getColorForLetter('Enter')}`
-          }}
-        />
+        <Key value='Enter' onClick={onClick} style={{ width: smallScreen ? '10%' : '14%', backgroundColor: `${getColorForLetter('Enter')}` }}/>
       </Box>
     </Box>
   );
