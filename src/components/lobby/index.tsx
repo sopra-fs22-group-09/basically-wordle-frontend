@@ -7,7 +7,7 @@ import {
   LobbyModels,
   LobbyStatus,
   MutationJoinLobbyByIdArgs,
-  SubscriptionLobbyArgs
+  SubscriptionLobbyArgs,
 } from '../../models/Lobby';
 import { Player } from '../../models/Player';
 import { gql, useMutation, useSubscription } from '@apollo/client';
@@ -77,7 +77,6 @@ const GAME_STATUS = gql`
 `;
 
 const Lobby = () => {
-
   const theme = useTheme();
   const params = useParams();
   const navigate = useNavigate();
@@ -102,13 +101,13 @@ const Lobby = () => {
     (async () => {
       joinLobby({
         variables: {
-          id: params.id as string
+          id: params.id as string,
         },
-        onError: error => {
+        onError: (error) => {
           alert(error.message);
           navigate('/');
-        }
-      }).then(r => {
+        },
+      }).then((r) => {
         if (r.data?.joinLobbyById && isSubscribed) {
           setOwnerId(r.data.joinLobbyById.owner.id);
           setLobbyStatus(r.data.joinLobbyById.status);
@@ -119,13 +118,15 @@ const Lobby = () => {
         }
       });
     })();
-    return () => { isSubscribed = false; };
-  }, [joinLobby, params.id]);
+    return () => {
+      isSubscribed = false;
+    };
+  }, [joinLobby, params.id, navigate]);
 
   const subscribeLobbyData = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION, {
     variables: {
-      id: params.id as string
-    }
+      id: params.id as string,
+    },
   });
   useEffect(() => {
     if (!subscribeLobbyData.loading && subscribeLobbyData.data?.lobby) {
@@ -141,8 +142,8 @@ const Lobby = () => {
   const [startGame, { called: _called }] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
   const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {
     variables: {
-      id: params.id as string
-    }
+      id: params.id as string,
+    },
   });
   useEffect(() => {
     let isSubscribed = true;
@@ -153,43 +154,63 @@ const Lobby = () => {
           await startGame().then(() => {
             //setLobbyStatus(LobbyStatus.INGAME);
           });
-        } else if (gameStatusData.data?.gameStatus == GameStatus.SYNCING
-          || gameStatusData.data?.gameStatus == GameStatus.GUESSING
-          && isSubscribed) {
+        } else if (
+          gameStatusData.data?.gameStatus == GameStatus.SYNCING ||
+          (gameStatusData.data?.gameStatus == GameStatus.GUESSING && isSubscribed)
+        ) {
           setLobbyStatus(LobbyStatus.INGAME);
         }
       }
     })();
-    return () => { isSubscribed = false; };
+    return () => {
+      isSubscribed = false;
+    };
   }, [gameStatusData, startGame, ownerId, userId]);
 
-  return (
-    debouncedLobbyStatus != LobbyStatus.INGAME ? // FIXME: If the lobby screen won't appear you have to use loading here instead of called.
-      <Suspense fallback={<LoaderCenterer><ChaoticOrbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
-        <LobbyManagement
-          name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
-          size={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.size : 0}
-          ownerId={ownerId}
-          gameCategory={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? Object.values(GameCategory)[Object.keys(GameCategory).indexOf(joinLobbyData.data.joinLobbyById.gameCategory)] : GameCategory.PVP}
-          gameMode={gameMode}
-          gameStatus={gameStatus}
-          gameRounds={gameRounds}
-          roundTime={roundTime}
-          players={players}
-          setGameRounds={setGameRounds}
-          setRoundTime={setRoundTime}
-          startGame={startGame}
-        />
-      </Suspense>
-      :
-      <Suspense fallback={<LoaderCenterer><DotWave size={50} color='#eee' /></LoaderCenterer>}>
-        <Game
-          name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
-          setStatus={setLobbyStatus}
-          gameStatus={gameStatus}
-          startGame={startGame}
-        />
-      </Suspense>
+  return debouncedLobbyStatus != LobbyStatus.INGAME ? ( // FIXME: If the lobby screen won't appear you have to use loading here instead of called.
+    <Suspense
+      fallback={
+        <LoaderCenterer>
+          <ChaoticOrbit size={35} color={theme.additional.UiBallLoader.colors.main} />
+        </LoaderCenterer>
+      }
+    >
+      <LobbyManagement
+        name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
+        size={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.size : 0}
+        ownerId={ownerId}
+        gameCategory={
+          !joinLobbyData.loading && joinLobbyData.data?.joinLobbyById
+            ? Object.values(GameCategory)[
+              Object.keys(GameCategory).indexOf(joinLobbyData.data.joinLobbyById.gameCategory)
+            ]
+            : GameCategory.PVP
+        }
+        gameMode={gameMode}
+        gameStatus={gameStatus}
+        gameRounds={gameRounds}
+        roundTime={roundTime}
+        players={players}
+        setGameRounds={setGameRounds}
+        setRoundTime={setRoundTime}
+        startGame={startGame}
+      />
+    </Suspense>
+  ) : (
+    <Suspense
+      fallback={
+        <LoaderCenterer>
+          <DotWave size={50} color="#eee" />
+        </LoaderCenterer>
+      }
+    >
+      <Game
+        name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
+        setStatus={setLobbyStatus}
+        gameStatus={gameStatus}
+        startGame={startGame}
+      />
+    </Suspense>
   );
 };
 
