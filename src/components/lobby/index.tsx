@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useDeferredValue, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   GameCategory,
@@ -12,7 +12,7 @@ import {
 import { Player } from '../../models/Player';
 import { gql, useMutation, useSubscription } from '@apollo/client';
 import { GameStatus, GameStatusModel } from '../../models/Game';
-import { useDebouncedValue, useLocalStorage } from '@mantine/hooks';
+import { useLocalStorage } from '@mantine/hooks';
 import { ChaoticOrbit, DotWave } from '@uiball/loaders';
 import { useTheme } from '@mui/material';
 import LoaderCenterer from '../loader';
@@ -87,7 +87,7 @@ const Lobby = () => {
   const [ownerId, setOwnerId] = React.useState('');
   const [lobbyStatus, setLobbyStatus] = React.useState<LobbyStatus>(LobbyStatus.OPEN);
   // TODO: Needed? Possibly prevents lobbyStatus stuttering
-  const [debouncedLobbyStatus] = useDebouncedValue(lobbyStatus, 500, { leading: true });
+  const deferredLobbyStatus = useDeferredValue(lobbyStatus);
   const [gameStatus, setGameStatus] = React.useState<GameStatus>(GameStatus.NEW);
   const [gameMode, setGameMode] = React.useState<GameMode>(GameMode.WORDSPP);
   const [gameRounds, setGameRounds] = React.useState(0);
@@ -127,6 +127,7 @@ const Lobby = () => {
     variables: {
       id: params.id as string,
     },
+    skip: !joinLobbyData.called || joinLobbyData.loading,
   });
   useEffect(() => {
     if (!subscribeLobbyData.loading && subscribeLobbyData.data?.lobby) {
@@ -167,7 +168,7 @@ const Lobby = () => {
     };
   }, [gameStatusData, startGame, ownerId, userId]);
 
-  return debouncedLobbyStatus != LobbyStatus.INGAME ? ( // FIXME: If the lobby screen won't appear you have to use loading here instead of called.
+  return deferredLobbyStatus != LobbyStatus.INGAME ? ( // FIXME: If the lobby screen won't appear you have to use loading here instead of called.
     <Suspense
       fallback={
         <LoaderCenterer>

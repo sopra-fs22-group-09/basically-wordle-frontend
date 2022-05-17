@@ -14,8 +14,8 @@ function App() {
     additional: {
       UiBallLoader: {
         colors: {
-          main: '#234F20'
-        }
+          main: '#234F20',
+        },
       },
       GameColoring: {
         colors: {
@@ -23,8 +23,8 @@ function App() {
           inWord: 'orange',
           notInWord: 'black',
           notUsed: '#808080',
-        }
-      }
+        },
+      },
     },
     breakpoints: {
       values: {
@@ -34,7 +34,7 @@ function App() {
         md: 900,
         lg: 1200,
         xl: 1536,
-      }
+      },
     },
     palette: {
       primary: {
@@ -49,7 +49,7 @@ function App() {
         dark: '#00867d',
         contrastText: '#000',
       },
-      mode: 'dark'
+      mode: 'dark',
     },
   });
 
@@ -64,29 +64,57 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline enableColorScheme />
       <Router>
-        <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
+        <Suspense
+          fallback={
+            <LoaderCenterer>
+              <Orbit size={35} color={theme.additional.UiBallLoader.colors.main} />
+            </LoaderCenterer>
+          }
+        >
           <Register />
           <Login />
           <Reset />
           <TokenEntry />
           <LobbyConfirmation />
           <Guard>
-            <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
+            <Suspense
+              fallback={
+                <LoaderCenterer>
+                  <Orbit size={35} color={theme.additional.UiBallLoader.colors.main} />
+                </LoaderCenterer>
+              }
+            >
               <Layout>
-                <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
+                <Suspense
+                  fallback={
+                    <LoaderCenterer>
+                      <Orbit size={35} color={theme.additional.UiBallLoader.colors.main} />
+                    </LoaderCenterer>
+                  }
+                >
                   <Routes>
                     {appRoutes
-                      .filter(r => r.enabled)
+                      .filter((r) => r.enabled)
                       .map((route) => (
-                        <Route key={route.key} path={route.path} element={ <route.component />} />
-                      ))
-                    }
+                        <Route key={route.key} path={route.path} element={<route.component />} />
+                      ))}
                   </Routes>
                 </Suspense>
               </Layout>
             </Suspense>
-            <Footer sx={{position: 'fixed', backgroundColor: 'rgba(50, 50, 50, 0.8)', textAlign: 'center', border: 'none', boxShadow: '0 -4px 8px 0 rgb(0 0 0 / 40%), 0 -6px 20px 0 rgb(0 0 0 / 50%)'}} height={'25px'}>
-              <Typography>Build: {process.env.REACT_APP_GIT_REV} ({process.env.NODE_ENV})</Typography>
+            <Footer
+              sx={{
+                position: 'fixed',
+                backgroundColor: 'rgba(50, 50, 50, 0.8)',
+                textAlign: 'center',
+                border: 'none',
+                boxShadow: '0 -4px 8px 0 rgb(0 0 0 / 40%), 0 -6px 20px 0 rgb(0 0 0 / 50%)',
+              }}
+              height={'25px'}
+            >
+              <Typography>
+                Build: {process.env.REACT_APP_GIT_REV} ({process.env.NODE_ENV})
+              </Typography>
             </Footer>
           </Guard>
         </Suspense>
