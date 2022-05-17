@@ -63,10 +63,7 @@ const LOBBY_SUBSCRIPTION = gql`
 
 const ANNOUNCE_START = gql`
   mutation announceStandby {
-    announceStandby {
-      amountRounds
-      roundTime
-    }
+    announceStandby
   }
 `;
 
@@ -125,8 +122,8 @@ const Lobby = () => {
 
   const subscribeLobbyData = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION, {
     variables: {
-      id: params.id as string,
-    },
+      id: params.id as string
+    }
   });
   useEffect(() => {
     if (!subscribeLobbyData.loading && subscribeLobbyData.data?.lobby) {
@@ -139,11 +136,11 @@ const Lobby = () => {
     }
   }, [subscribeLobbyData.loading, subscribeLobbyData.data]);
 
-  const [startGame, { called: _called }] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
+  const [startGame, { called: _called }] = useMutation(ANNOUNCE_START);
   const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {
     variables: {
-      id: params.id as string,
-    },
+      id: params.id as string
+    }
   });
   useEffect(() => {
     let isSubscribed = true;
