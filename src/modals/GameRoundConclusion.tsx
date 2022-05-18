@@ -1,24 +1,21 @@
 import * as React from 'react';
 import { Box, Modal, Typography } from '@mui/material';
+import { useAppSelector } from '../redux/hooks';
 
-interface GameConclusionInformation {
-  open: boolean
-  toggle: () => void
-}
+const GameRoundConclusion = () => {
 
-const GameRoundConclusion = (open: GameConclusionInformation) => {
+  const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'gameRoundConclusion');
 
   return(
     <Modal
-      open={open.open}
-      onClose={open.toggle}
+      open={open}
     >
       <Box
         sx={{
           display: 'flex',
           position: 'absolute',
-          width: '60%',
-          height: '60%',
+          width: '50%',
+          height: '50%',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
@@ -28,10 +25,10 @@ const GameRoundConclusion = (open: GameConclusionInformation) => {
       >
         <Box sx={{ width:'80%', height:'80%', m:'auto', textAlign:'center' }}>
           <Typography variant='h2' sx={{fontSize: 48}}>
-            Game finished!
+            The gameround has finished!
           </Typography>
           <Typography variant='h4' sx={{fontSize: 24, mt:10}}>
-            Check here later again for Game Stats!
+            Wait for other players to finish their round.
           </Typography>
         </Box>
       </Box>
