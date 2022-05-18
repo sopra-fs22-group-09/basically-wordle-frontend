@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Box } from '@mui/material';
 
-
 type CellProps = {
   value?: string
   style?: React.CSSProperties

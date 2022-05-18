@@ -52,7 +52,7 @@ const Game = (gameInfo: GameInformation) => {
   const Grid = lazy(() => import('../components/grid/grid'));
   const Keyboard = lazy(() => import('../components/keyboard/keyboard'));
 
-  const [stopwatch, setStopwatch] = useState(0); //TODO renders everytime whole grid
+  const [stopwatch, setStopwatch] = useState(0); //TODO no need to renders everytime whole grid
   useEffect(() => {
     setTimeout(() => setStopwatch(stopwatch + 1), 1000);
   }, [stopwatch]);
@@ -175,7 +175,14 @@ const Game = (gameInfo: GameInformation) => {
 
   //TODO: Still in production, big changes should come in the next weeks
   return (
-    <>
+    <Box
+      sx={{
+        width: smallScreen ? '100%' : '90%',
+        mx:'auto',
+        mt: '2.5%',
+        textAlign: 'center'
+      }}
+    >
       {gameInfo.gameStatus == GameStatus.FINISHED &&
           <>
             <Typography variant={'h1'} sx={{fontSize: '48px', textAlign: 'center'}}>Game is finished</Typography>
@@ -205,14 +212,14 @@ const Game = (gameInfo: GameInformation) => {
             <Typography variant="h3" sx={{fontSize: '24px', textAlign: 'right', display: 'inline-block', float: 'right'}}>Time: {stopwatch} seconds</Typography>
             {gameInfo.gameStatus == GameStatus.WAITING && <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>Waiting for other players to finish...</Typography>}
           </Box>
-          <Box  sx={{
-            width: gameInfo.gameStatus == GameStatus.WAITING ? '100%' : smallScreen ? '100%' : '50%',
-            mx: 'auto',
-            mt: '2.5%',
-            textAlign: 'center',
-            //float: gameInfo.gameStatus == GameStatus.GUESSING ? 'left' : 'none'
-            display: 'inline-block'
-          }}
+          <Box
+            sx={{
+              width: gameInfo.gameStatus == GameStatus.WAITING ? '100%' : smallScreen ? '100%' : '50%',
+              mx: 'auto',
+              mt: '2.5%',
+              textAlign: 'center',
+              display: 'inline-block'
+            }}
           >
             <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
               <Grid
@@ -244,9 +251,9 @@ const Game = (gameInfo: GameInformation) => {
                 textAlign: 'center'
               }}
             >
-              {opponentGameRoundData.data.opponentGameRound.map((round, i) => (
+              {opponentGameRoundData.data.opponentGameRound.map((round) => (
                 <Box
-                  key={i}
+                  key={round.player.id}
                   sx={{
                     display: 'inline-block',
                     mb: '5%',
@@ -261,7 +268,7 @@ const Game = (gameInfo: GameInformation) => {
           }
         </>
       }
-    </>
+    </Box>
   );
 };
 

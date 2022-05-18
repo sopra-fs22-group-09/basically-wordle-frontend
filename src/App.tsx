@@ -28,7 +28,7 @@ function App() {
     },
     breakpoints: {
       values: {
-        mobile: 800,
+        mobile: 900,
         xs: 0,
         sm: 600,
         md: 900,
