@@ -16,6 +16,7 @@ import { useDebouncedValue, useLocalStorage } from '@mantine/hooks';
 import { ChaoticOrbit, DotWave } from '@uiball/loaders';
 import { useTheme } from '@mui/material';
 import LoaderCenterer from '../loader';
+import { useAppDispatch } from '../../redux/hooks';
 
 const JOIN_LOBBY = gql`
   mutation joinLobby($id: ID!) {
@@ -77,6 +78,7 @@ const Lobby = () => {
   const theme = useTheme();
   const params = useParams();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const LobbyManagement = lazy(() => import('../../pages/lobbyManagement'));
   const Game = lazy(() => import('../../pages/game'));
@@ -151,6 +153,9 @@ const Lobby = () => {
           await startGame().then(() => {
             //setLobbyStatus(LobbyStatus.INGAME);
           });
+        } else if (gameStatusData.data?.gameStatus == GameStatus.NEW) {
+          setLobbyStatus(LobbyStatus.OPEN);
+          dispatch({type: 'modal/setState', payload: {isOpen: false}});
         } else if (
           gameStatusData.data?.gameStatus == GameStatus.SYNCING ||
           (gameStatusData.data?.gameStatus == GameStatus.GUESSING && isSubscribed)
