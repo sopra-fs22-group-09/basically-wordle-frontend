@@ -1,8 +1,8 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import { READ_USERNAME, WithChildren } from '../utils/utils';
-import { lazy, Suspense } from 'react';
-import { Skeleton, useTheme } from '@mui/material';
+import { lazy, Suspense, useEffect } from 'react';
+import { Skeleton, useMediaQuery, useTheme } from '@mui/material';
 import MuiAppBar from '@mui/material/AppBar';
 import MuiDrawer from '@mui/material/Drawer';
 import { hideNotification, showNotification } from '@mantine/notifications';
@@ -12,6 +12,7 @@ import { LobbyInvite } from '../models/Lobby';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { User } from '../models/User';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 
 // Do this explicitly if you need the component to have children!
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -33,6 +34,13 @@ const Layout = ({ children }: LayoutProps) => {
 
   const navigate = useNavigate();
   const theme = useTheme();
+  const smallScreen = !useMediaQuery(theme.breakpoints.up('mobile')); //screen smaller than defined size
+  const dispatch = useAppDispatch();
+  const open = useAppSelector(state => state.drawer.isOpen);
+
+  useEffect(() => {
+    if (smallScreen) dispatch({ type: 'drawer/setState', action: false });
+  }, [smallScreen]);
 
   const acceptInvite = (invite: LobbyInvite) => {
     hideNotification('invite-' + invite.senderId);
@@ -83,9 +91,9 @@ const Layout = ({ children }: LayoutProps) => {
       <Suspense fallback={<Skeleton variant="rectangular"><MuiAppBar /></Skeleton>}>
         <Header />
       </Suspense>
-      <Suspense fallback={<Skeleton variant="rectangular" width="240px"><MuiDrawer /></Skeleton>}>
+      {(!smallScreen || open) && <Suspense fallback={<Skeleton variant="rectangular" width="240px"><MuiDrawer /></Skeleton>}>
         <FriendsList />
-      </Suspense>
+      </Suspense>}
       <Box
         component="main"
         sx={{
