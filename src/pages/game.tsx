@@ -251,7 +251,7 @@ const Game = (gameInfo: GameInformation) => {
                 textAlign: 'center'
               }}
             >
-              {opponentGameRoundData.data.opponentGameRound.map((round, i) => (
+              {opponentGameRoundData.data.opponentGameRound.map((round) => (
                 <Box
                   key={round.player.id}
                   sx={{

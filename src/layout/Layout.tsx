@@ -40,7 +40,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   useEffect(() => {
     if (smallScreen) dispatch({ type: 'drawer/setState', action: false });
-  }, [smallScreen]);
+  }, [dispatch, smallScreen]);
 
   const acceptInvite = (invite: LobbyInvite) => {
     hideNotification('invite-' + invite.senderId);
