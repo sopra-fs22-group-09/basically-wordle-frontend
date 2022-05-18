@@ -28,7 +28,8 @@ const GameConclusion = () => {
   const dispatch = useAppDispatch();
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'gameConclusion');
 
-  const [concludeGame, {data}] = useLazyQuery<GameStatsModel>(CONCLUDE_GAME, {
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  const [concludeGame, {data}] = useLazyQuery<GameStatsModel>(CONCLUDE_GAME, { //TODO unsupress for later below
     onCompleted(data) {
       alert(data.concludeGame.score);
       //console.log('ja');
