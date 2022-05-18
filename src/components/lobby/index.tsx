@@ -138,35 +138,6 @@ const Lobby = () => {
   const [createGuest, { data: guestData, loading: guestLoading, error: guestError }] = useMutation<GuestType>(ADD_GUEST);
   const [joinLobbyAsGuest, joinGuestLobbyData] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY_AS_GUEST);
 
-  /*useEffect(() => {
-    if (!localStorage.getItem('userId') && !guestCreated) {
-      createGuest({
-        onCompleted(data) {
-          if (data.createGuest) {
-            localStorage.setItem('userId', data.createGuest.id);
-            localStorage.setItem('userName', data.createGuest.name);
-            localStorage.setItem('guest', 'yes');
-            setGuestCreated(true);
-          }
-        }
-      }).then(r1 => {
-        joinLobbyAsGuest({
-          variables: {
-            id: params.id as string
-          }
-        }).then(r => {
-          if (r.data?.guestJoinLobbyById) {
-            setOwnerId(r.data.guestJoinLobbyById.owner.id);
-            setLobbyStatus(r.data.guestJoinLobbyById.status);
-            setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.guestJoinLobbyById.gameMode)]);
-            setGameRounds(r.data.guestJoinLobbyById.game.amountRounds);
-            setRoundTime(r.data.guestJoinLobbyById.game.roundTime);
-            setPlayers(r.data.guestJoinLobbyById.players);
-          }
-        });
-      });
-    }
-  }, [createGuest, guestCreated, joinLobbyAsGuest, params.id]);*/
   useEffect(() => {
     /*if (!guestCreated) {*/
     let isSubscribed = true;

@@ -2,13 +2,13 @@ import * as React from 'react';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { Box, Typography, Button, useTheme } from '@mui/material';
 import { DotWave, Orbit } from '@uiball/loaders';
-import { GameMode, LobbyStatus } from '../models/Lobby';
+import { GameMode, LobbyStatus, LeaveGameArgs } from '../models/Lobby';
 import { gql, useLazyQuery, useMutation, useSubscription } from '@apollo/client';
 import {
   GameRoundModel,
   GameStatsModel,
   GameStatus, GameStatusModel,
-  LeaveGameArgs, LeaveType,
+  LeaveType,
   LetterState,
   OpponentGameRoundModel, PlayAgainType,
 } from '../models/Game';
@@ -148,12 +148,7 @@ const Game = (gameInfo: GameInformation) => {
   const [playAgain, playData] = useMutation<PlayAgainType>(PLAY_AGAIN);
 
   const handleRematch = () => {
-    playAgain({variables: {
-    },
-    onCompleted() {
-      const a = '';
-    }
-    });
+    playAgain();
   };
 
   const [submitGuess, {loading}] = useMutation<GameRoundModel>(SUBMIT_GUESS, {

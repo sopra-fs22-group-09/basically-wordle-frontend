@@ -47,6 +47,10 @@ export type SubscriptionLobbyArgs = {
   id: Scalars['ID'];
 }
 
+export type LeaveGameArgs = {
+  id: Scalars['ID'];
+};
+
 export type MutationUpdateLobbySettingsArgs = {
   input: GameSettingsInput;
 };
