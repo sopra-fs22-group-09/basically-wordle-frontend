@@ -8,17 +8,19 @@ type GridProps = {
   currentWord?: string
   allGuesses: string[]
   allLetterStates: LetterState[][]
+  style?: React.CSSProperties
 }
 
 const Grid = ({
   currentRow,
   currentWord,
   allGuesses,
-  allLetterStates
+  allLetterStates,
+  style
 
 }: GridProps) => {
   return (
-    <Box sx={{minWidth: '200px', maxWidth: '312px', m: 'auto'}}>
+    <Box sx={{minWidth: '200px', maxWidth: '312px', m: 'auto', ...style}}>
       {allGuesses?.map((word, i) => (
         <Row
           key={i}

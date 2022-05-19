@@ -4,9 +4,9 @@ import Key from './key';
 import { useEffect } from 'react';
 
 type KeyboardProps = {
-  onChar: (value: string) => void
-  onDelete: () => void
-  onEnter: () => void
+  onChar?: (value: string) => void
+  onDelete?: () => void
+  onEnter?: () => void
   letterOnCorrectPosition: string;
   letterInWord: string;
   letterNotInWord: string;
@@ -31,19 +31,19 @@ const Keyboard = ({
   };
 
   const onClick = (value: string) => {
-    if (value === 'Enter') onEnter();
-    else if (value === 'Del') onDelete();
-    else onChar(value);
+    if ((value === 'Enter' || value === 'Ok') && onEnter) onEnter();
+    else if ((value === 'Delete' || value === 'Del') && onDelete) onDelete();
+    else if (onChar) onChar(value);
   };
 
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
-      if (e.code === 'Enter') onEnter();
-      else if (e.code === 'Backspace' || e.code === 'Delete') {
+      if (e.code === 'Enter' && onEnter) onEnter();
+      else if ((e.code === 'Backspace' || e.code === 'Delete') && onDelete) {
         e.preventDefault();
         onDelete();
       }
-      else if (e.key.length === 1 && e.key >= 'a' && e.key <= 'z') onChar(e.key.toUpperCase());
+      else if ((e.key.length === 1 && e.key >= 'a' && e.key <= 'z') && onChar) onChar(e.key.toUpperCase());
     };
     window.addEventListener('keyup', listener);
     return () => {window.removeEventListener('keyup', listener);};
@@ -62,11 +62,11 @@ const Keyboard = ({
         ))}
       </Box>
       <Box>
-        <Key value='Del' onClick={onClick} style={{ width: smallScreen ? '10%' : '14%', backgroundColor: `${getColorForLetter('Delete')}` }}/>
+        <Key value={smallScreen ? 'Del' : 'Delete'} onClick={onClick} style={{ width: smallScreen ? '10%' : '14%', backgroundColor: `${getColorForLetter('Delete')}` }}/>
         {['Y', 'X', 'C', 'V', 'B', 'N', 'M'].map((key) => (
           <Key value={key} key={key} onClick={onClick} style={{ backgroundColor: `${getColorForLetter(key)}` }}/>
         ))}
-        <Key value='Enter' onClick={onClick} style={{ width: smallScreen ? '10%' : '14%', backgroundColor: `${getColorForLetter('Enter')}` }}/>
+        <Key value={smallScreen ? 'Ok' : 'Enter'} onClick={onClick} style={{ width: smallScreen ? '10%' : '14%', backgroundColor: `${getColorForLetter('Enter')}` }}/>
       </Box>
     </Box>
   );

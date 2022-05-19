@@ -4,6 +4,7 @@ import { useAppSelector } from '../redux/hooks';
 
 const GameRoundConclusion = () => {
 
+  //TODO @jemaie?
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'gameRoundConclusion');
 
   return(
@@ -19,7 +20,7 @@ const GameRoundConclusion = () => {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          bgcolor: 'black',
+          bgcolor: 'rgba(0, 0, 0, 0.5)',
           boxShadow: 24,
         }}
       >
