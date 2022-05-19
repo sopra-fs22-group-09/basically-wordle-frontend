@@ -94,15 +94,15 @@ export enum LobbyStatus {
 export const GameCategorization = new Map<GameMode, GameCategory>([
   [GameMode.WORDSPP, GameCategory.PVP],
   [GameMode.SONICFAST, GameCategory.PVP],
-  [GameMode.TIMERESET, GameCategory.PVP],
-  [GameMode.PARTY, GameCategory.PVP],
-  [GameMode.CHALLENGE, GameCategory.PVP],
-  [GameMode.CHAIN, GameCategory.PVP],
+  //[GameMode.TIMERESET, GameCategory.PVP],
+  //[GameMode.PARTY, GameCategory.PVP],
+  //[GameMode.CHALLENGE, GameCategory.PVP],
+  //[GameMode.CHAIN, GameCategory.PVP],
   [GameMode.CLASSIC, GameCategory.SOLO],
-  [GameMode.INTIME, GameCategory.SOLO],
-  [GameMode.PLAYERVSAI, GameCategory.SOLO],
-  [GameMode.ONEWORD, GameCategory.COOP],
-  [GameMode.WORDCOMBINATION, GameCategory.COOP]
+  //[GameMode.INTIME, GameCategory.SOLO],
+  //[GameMode.PLAYERVSAI, GameCategory.SOLO],
+  //[GameMode.ONEWORD, GameCategory.COOP],
+  //[GameMode.WORDCOMBINATION, GameCategory.COOP]
 ]);
 
 export const GameCategoryMaxSize = new Map<GameCategory, number>([

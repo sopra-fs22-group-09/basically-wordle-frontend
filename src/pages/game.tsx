@@ -114,7 +114,7 @@ const Game = (gameInfo: GameInformation) => {
         setDelayNewRound(false);
         clearGameScreen();
         dispatch({type: 'modal/setState', payload: {isOpen: false}});
-      }, 5000);
+      }, 2500);
 
     } else {
       dispatch({type: 'modal/setState', payload: {isOpen: false}});
@@ -191,13 +191,17 @@ const Game = (gameInfo: GameInformation) => {
         setCurrentlyTypingWord('');
         setAmountGuesses(amountGuesses + 1);
         if (amountGuesses >= 5) { //TODO Hook is too slow and is not updated at this point.. there must be a better solution...
-          toggleModal('gameRoundConclusion');
-          setTimeout(() => {
-            if (gamestat.current == GameStatus.GUESSING) {
-              clearGameScreen();
-              dispatch({type: 'modal/setState', payload: {isOpen: false}});
-            }
-          }, 5000);
+          if (gamestat.current == GameStatus.FINISHED) {
+            toggleModal('gameConclusion');
+          } else {
+            toggleModal('gameRoundConclusion');
+            setTimeout(() => {
+              if (gamestat.current == GameStatus.GUESSING) {
+                clearGameScreen();
+                dispatch({type: 'modal/setState', payload: {isOpen: false}});
+              }
+            }, 2500);
+          }
         }
       });
     }

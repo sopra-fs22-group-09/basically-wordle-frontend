@@ -33,6 +33,8 @@ const JOIN_LOBBY = gql`
       game {
         amountRounds
         roundTime
+        maxRounds
+        maxTime
       }
       players {
         id
@@ -53,6 +55,8 @@ const LOBBY_SUBSCRIPTION = gql`
       game {
         amountRounds
         roundTime
+        maxRounds
+        maxTime
       }
       players {
         id
@@ -91,6 +95,8 @@ const Lobby = () => {
   const [gameMode, setGameMode] = React.useState<GameMode>(GameMode.WORDSPP);
   const [gameRounds, setGameRounds] = React.useState(0);
   const [roundTime, setRoundTime] = React.useState(0);
+  const [maxRounds, setMaxRounds] = React.useState(1);
+  const [maxTime, setMaxTime] = React.useState(60);
   const [players, setPlayers] = React.useState<Player[]>([]);
   const [userId] = useLocalStorage<string>({ key: 'userId' });
 
@@ -113,6 +119,8 @@ const Lobby = () => {
           setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.joinLobbyById.gameMode)]);
           setGameRounds(r.data.joinLobbyById.game.amountRounds);
           setRoundTime(r.data.joinLobbyById.game.roundTime);
+          setMaxRounds(r.data.joinLobbyById.game.maxRounds);
+          setMaxTime(r.data.joinLobbyById.game.maxTime);
           setPlayers(r.data.joinLobbyById.players);
         }
       });
@@ -134,6 +142,8 @@ const Lobby = () => {
       setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(subscribeLobbyData.data.lobby.gameMode)]);
       setGameRounds(subscribeLobbyData.data.lobby.game.amountRounds);
       setRoundTime(subscribeLobbyData.data.lobby.game.roundTime);
+      setMaxRounds(subscribeLobbyData.data.lobby.game.maxRounds);
+      setMaxTime(subscribeLobbyData.data.lobby.game.maxTime);
       setPlayers(subscribeLobbyData.data.lobby.players);
     }
   }, [subscribeLobbyData.loading, subscribeLobbyData.data]);
@@ -192,6 +202,8 @@ const Lobby = () => {
         gameStatus={gameStatus}
         gameRounds={gameRounds}
         roundTime={roundTime}
+        maxRounds={maxRounds}
+        maxTime={maxTime}
         players={players}
         setGameRounds={setGameRounds}
         setRoundTime={setRoundTime}
