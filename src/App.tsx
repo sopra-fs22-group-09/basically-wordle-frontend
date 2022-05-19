@@ -59,6 +59,8 @@ function App() {
   const Reset = lazy(() => import('./modals/Reset'));
   const TokenEntry = lazy(() => import('./modals/TokenEntry'));
   const LobbyConfirmation = lazy(() => import('./modals/LobbyConfirmation'));
+  const GameRoundConclusion = lazy(() => import('./modals/GameRoundConclusion'));
+  const GameConclusion = lazy(() => import('./modals/GameConclusion'));
 
   return (
     <ThemeProvider theme={theme}>
@@ -70,6 +72,8 @@ function App() {
           <Reset />
           <TokenEntry />
           <LobbyConfirmation />
+          <GameRoundConclusion />
+          <GameConclusion />
           <Guard>
             <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
               <Layout>

@@ -3,9 +3,10 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { DotWave, Orbit } from '@uiball/loaders';
 import { LobbyStatus } from '../models/Lobby';
-import { gql, useLazyQuery, useMutation, useSubscription } from '@apollo/client';
-import { GameRoundModel, GameStatsModel, GameStatus, LetterState, OpponentGameRoundModel, } from '../models/Game';
+import { gql, useMutation, useSubscription } from '@apollo/client';
+import { GameRoundModel, GameStatus, LetterState, OpponentGameRoundModel, } from '../models/Game';
 import LoaderCenterer from '../components/loader';
+import { useAppDispatch } from '../redux/hooks';
 
 interface GameInformation {
   name: string
@@ -36,18 +37,6 @@ const OPPONENT_GAME_ROUND = gql`
   }
 `;
 
-const CONCLUDE_GAME = gql`
-  query concludeGame {
-    concludeGame {
-      targetWord
-      roundsTaken
-      timeTaken
-      score
-      rank
-    }
-  }
-`;
-
 const Game = (gameInfo: GameInformation) => {
   const Grid = lazy(() => import('../components/grid/grid'));
   const Keyboard = lazy(() => import('../components/keyboard/keyboard'));
@@ -58,6 +47,7 @@ const Game = (gameInfo: GameInformation) => {
   }, [stopwatch]);
 
   const theme = useTheme();
+  const dispatch = useAppDispatch();
   const smallScreen = !useMediaQuery(theme.breakpoints.up('mobile')); //screen smaller than defined size
 
   // const [roundConclusion, setRoundConclusion] = React.useState<boolean>(false);
@@ -82,15 +72,10 @@ const Game = (gameInfo: GameInformation) => {
   const [guessHistory, setGuessHistory] = useState(['', '', '', '', '', '']);
   const [letterState, setLetterState] = useState<LetterState[][]>([[]]);
 
-
-  const [concludeGame, {data}] = useLazyQuery<GameStatsModel>(CONCLUDE_GAME, {
-    onCompleted(data) {
-      alert(data.concludeGame.score);
-      //console.log('ja');
-      gameInfo.setStatus(LobbyStatus.OPEN);
-    },
-    fetchPolicy: 'network-only'
-  });
+  const toggleModal = (conclusionType: string) => {
+    dispatch({type: 'modal/setState', payload: {isOpen: false}});
+    dispatch({ type: 'modal/toggle', payload: conclusionType });
+  };
 
   useEffect(() => {
     if (gameInfo.gameStatus == GameStatus.SYNCING || gameInfo.gameStatus == GameStatus.NEW) gameInfo.startGame();
@@ -98,8 +83,15 @@ const Game = (gameInfo: GameInformation) => {
   }, []);  // Please don't touch!!
 
   useEffect(() => {
-    if (gameInfo.gameStatus == GameStatus.FINISHED) concludeGame();
-  }, [concludeGame, gameInfo.gameStatus]);
+    if (gameInfo.gameStatus == GameStatus.WAITING) {
+      toggleModal('gameRoundConclusion');
+    } else if (gameInfo.gameStatus == GameStatus.FINISHED) {
+      toggleModal('gameConclusion');
+    } else {
+      dispatch({type: 'modal/setState', payload: {isOpen: false}});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameInfo.gameStatus]);
 
   const [submitGuess, {loading}] = useMutation<GameRoundModel>(SUBMIT_GUESS, {
     variables: {
@@ -200,18 +192,6 @@ const Game = (gameInfo: GameInformation) => {
         textAlign: 'center'
       }}
     >
-      {gameInfo.gameStatus == GameStatus.FINISHED &&
-          <>
-            <Typography variant={'h1'} sx={{fontSize: '48px', textAlign: 'center'}}>Game is finished</Typography>
-            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Score: {data?.concludeGame.score}</Typography>
-            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Rank: {data?.concludeGame.rank}</Typography>
-            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Target word: {data?.concludeGame.targetWord}</Typography>
-            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Rounds taken: {data?.concludeGame.roundsTaken}</Typography>
-            <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Time taken: {data?.concludeGame.timeTaken}</Typography>
-            {/*TODO <Button variant='contained' sx={{ mx:2, mt:2 }} disabled={localStorage.getItem('userId') != ownerId} onClick={() => setStatus(LobbyStatus.OPEN)}>Back to Lobby</Button>*/}
-          </>
-      }
-
       {(gameInfo.gameStatus == GameStatus.SYNCING) &&
         <LoaderCenterer>
           <DotWave
