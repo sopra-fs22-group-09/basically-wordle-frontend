@@ -9,9 +9,9 @@ import LoaderCenterer from '../components/loader';
 import { useAppDispatch } from '../redux/hooks';
 
 interface GameInformation {
-  name: string
-  setStatus: (status: LobbyStatus) => void
   gameStatus?: GameStatus
+  roundTime: number
+  setStatus: (status: LobbyStatus) => void
   startGame: () => void
 }
 
@@ -21,6 +21,8 @@ const SUBMIT_GUESS = gql`
       targetWord
       words
       letterStates
+      currentRound
+      guessed
     }
   }
 `;
@@ -41,28 +43,18 @@ const Game = (gameInfo: GameInformation) => {
   const Grid = lazy(() => import('../components/grid/grid'));
   const Keyboard = lazy(() => import('../components/keyboard/keyboard'));
 
-  const [stopwatch, setStopwatch] = useState(0); //TODO no need to renders everytime whole grid
+  const [stopwatch, setStopWatch] = useState(gameInfo.roundTime); //TODO no need to renders everytime whole grid
   useEffect(() => {
-    setTimeout(() => setStopwatch(stopwatch + 1), 1000);
+    setTimeout(() => setStopWatch(stopwatch - 1), 1000);
   }, [stopwatch]);
 
   const theme = useTheme();
   const dispatch = useAppDispatch();
+  const gamestat = useRef(gameInfo.gameStatus); // To be able to access gamestatus within setTimeout
   const smallScreen = !useMediaQuery(theme.breakpoints.up('mobile')); //screen smaller than defined size
 
-  // const [roundConclusion, setRoundConclusion] = React.useState<boolean>(false);
-  // const [gameConclusion, setGameConclusion] = React.useState<boolean>(false);
-  // const toggleRoundConclusionModal = () => {
-  //   setRoundConclusion(!roundConclusion);
-  // };
-  // const toggleGameConclusionModal = () => {
-  //   setGameConclusion(!gameConclusion);
-  // };
-
-  const [delayNewRound, setDelayNewRound] = useState(false);
-  const gamestat = useRef(gameInfo.gameStatus); // To be able to access gamestatus within setTimeout
-
   const [currentRound, setCurrentRound] = useState(1);
+  const [delayNewRound, setDelayNewRound] = useState(false);
 
   // For keyboard
   const [letterOnCorrectPosition, setLetterOnCorrectPosition] = useState('');
@@ -81,6 +73,7 @@ const Game = (gameInfo: GameInformation) => {
   };
 
   const clearGameScreen = () => {
+    setStopWatch(gameInfo.roundTime);
     setCurrentRound(currentRound + 1);
 
     // For keyboard
@@ -93,8 +86,20 @@ const Game = (gameInfo: GameInformation) => {
     setAmountGuesses(0);
     setGuessHistory(['', '', '', '', '', '']);
     setLetterState([[]]);
+  };
 
-    setStopwatch(0);
+  const finishRound = () => {
+    if (gamestat.current == GameStatus.FINISHED) {
+      toggleModal('gameConclusion');
+    } else {
+      toggleModal('gameRoundConclusion');
+      setTimeout(() => {
+        if (gamestat.current == GameStatus.GUESSING) {
+          clearGameScreen();
+          dispatch({type: 'modal/setState', payload: {isOpen: false}});
+        }
+      }, 2500);
+    }
   };
 
   useEffect(() => {
@@ -131,7 +136,7 @@ const Game = (gameInfo: GameInformation) => {
     },
     async onCompleted(data) {
       if (data?.submitGuess) {
-        setCurrentRound(data.submitGuess.currentRound);
+        setCurrentRound(data.submitGuess.currentRound + 1);
 
         // Grid coloring magic
         setGuessHistory(data.submitGuess.words);
@@ -157,31 +162,15 @@ const Game = (gameInfo: GameInformation) => {
         setLetterInWord(inWord);
         setLetterNotInWord(wrong);
 
-
-        // if (gameInfo.gameStatus == GameStatus.FINISHED) toggleGameConclusionModal();
-
-        // if (amountGuesses >= 5) {
-        //   toggleRoundConclusionModal();
-        // }
-        // let allRight = true;
-        // //console.log(row);
-        // for (const letterState of row) {
-        //   //console.log(letterState);
-        //   if (letterState != LetterState.CORRECTPOSITION) {
-        //     allRight = false;
-        //   }
-        // }
-        // if (allRight) {
-        //   toggleRoundConclusionModal();
-        // }
+        if (data.submitGuess.guessed) {
+          finishRound();
+        }
       }
     }
   });
 
   //TODO Write hooks to initialize an empty state and show this state. then, use useeffect to update the hooks.
-  const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND, {
-    //onSubscriptionData: a => console.log(a.subscriptionData)
-  });
+  const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND);
 
   const onChar = (value: string) => {if (!loading && currentlyTypingWord.length < 5 && amountGuesses < 6) setCurrentlyTypingWord(currentlyTypingWord + value);};
   const onDelete = () => {if (!loading && currentlyTypingWord.length > 0 && amountGuesses < 6) setCurrentlyTypingWord(currentlyTypingWord.substring(0, currentlyTypingWord.length - 1));};
@@ -191,17 +180,7 @@ const Game = (gameInfo: GameInformation) => {
         setCurrentlyTypingWord('');
         setAmountGuesses(amountGuesses + 1);
         if (amountGuesses >= 5) { //TODO Hook is too slow and is not updated at this point.. there must be a better solution...
-          if (gamestat.current == GameStatus.FINISHED) {
-            toggleModal('gameConclusion');
-          } else {
-            toggleModal('gameRoundConclusion');
-            setTimeout(() => {
-              if (gamestat.current == GameStatus.GUESSING) {
-                clearGameScreen();
-                dispatch({type: 'modal/setState', payload: {isOpen: false}});
-              }
-            }, 2500);
-          }
+          finishRound();
         }
       });
     }
@@ -282,7 +261,7 @@ const Game = (gameInfo: GameInformation) => {
                   }}
                 >
 
-                  <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>{round.player.name} - Round {round.currentRound}</Typography>
+                  <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>{round.player.name} - Round {round.currentRound + 1}</Typography>
                   <Grid allLetterStates={round.letterStates} allGuesses={['', '', '', '', '', '']}/>
                 </Box>
               ))}

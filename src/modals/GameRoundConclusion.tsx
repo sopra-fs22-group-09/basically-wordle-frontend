@@ -10,6 +10,7 @@ const CONCLUDE_ROUND = gql`
     concludeGame {
       targetWord
       timeTaken
+      score
     }
   }
 `;
@@ -18,7 +19,7 @@ const GameRoundConclusion = () => {
 
   const [targetWord, setTargetWord] = useState('');
   const [timeTaken, setTimeTaken] = useState(0);
-  //TODO @jemaie?
+  const [score, setScore] = useState(0);
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'gameRoundConclusion');
 
   const [concludeRound] = useLazyQuery<GameStatsModel>(CONCLUDE_ROUND, { //TODO unsupress for later below
@@ -30,6 +31,7 @@ const GameRoundConclusion = () => {
         if (!r.loading && r.data) {
           setTimeTaken(r.data.concludeGame.timeTaken);
           setTargetWord(r.data.concludeGame.targetWord);
+          setScore(r.data.concludeGame.score);
         }
       });
   }, [concludeRound, open]);
@@ -62,8 +64,11 @@ const GameRoundConclusion = () => {
             Target word: {targetWord}
           </Typography>
           <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center'}}>
-            Time taken: {((timeTaken % 3600) / 60).toPrecision(2)
-            + '.' + (timeTaken % 60).toPrecision(2) + ' seconds'}
+            Time taken: {Math.floor((timeTaken % 3600) / 60)
+              + '.' + ((timeTaken % 60000) / 1000).toFixed(0)}
+          </Typography>
+          <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center'}}>
+            Score: {score}
           </Typography>
         </Box>
       </Box>
