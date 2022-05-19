@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { Box, Typography, useTheme, useMediaQuery } from '@mui/material';
+import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { DotWave, Orbit } from '@uiball/loaders';
 import { LobbyStatus } from '../models/Lobby';
 import { gql, useLazyQuery, useMutation, useSubscription } from '@apollo/client';
@@ -136,6 +136,23 @@ const Game = (gameInfo: GameInformation) => {
         setLetterInWord(inWord);
         setLetterNotInWord(wrong);
 
+        if(data.submitGuess.words.length === 6 && gameInfo.gameStatus === GameStatus.GUESSING) {
+          setTimeout(() => {
+            setCurrentRound(currentRound + 1);
+
+            // For keyboard
+            setLetterOnCorrectPosition('');
+            setLetterInWord('');
+            setLetterNotInWord('');
+
+            // For Grid
+            setCurrentlyTypingWord('');
+            setAmountGuesses(0);
+            setGuessHistory(['', '', '', '', '', '']);
+            setLetterState([[]]);
+          }, 5000);
+        }
+
 
         // if (gameInfo.gameStatus == GameStatus.FINISHED) toggleGameConclusionModal();
 
@@ -230,16 +247,16 @@ const Game = (gameInfo: GameInformation) => {
               />
             </Suspense>
             {gameInfo.gameStatus == GameStatus.GUESSING &&
-                <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main}/></LoaderCenterer>}>
-                  <Keyboard
-                    onChar={onChar}
-                    onDelete={onDelete}
-                    onEnter={onEnter}
-                    letterOnCorrectPosition={letterOnCorrectPosition}
-                    letterInWord={letterInWord}
-                    letterNotInWord={letterNotInWord}
-                  />
-                </Suspense>
+              <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main}/></LoaderCenterer>}>
+                <Keyboard
+                  onChar={onChar}
+                  onDelete={onDelete}
+                  onEnter={onEnter}
+                  letterOnCorrectPosition={letterOnCorrectPosition}
+                  letterInWord={letterInWord}
+                  letterNotInWord={letterNotInWord}
+                />
+              </Suspense>
             }
           </Box>
           {opponentGameRoundData.data &&

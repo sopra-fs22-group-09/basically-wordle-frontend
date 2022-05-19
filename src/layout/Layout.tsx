@@ -97,8 +97,9 @@ const Layout = ({ children }: LayoutProps) => {
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
+          width: '100%',
           height: 'calc(100% - 75px)',
+          pb: '30px',
           transform: 'translate(0, 75px)',
           overflowY: 'scroll',
           overflowX: 'hidden',
