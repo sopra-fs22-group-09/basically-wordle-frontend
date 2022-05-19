@@ -3,16 +3,13 @@ import { Box, Button, Modal, Typography } from '@mui/material';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { GameStatsModel } from '../models/Game';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const CONCLUDE_GAME = gql`
   query concludeGame {
     concludeGame {
       targetWord
-      roundsTaken
       timeTaken
-      score
-      rank
     }
   }
 `;
@@ -26,20 +23,22 @@ const REINITIALIZE_LOBBY = gql`
 const GameConclusion = () => {
 
   const dispatch = useAppDispatch();
+  const [targetWord, setTargetWord] = useState('');
+  const [timeTaken, setTimeTaken] = useState(0);
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'gameConclusion');
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  const [concludeGame, {data}] = useLazyQuery<GameStatsModel>(CONCLUDE_GAME, { //TODO unsupress for later below
-    onCompleted(data) {
-      alert(data.concludeGame.score);
-      //console.log('ja');
-      //gameInfo.setStatus(LobbyStatus.OPEN);
-    },
+  const [concludeGame] = useLazyQuery<GameStatsModel>(CONCLUDE_GAME, { //TODO unsupress for later below
     fetchPolicy: 'network-only'
   });
   useEffect(() => {
-    concludeGame();
-  }, [concludeGame]);
+    concludeGame()
+      .then(r => {
+        if (!r.loading && r.data) {
+          setTimeTaken(r.data.concludeGame.timeTaken);
+          setTargetWord(r.data.concludeGame.targetWord);
+        }
+      });
+  }, [concludeGame, open]);
 
   const [reInitLobby] = useMutation(REINITIALIZE_LOBBY);
 
@@ -66,13 +65,17 @@ const GameConclusion = () => {
         }}
       >
         <Box sx={{ width:'80%', height:'80%', m:'auto', textAlign:'center' }}>
-          <Typography variant='h1' sx={{fontSize: 48}}>
+          <Typography variant='h1' sx={{fontSize: '48px'}}>
             Game finished!
           </Typography>
-          <Typography variant='h2' sx={{fontSize: 24, mt:10}}>
-            Check here later again for Game Stats!
+          <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center', mt:5}}>
+            Target word: {targetWord}
           </Typography>
-          <Button variant="contained" sx={{ mr:2 }} onClick={() => playAgain()}>Play Again</Button>
+          <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center'}}>
+            Time taken: {((timeTaken % 3600) / 60).toPrecision(2)
+              + '.' + (timeTaken % 60).toPrecision(2) + ' seconds'}
+          </Typography>
+          <Button variant="contained" sx={{ mt:2 }} onClick={() => playAgain()}>Play Again</Button>
           
           {/*          <Typography variant={'h1'} sx={{fontSize: '48px', textAlign: 'center'}}>Game is finished</Typography>
           <Typography variant={'body1'} sx={{fontSize: '32px', textAlign: 'center'}}>Score: {data?.concludeGame.score}</Typography>
