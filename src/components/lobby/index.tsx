@@ -219,9 +219,9 @@ const Lobby = () => {
       }
     >
       <Game
-        name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
-        setStatus={setLobbyStatus}
         gameStatus={gameStatus}
+        roundTime={roundTime}
+        setStatus={setLobbyStatus}
         startGame={startGame}
       />
     </Suspense>

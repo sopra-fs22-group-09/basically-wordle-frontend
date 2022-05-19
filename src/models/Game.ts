@@ -35,6 +35,7 @@ export type GameRound = {
   player: Player;
   currentRound: Scalars['Int'];
   targetWord: Scalars['String'];
+  guessed: Scalars['Boolean'];
   words: Array<Scalars['String']>;
   letterStates: Array<Array<LetterState>>;
 };

@@ -10,6 +10,8 @@ const CONCLUDE_GAME = gql`
     concludeGame {
       targetWord
       timeTaken
+      roundsTaken
+      score
     }
   }
 `;
@@ -25,6 +27,8 @@ const GameConclusion = () => {
   const dispatch = useAppDispatch();
   const [targetWord, setTargetWord] = useState('');
   const [timeTaken, setTimeTaken] = useState(0);
+  const [roundsTaken, setRoundsTaken] = useState(0);
+  const [score, setScore] = useState(0);
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'gameConclusion');
 
   const [concludeGame] = useLazyQuery<GameStatsModel>(CONCLUDE_GAME, { //TODO unsupress for later below
@@ -36,6 +40,8 @@ const GameConclusion = () => {
         if (!r.loading && r.data) {
           setTimeTaken(r.data.concludeGame.timeTaken);
           setTargetWord(r.data.concludeGame.targetWord);
+          setRoundsTaken(r.data.concludeGame.roundsTaken);
+          setScore(r.data.concludeGame.score);
         }
       });
   }, [concludeGame, open]);
@@ -69,11 +75,17 @@ const GameConclusion = () => {
             Game finished!
           </Typography>
           <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center', mt:5}}>
-            Target word: {targetWord}
+            Last target word: {targetWord}
           </Typography>
           <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center'}}>
-            Time taken: {((timeTaken % 3600) / 60).toPrecision(2)
-              + '.' + (timeTaken % 60).toPrecision(2) + ' seconds'}
+            Total time taken: {Math.floor((timeTaken % 3600) / 60)
+            + '.' + ((timeTaken % 60000) / 1000).toFixed(0)}
+          </Typography>
+          <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center'}}>
+            Rounds played: {roundsTaken}
+          </Typography>
+          <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center'}}>
+            Score: {score}
           </Typography>
           <Button variant="contained" sx={{ mt:2 }} onClick={() => playAgain()}>Play Again</Button>
           
