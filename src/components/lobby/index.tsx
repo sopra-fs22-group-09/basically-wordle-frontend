@@ -167,7 +167,7 @@ const Lobby = () => {
     return () => {
       isSubscribed = false;
     };
-  }, [gameStatusData, startGame, ownerId, userId]);
+  }, [gameStatusData, startGame, ownerId, userId, dispatch]);
 
   return debouncedLobbyStatus != LobbyStatus.INGAME ? ( // FIXME: If the lobby screen won't appear you have to use loading here instead of called.
     <Suspense

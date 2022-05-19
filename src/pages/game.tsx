@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { DotWave, Orbit } from '@uiball/loaders';
 import { LobbyStatus } from '../models/Lobby';
@@ -59,6 +59,9 @@ const Game = (gameInfo: GameInformation) => {
   //   setGameConclusion(!gameConclusion);
   // };
 
+  const [delayNewRound, setDelayNewRound] = useState(false);
+  const gamestat = useRef(gameInfo.gameStatus); // To be able to access gamestatus within setTimeout
+
   const [currentRound, setCurrentRound] = useState(1);
 
   // For keyboard
@@ -77,16 +80,42 @@ const Game = (gameInfo: GameInformation) => {
     dispatch({ type: 'modal/toggle', payload: conclusionType });
   };
 
+  const clearGameScreen = () => {
+    setCurrentRound(currentRound + 1);
+
+    // For keyboard
+    setLetterOnCorrectPosition('');
+    setLetterInWord('');
+    setLetterNotInWord('');
+
+    // For Grid
+    setCurrentlyTypingWord('');
+    setAmountGuesses(0);
+    setGuessHistory(['', '', '', '', '', '']);
+    setLetterState([[]]);
+
+    setStopwatch(0);
+  };
+
   useEffect(() => {
     if (gameInfo.gameStatus == GameStatus.SYNCING || gameInfo.gameStatus == GameStatus.NEW) gameInfo.startGame();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);  // Please don't touch!!
 
   useEffect(() => {
+    gamestat.current = gameInfo.gameStatus;
     if (gameInfo.gameStatus == GameStatus.WAITING) {
+      setDelayNewRound(true);
       toggleModal('gameRoundConclusion');
     } else if (gameInfo.gameStatus == GameStatus.FINISHED) {
       toggleModal('gameConclusion');
+    } else if (gameInfo.gameStatus == GameStatus.GUESSING && delayNewRound) {
+      setTimeout(() => {
+        setDelayNewRound(false);
+        clearGameScreen();
+        dispatch({type: 'modal/setState', payload: {isOpen: false}});
+      }, 5000);
+
     } else {
       dispatch({type: 'modal/setState', payload: {isOpen: false}});
     }
@@ -100,7 +129,7 @@ const Game = (gameInfo: GameInformation) => {
     onError: error => {
       alert(error.message); //TODO sött nid als alert cho aber wüsst grad nid was susch, vllt het epper e idee
     },
-    onCompleted(data) {
+    async onCompleted(data) {
       if (data?.submitGuess) {
         setCurrentRound(data.submitGuess.currentRound);
 
@@ -128,23 +157,6 @@ const Game = (gameInfo: GameInformation) => {
         setLetterInWord(inWord);
         setLetterNotInWord(wrong);
 
-        if(data.submitGuess.words.length === 6 && gameInfo.gameStatus === GameStatus.GUESSING) {
-          setTimeout(() => {
-            setCurrentRound(currentRound + 1);
-
-            // For keyboard
-            setLetterOnCorrectPosition('');
-            setLetterInWord('');
-            setLetterNotInWord('');
-
-            // For Grid
-            setCurrentlyTypingWord('');
-            setAmountGuesses(0);
-            setGuessHistory(['', '', '', '', '', '']);
-            setLetterState([[]]);
-          }, 5000);
-        }
-
 
         // if (gameInfo.gameStatus == GameStatus.FINISHED) toggleGameConclusionModal();
 
@@ -171,13 +183,22 @@ const Game = (gameInfo: GameInformation) => {
     //onSubscriptionData: a => console.log(a.subscriptionData)
   });
 
-  const onChar = (value: string) => {if (!loading && currentlyTypingWord.length < 5 && amountGuesses <= 6) setCurrentlyTypingWord(currentlyTypingWord + value);};
-  const onDelete = () => {if (!loading && currentlyTypingWord.length > 0 && amountGuesses <= 6) setCurrentlyTypingWord(currentlyTypingWord.substring(0, currentlyTypingWord.length - 1));};
+  const onChar = (value: string) => {if (!loading && currentlyTypingWord.length < 5 && amountGuesses < 6) setCurrentlyTypingWord(currentlyTypingWord + value);};
+  const onDelete = () => {if (!loading && currentlyTypingWord.length > 0 && amountGuesses < 6) setCurrentlyTypingWord(currentlyTypingWord.substring(0, currentlyTypingWord.length - 1));};
   const onEnter = () => {
-    if (!loading && currentlyTypingWord.length === 5 && amountGuesses <= 6) {
+    if (!loading && currentlyTypingWord.length === 5 && amountGuesses < 6) {
       submitGuess().then(() => {
         setCurrentlyTypingWord('');
         setAmountGuesses(amountGuesses + 1);
+        if (amountGuesses >= 5) { //TODO Hook is too slow and is not updated at this point.. there must be a better solution...
+          toggleModal('gameRoundConclusion');
+          setTimeout(() => {
+            if (gamestat.current == GameStatus.GUESSING) {
+              clearGameScreen();
+              dispatch({type: 'modal/setState', payload: {isOpen: false}});
+            }
+          }, 5000);
+        }
       });
     }
   };
@@ -205,7 +226,6 @@ const Game = (gameInfo: GameInformation) => {
         <>
           <Box sx={{display: 'inline-block', width: '100%'}}>
             <Typography variant="h3" sx={{fontSize: '24px', textAlign: 'left', display: 'inline-block'}}>Round: {currentRound}</Typography>
-            {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
             <Typography variant="h3" sx={{fontSize: '24px', textAlign: 'right', display: 'inline-block', float: 'right'}}>Time: {stopwatch} seconds</Typography>
             {gameInfo.gameStatus == GameStatus.WAITING && <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>Waiting for other players to finish...</Typography>}
           </Box>
@@ -248,15 +268,16 @@ const Game = (gameInfo: GameInformation) => {
                 textAlign: 'center'
               }}
             >
-              {opponentGameRoundData.data.opponentGameRound.map((round) => (
+              {opponentGameRoundData.data.opponentGameRound.map((round, i) => (
                 <Box
-                  key={round.player.id}
+                  key={round.player.name+i}
                   sx={{
                     display: 'inline-block',
                     mb: '5%',
                     mx: '2.5%',
                   }}
                 >
+
                   <Typography variant={'h2'} sx={{fontSize: '32px', textAlign: 'center'}}>{round.player.name} - Round {round.currentRound}</Typography>
                   <Grid allLetterStates={round.letterStates} allGuesses={['', '', '', '', '', '']}/>
                 </Box>

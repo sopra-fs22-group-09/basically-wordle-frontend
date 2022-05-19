@@ -5,8 +5,6 @@ import { gql, useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import LoaderCenterer from '../components/loader';
 import { Orbit } from '@uiball/loaders';
-import Keyboard from '../components/keyboard/keyboard';
-import Grid from '../components/grid/grid';
 import { LetterState } from '../models/Game';
 
 const Tutorial = () => {
