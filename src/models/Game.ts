@@ -43,7 +43,7 @@ export type GameStats = {
   __typename?: 'GameStats';
   targetWord: Scalars['String'];
   roundsTaken: Scalars['Int'];
-  timeTaken: Scalars['String'];
+  timeTaken: number;
   score: Scalars['Int'];
   rank: Scalars['Int'];
 };
