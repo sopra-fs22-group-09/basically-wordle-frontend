@@ -29,7 +29,7 @@ const GameRoundConclusion = () => {
             The gameround has finished!
           </Typography>
           <Typography variant='h4' sx={{fontSize: 24, mt:10}}>
-            Wait for other players to finish their round.
+            Waiting for the next round.
           </Typography>
         </Box>
       </Box>

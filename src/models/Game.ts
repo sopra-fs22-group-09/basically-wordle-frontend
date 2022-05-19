@@ -26,6 +26,8 @@ export type Game = {
   __typename?: 'Game';
   amountRounds: Scalars['Int'];
   roundTime: Scalars['Int'];
+  maxRounds: Scalars['Int'];
+  maxTime: Scalars['Int'];
 };
 
 export type GameRound = {

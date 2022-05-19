@@ -50,6 +50,8 @@ interface LobbyInformation {
   gameStatus: GameStatus;
   gameRounds: number;
   roundTime: number;
+  maxRounds: number;
+  maxTime: number;
   players: Player[];
   setGameRounds: (rounds: number) => void;
   setRoundTime: (time: number) => void;
@@ -181,7 +183,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                   })}
                 </Select>
               </FormControl>
-              {lobbyInfo.gameRounds != 0 && (
+              {lobbyInfo.gameRounds != 0 && lobbyInfo.gameCategory != GameCategory.SOLO && (
                 <Box sx={{ m: 'auto', mt: 2, width: '80%' }}>
                   <Typography variant="h6">Rounds: {lobbyInfo.gameRounds}</Typography>
                   <Slider
@@ -189,7 +191,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                     marks
                     step={1}
                     min={1}
-                    max={5}
+                    max={lobbyInfo.maxRounds}
                     valueLabelDisplay="auto"
                     value={lobbyInfo.gameRounds}
                     disabled={localStorage.getItem('userId') != lobbyInfo.ownerId}
@@ -208,7 +210,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                     marks
                     step={10}
                     min={60}
-                    max={300}
+                    max={lobbyInfo.maxTime}
                     valueLabelDisplay="auto"
                     value={lobbyInfo.roundTime}
                     disabled={localStorage.getItem('userId') != lobbyInfo.ownerId}
