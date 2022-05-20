@@ -120,7 +120,6 @@ const Game = (gameInfo: GameInformation) => {
         clearGameScreen();
         dispatch({type: 'modal/setState', payload: {isOpen: false}});
       }, 2500);
-
     } else {
       dispatch({type: 'modal/setState', payload: {isOpen: false}});
     }
@@ -170,7 +169,9 @@ const Game = (gameInfo: GameInformation) => {
   });
 
   //TODO Write hooks to initialize an empty state and show this state. then, use useeffect to update the hooks.
-  const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND);
+  const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND, {
+    skip: gameInfo.gameStatus == GameStatus.NEW || gameInfo.gameStatus == GameStatus.SYNCING
+  });
 
   const onChar = (value: string) => {if (!loading && currentlyTypingWord.length < 5 && amountGuesses < 6) setCurrentlyTypingWord(currentlyTypingWord + value);};
   const onDelete = () => {if (!loading && currentlyTypingWord.length > 0 && amountGuesses < 6) setCurrentlyTypingWord(currentlyTypingWord.substring(0, currentlyTypingWord.length - 1));};

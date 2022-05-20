@@ -35,15 +35,17 @@ const GameConclusion = () => {
     fetchPolicy: 'network-only'
   });
   useEffect(() => {
-    concludeGame()
-      .then(r => {
-        if (!r.loading && r.data) {
-          setTimeTaken(r.data.concludeGame.timeTaken);
-          setTargetWord(r.data.concludeGame.targetWord);
-          setRoundsTaken(r.data.concludeGame.roundsTaken);
-          setScore(r.data.concludeGame.score);
-        }
-      });
+    if (open) {
+      concludeGame()
+        .then(r => {
+          if (!r.loading && r.data) {
+            setTimeTaken(r.data.concludeGame.timeTaken);
+            setTargetWord(r.data.concludeGame.targetWord);
+            setRoundsTaken(r.data.concludeGame.roundsTaken);
+            setScore(r.data.concludeGame.score);
+          }
+        });
+    }
   }, [concludeGame, open]);
 
   const [reInitLobby] = useMutation(REINITIALIZE_LOBBY);
@@ -78,8 +80,8 @@ const GameConclusion = () => {
             Last target word: {targetWord}
           </Typography>
           <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center'}}>
-            Total time taken: {Math.floor((timeTaken % 3600) / 60)
-            + '.' + ((timeTaken % 60000) / 1000).toFixed(0)}
+            Total time taken: {Math.floor(timeTaken / 60)
+            + ':' + (timeTaken % 60).toFixed(0)}
           </Typography>
           <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center'}}>
             Rounds played: {roundsTaken}
