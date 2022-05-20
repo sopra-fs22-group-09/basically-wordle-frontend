@@ -87,6 +87,7 @@ const Lobby = () => {
   const LobbyManagement = lazy(() => import('../../pages/lobbyManagement'));
   const Game = lazy(() => import('../../pages/game'));
 
+  const [joined, setJoined] = React.useState(false);
   const [ownerId, setOwnerId] = React.useState('');
   const [lobbyStatus, setLobbyStatus] = React.useState<LobbyStatus>(LobbyStatus.OPEN);
   // TODO: Needed? Possibly prevents lobbyStatus stuttering
@@ -114,6 +115,7 @@ const Lobby = () => {
         },
       }).then((r) => {
         if (r.data?.joinLobbyById && isSubscribed) {
+          setJoined(true);
           setOwnerId(r.data.joinLobbyById.owner.id);
           setLobbyStatus(r.data.joinLobbyById.status);
           setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.joinLobbyById.gameMode)]);
@@ -133,7 +135,8 @@ const Lobby = () => {
   const subscribeLobbyData = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION, {
     variables: {
       id: params.id as string
-    }
+    },
+    skip: !joined
   });
   useEffect(() => {
     if (!subscribeLobbyData.loading && subscribeLobbyData.data?.lobby) {
@@ -152,7 +155,8 @@ const Lobby = () => {
   const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {
     variables: {
       id: params.id as string
-    }
+    },
+    skip: !joined
   });
   useEffect(() => {
     let isSubscribed = true;

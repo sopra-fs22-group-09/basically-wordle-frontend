@@ -26,14 +26,16 @@ const GameRoundConclusion = () => {
     fetchPolicy: 'network-only'
   });
   useEffect(() => {
-    concludeRound()
-      .then(r => {
-        if (!r.loading && r.data) {
-          setTimeTaken(r.data.concludeGame.timeTaken);
-          setTargetWord(r.data.concludeGame.targetWord);
-          setScore(r.data.concludeGame.score);
-        }
-      });
+    if (open) {
+      concludeRound()
+        .then(r => {
+          if (!r.loading && r.data) {
+            setTimeTaken(r.data.concludeGame.timeTaken);
+            setTargetWord(r.data.concludeGame.targetWord);
+            setScore(r.data.concludeGame.score);
+          }
+        });
+    }
   }, [concludeRound, open]);
 
   return(
@@ -64,8 +66,8 @@ const GameRoundConclusion = () => {
             Target word: {targetWord}
           </Typography>
           <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center'}}>
-            Time taken: {Math.floor((timeTaken % 3600) / 60)
-              + '.' + ((timeTaken % 60000) / 1000).toFixed(0)}
+            Time taken: {Math.floor(timeTaken / 60)
+              + ':' + (timeTaken % 60).toFixed(0)}
           </Typography>
           <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center'}}>
             Score: {score}

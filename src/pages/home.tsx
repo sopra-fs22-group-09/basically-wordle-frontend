@@ -44,6 +44,7 @@ const Home = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const token = localStorage.getItem('token');
   const [lobbies, setLobbies] = React.useState<LobbyOverview[]>();
 
   const toggleModal = () => {
@@ -51,6 +52,7 @@ const Home = () => {
   };
 
   useQuery<LobbyModels>(GET_LOBBIES, {
+    skip: !token,
     onCompleted(data) {
       setLobbies(data.getLobbies.map(l => {
         return (
@@ -66,7 +68,9 @@ const Home = () => {
     }
   });
 
-  const subscribeLobbiesData = useSubscription<LobbyModels>(LOBBIES_SUBSCRIPTION);
+  const subscribeLobbiesData = useSubscription<LobbyModels>(LOBBIES_SUBSCRIPTION, {
+    skip: !token
+  });
   useEffect(() => {
     if (!subscribeLobbiesData.loading && subscribeLobbiesData.data?.lobbyList) {
       setLobbies(subscribeLobbiesData.data.lobbyList.map(l => {
