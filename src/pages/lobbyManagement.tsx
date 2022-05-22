@@ -97,12 +97,10 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
   };
   const [stateDebounceLobbyChange] = React.useState(() => debounce(changeLobbySettings, 250));
   const isFriend = (lookupUserId: string) => {
-    return api.readFragment<User>({
+    return !!api.readFragment<User>({
       fragment: READ_USERNAME,
       id: 'User:' + lookupUserId,
-    })?.username
-      ? true
-      : false;
+    })?.username;
   };
 
   const sendFriendRequest = (userId: string) => {
@@ -283,6 +281,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                   width: '100%',
                 }}
               />
+              {/*<img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href + '&size=300x300&ecc=H&margin=0'} width="50%" alt="" title="" />*/}
               <Button variant="contained" sx={{ mx: 2, mt: 2 }} onClick={() => navigate('/')}>
                 Leave Lobby
               </Button>

@@ -223,8 +223,10 @@ const Lobby = () => {
       }
     >
       <Game
+        gameMode={gameMode}
         gameStatus={gameStatus}
         roundTime={roundTime}
+        maxRounds={maxRounds - 1}
         setStatus={setLobbyStatus}
         startGame={startGame}
       />

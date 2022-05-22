@@ -9,6 +9,7 @@ type GridProps = {
   allGuesses: string[]
   allLetterStates: LetterState[][]
   style?: React.CSSProperties
+  shake?: boolean
 }
 
 const Grid = ({
@@ -16,7 +17,8 @@ const Grid = ({
   currentWord,
   allGuesses,
   allLetterStates,
-  style
+  style,
+  shake
 
 }: GridProps) => {
   return (
@@ -26,6 +28,7 @@ const Grid = ({
           key={i}
           word={currentRow === i ? currentWord : allGuesses[i]}
           letterStates={allLetterStates[i] ? allLetterStates[i] : []}
+          shake={currentRow === i ? shake : false}
         />
       ))}
     </Box>
