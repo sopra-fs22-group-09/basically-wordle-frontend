@@ -21,6 +21,7 @@ const Guard = ({ children }: GuardProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const token = localStorage.getItem('token');
+  const href = window.location.href;
 
   useEffect(() => {
     switch (location.pathname) {
@@ -47,14 +48,14 @@ const Guard = ({ children }: GuardProps) => {
       return;
     }
     
-    if (!token) {
+    if (!token && !href.includes('/lobby')) {
       navigate('/login');
       //window.location.reload();
       //forceUpdate();
     }
 
     //return () => ;
-  }, [dispatch, location.pathname, navigate, token]);
+  }, [dispatch, href, location.pathname, navigate, token]);
 
   return (
     <>

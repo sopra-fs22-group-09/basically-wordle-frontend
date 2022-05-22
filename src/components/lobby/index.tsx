@@ -77,8 +77,8 @@ const GAME_STATUS = gql`
 `;
 
 const ADD_GUEST = gql`
-    mutation createGuest{
-        createGuest {
+    mutation createGuest($id: ID!) {
+        createGuest(id: $id) {
             id
             name
         }
@@ -124,60 +124,131 @@ const Lobby = () => {
 
   const [ownerId, setOwnerId] = React.useState('');
   const [lobbyStatus, setLobbyStatus] = React.useState<LobbyStatus>(LobbyStatus.OPEN);
+  const [gameStatus, setGameStatus] = React.useState<GameStatus>(GameStatus.NEW);
   // TODO: Needed? Possibly prevents lobbyStatus stuttering
   const [debouncedLobbyStatus] = useDebouncedValue(lobbyStatus, 500, { leading: true });
-  const [gameStatus, setGameStatus] = React.useState<GameStatus>(GameStatus.NEW);
+  const [debouncedGameStatus] = useDebouncedValue(gameStatus, 500, {leading: true});
   const [gameMode, setGameMode] = React.useState<GameMode>(GameMode.WORDSPP);
   const [gameRounds, setGameRounds] = React.useState(0);
   const [roundTime, setRoundTime] = React.useState(0);
   const [players, setPlayers] = React.useState<Player[]>([]);
   const [guestCreated, setGuestCreated] = React.useState(false);
+  const [isGuest, setGuest] = React.useState(true);
+  const [tokenPresent, setTokenPresent] = React.useState(false);
   const [userId] = useLocalStorage<string>({ key: 'userId' });
 
   const [joinLobby, joinLobbyData] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY);
-  const [createGuest, { data: guestData, loading: guestLoading, error: guestError }] = useMutation<GuestType>(ADD_GUEST);
+  const [createGuest, createGuestData] = useMutation<GuestType, MutationJoinLobbyByIdArgs>(ADD_GUEST);
   const [joinLobbyAsGuest, joinGuestLobbyData] = useMutation<LobbyModels, MutationJoinLobbyByIdArgs>(JOIN_LOBBY_AS_GUEST);
 
+
   useEffect(() => {
-    /*if (!guestCreated) {*/
-    let isSubscribed = true;
-    (async () => {
-      joinLobby({
-        variables: {
-          id: params.id as string
-        }
-      }).then(r => {
-        if (r.data?.joinLobbyById && isSubscribed) {
-          setOwnerId(r.data.joinLobbyById.owner.id);
-          setLobbyStatus(r.data.joinLobbyById.status);
-          setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.joinLobbyById.gameMode)]);
-          setGameRounds(r.data.joinLobbyById.game.amountRounds);
-          setRoundTime(r.data.joinLobbyById.game.roundTime);
-          setPlayers(r.data.joinLobbyById.players);
-        }
-      });
-    })();
-    return () => {
-      isSubscribed = false;
-    };
-    /*}*/
-  }, [joinLobby, params.id]);
+    if (localStorage.getItem('token')) {
+      setTokenPresent(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!localStorage.getItem('userId')) {
+      setGuest(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!localStorage.getItem('userId') && !guestCreated) {
+      let isSubscribed = true;
+      (async () => {
+        createGuest({
+          variables: {
+            id: params.id as string
+          },
+          onCompleted(data) {
+            if (data.createGuest) {
+              localStorage.setItem('userId', data.createGuest.id);
+              localStorage.setItem('userName', data.createGuest.name);
+              // localStorage.setItem('guest', 'yes');
+              setGuestCreated(true);
+              setTokenPresent(true);
+              window.console.log('guest creation called');
+            }
+          }
+        });
+      })();
+      return () => {
+        isSubscribed = false;
+      };
+    }
+  }, [createGuest, guestCreated, params.id]);
+
+  useEffect(() => {
+    if (guestCreated) {
+      let isSubscribed = true;
+      (async () => {
+        joinLobbyAsGuest({
+          variables: {
+            id: params.id as string
+          }
+        }).then(r => {
+          if (r.data?.guestJoinLobbyById && isSubscribed) {
+            setOwnerId(r.data.guestJoinLobbyById.owner.id);
+            setLobbyStatus(r.data.guestJoinLobbyById.status);
+            setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.guestJoinLobbyById.gameMode)]);
+            setGameRounds(r.data.guestJoinLobbyById.game.amountRounds);
+            setRoundTime(r.data.guestJoinLobbyById.game.roundTime);
+            setPlayers(r.data.guestJoinLobbyById.players);
+          }
+        });
+      })();
+      return () => {
+        isSubscribed = false;
+      };
+    }
+  }, [guestCreated, joinLobbyAsGuest, params.id]);
+
+
+  useEffect(() => {
+    if (!guestCreated) {
+      let isSubscribed = true;
+      (async () => {
+        joinLobby({
+          variables: {
+            id: params.id as string
+          }
+        }).then(r => {
+          if (r.data?.joinLobbyById && isSubscribed) {
+            setOwnerId(r.data.joinLobbyById.owner.id);
+            setLobbyStatus(r.data.joinLobbyById.status);
+            setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.joinLobbyById.gameMode)]);
+            setGameRounds(r.data.joinLobbyById.game.amountRounds);
+            setRoundTime(r.data.joinLobbyById.game.roundTime);
+            setPlayers(r.data.joinLobbyById.players);
+          }
+        });
+      })();
+      return () => {
+        isSubscribed = false;
+      };
+    }
+  }, [guestCreated, joinLobby, params.id]);
   
   const subscribeLobbyData = useSubscription<LobbyModels, SubscriptionLobbyArgs>(LOBBY_SUBSCRIPTION, {
     variables: {
       id: params.id as string
-    }
+    }, skip: !localStorage.getItem('token'),
   });
+
   useEffect(() => {
+    window.console.log('useEffect subscription called' + ' ' + subscribeLobbyData.loading + ' ' + subscribeLobbyData.data?.lobby.owner.id);
     if (!subscribeLobbyData.loading && subscribeLobbyData.data?.lobby) {
       setOwnerId(subscribeLobbyData.data.lobby.owner.id);
       //setLobbyStatus(debouncedLobbyStatus);
       setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(subscribeLobbyData.data.lobby.gameMode)]);
       setGameRounds(subscribeLobbyData.data.lobby.game.amountRounds);
       setRoundTime(subscribeLobbyData.data.lobby.game.roundTime);
+      window.console.log('game rounds set: ' + subscribeLobbyData.data.lobby.game.roundTime.toString() + ' ' + roundTime.toString());
       setPlayers(subscribeLobbyData.data.lobby.players);
     }
-  }, [subscribeLobbyData.loading, subscribeLobbyData.data]);
+  }, [subscribeLobbyData.loading, subscribeLobbyData.data, roundTime]);
 
   const [startGame, { called: _called }] = useMutation(ANNOUNCE_START); //was using the GameModel at some point
   const gameStatusData = useSubscription<GameStatusModel>(GAME_STATUS, {
@@ -204,9 +275,10 @@ const Lobby = () => {
     return () => { isSubscribed = false; };
   }, [gameStatusData, startGame, ownerId, userId]);
 
-  return (
-    gameStatus == GameStatus.NEW ? // FIXME: If the lobby screen won't appear you have to use loading here instead of called.
-      <Suspense fallback={<LoaderCenterer><ChaoticOrbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
+  if (debouncedGameStatus == GameStatus.NEW) {
+    if (!guestCreated) {
+      window.console.log('GameStatus.NEW & !guestCreated');
+      return <Suspense fallback={<LoaderCenterer><ChaoticOrbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
         <LobbyManagement
           name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
           size={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.size : 0}
@@ -221,19 +293,54 @@ const Lobby = () => {
           setRoundTime={setRoundTime}
           startGame={startGame}
         />
-      </Suspense>
-      :
-      <Suspense fallback={<LoaderCenterer><DotWave size={50} color='#eee' /></LoaderCenterer>}>
-        <Game
-          name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
-          setStatus={setLobbyStatus}
+      </Suspense>;
+    } else {
+      window.console.log('GameStatus.NEW & guestCreated');
+      return <Suspense fallback={<LoaderCenterer><ChaoticOrbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
+        <LobbyManagement
+          name={!joinGuestLobbyData.loading && joinGuestLobbyData.data?.guestJoinLobbyById ? joinGuestLobbyData.data.guestJoinLobbyById.name : ''}
+          size={!joinGuestLobbyData.loading && joinGuestLobbyData.data?.guestJoinLobbyById ? joinGuestLobbyData.data.guestJoinLobbyById.size : 0}
+          ownerId={ownerId}
+          gameCategory={!joinGuestLobbyData.loading && joinGuestLobbyData.data?.guestJoinLobbyById ? Object.values(GameCategory)[Object.keys(GameCategory).indexOf(joinGuestLobbyData.data.guestJoinLobbyById.gameCategory)] : GameCategory.PVP}
+          gameMode={gameMode}
           gameStatus={gameStatus}
+          gameRounds={gameRounds}
+          roundTime={roundTime}
+          players={players}
+          setGameRounds={setGameRounds}
+          setRoundTime={setRoundTime}
           startGame={startGame}
-          ownerId={ownerId.toString()}
-          setGameMode={setGameMode}
         />
-      </Suspense>
-  );
+      </Suspense>;
+    }
+  }
+  if (!guestCreated) {
+    window.console.log('!GameStatus.NEW & !guestCreated');
+    return <Suspense fallback={<LoaderCenterer><DotWave size={50} color='#eee' /></LoaderCenterer>}>
+      <Game
+        name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
+        setStatus={setLobbyStatus}
+        gameStatus={gameStatus}
+        startGame={startGame}
+        ownerId={ownerId.toString()}
+        setGameMode={setGameMode}
+      />
+    </Suspense>;
+  } else {
+    window.console.log('!GameStatus.NEW & guestCreated');
+    return <Suspense fallback={<LoaderCenterer><DotWave size={50} color='#eee' /></LoaderCenterer>}>
+      <Game
+        name={!joinGuestLobbyData.loading && joinGuestLobbyData.data?.guestJoinLobbyById ? joinGuestLobbyData.data.guestJoinLobbyById.name : ''}
+        setStatus={setLobbyStatus}
+        gameStatus={gameStatus}
+        startGame={startGame}
+        ownerId={ownerId.toString()}
+        setGameMode={setGameMode}
+      />
+    </Suspense>;
+  }
+
+  return null;
 };
 
 export default Lobby;
