@@ -73,6 +73,7 @@ const PasswordStrength = () => {
           inputProps={{ minLength: 5, maxLength: 50 }}
           value={value}
           onChange={(event) => setValue(event.currentTarget.value)}
+          sx={{mt: '20px'}}
         />
       }
     >

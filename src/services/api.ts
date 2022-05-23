@@ -6,7 +6,7 @@ import { ApolloClient, ApolloLink, InMemoryCache, split } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { getHttpDomain, getWsDomain } from '../utils/getDomain';
 import { onError } from '@apollo/client/link/error';
-//import { mergeArrayByField } from '../utils/utils';
+import { store } from '../redux/store';
 
 const commonHeaders = {
   Accept: 'application/graphql+json',
@@ -80,16 +80,20 @@ const logoutLink = onError(({ networkError, graphQLErrors }) => {
       //console.log(err);
       switch (err.extensions.code) {
       case 'UNAUTHORIZED':
-        localStorage.clear();
-        window.location.reload();
+        if (!store.getState().modal.isOpen || (store.getState().modal.modalWindow != 'login' && store.getState().modal.modalWindow != 'tokenEntry')) {
+          localStorage.clear();
+          window.location.reload();
+        }
       }
     }
   }
   else if (networkError) {
     if ('statusCode' in networkError) {
       if (networkError.statusCode === 401) {
-        localStorage.clear();
-        window.location.reload();
+        if (!store.getState().modal.isOpen || (store.getState().modal.modalWindow != 'login' && store.getState().modal.modalWindow != 'tokenEntry')) {
+          localStorage.clear();
+          window.location.reload();
+        }
       }
     }
   }
