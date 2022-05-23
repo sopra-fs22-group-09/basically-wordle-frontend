@@ -6,11 +6,14 @@ import { LetterState } from '../../models/Game';
 type RowProps = {
   word?: string
   letterStates: LetterState[]
+  shake?: boolean
 }
 
 const Row = ({
   word,
-  letterStates
+  letterStates,
+  shake
+
 
 }: RowProps) => {
   const theme = useTheme();
@@ -30,7 +33,7 @@ const Row = ({
   };
 
   return (
-    <Box>
+    <Box className={shake ? 'shake' : undefined}>
       {word?.split('').map((letter, i) => (<Cell key={'notEmpty' + i} value={letter} style={{backgroundColor: `${getColorForLetter(i)}`}} />))}
       {emptyCells(5 - (word ? word.length : 0))}
     </Box>

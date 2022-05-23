@@ -43,7 +43,7 @@ const Keyboard = ({
         e.preventDefault();
         onDelete();
       }
-      else if ((e.key.length === 1 && e.key >= 'a' && e.key <= 'z') && onChar) onChar(e.key.toUpperCase());
+      else if (e.key.length === 1 && ((e.key >= 'a' && e.key <= 'z') || (e.key >= 'A' && e.key <= 'Z')) && onChar) onChar(e.key.toUpperCase());
     };
     window.addEventListener('keyup', listener);
     return () => {window.removeEventListener('keyup', listener);};
