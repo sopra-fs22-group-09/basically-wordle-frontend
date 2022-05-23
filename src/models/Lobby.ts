@@ -14,6 +14,7 @@ export type LobbyOverview = {
   __typename?: 'LobbyOverview';
   id: Scalars['ID'];
   name: Scalars['String'];
+  status: LobbyStatus;
   category: GameCategory;
   mode: GameMode;
   players: Scalars['String'];
@@ -68,21 +69,21 @@ export type LobbyInviteInput = {
 export enum GameCategory {
   PVP = 'PvP',
   SOLO = 'SOLO',
-  COOP = 'CO-OP'
+  //COOP = 'CO-OP'
 }
 
 export enum GameMode {
   WORDSPP = 'Words++',
   SONICFAST = 'Sonic Fast',
-  TIMERESET = 'Time Reset',
+  /*  TIMERESET = 'Time Reset',
   PARTY = 'Party',
   CHALLENGE = 'Challenge',
   CHAIN = 'Chain',
-  CLASSIC = 'Classic',
+  */CLASSIC = 'Classic',/*
   INTIME = 'In Time',
   PLAYERVSAI = 'Player vs AI',
   ONEWORD = 'OneWord',
-  WORDCOMBINATION = 'WordCombination'
+  WORDCOMBINATION = 'WordCombination'*/
 }
 
 export enum LobbyStatus {
@@ -108,7 +109,7 @@ export const GameCategorization = new Map<GameMode, GameCategory>([
 export const GameCategoryMaxSize = new Map<GameCategory, number>([
   [GameCategory.PVP, 6],
   [GameCategory.SOLO, 1],
-  [GameCategory.COOP, 4]
+  //[GameCategory.COOP, 4]
 ]);
 
 //TODO: Get default categories ??

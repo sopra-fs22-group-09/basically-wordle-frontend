@@ -4,7 +4,7 @@ import { useAppDispatch } from '../redux/hooks';
 import { DataGrid } from '@mui/x-data-grid';
 import { Box, Button, useTheme } from '@mui/material';
 import { gql, useQuery, useSubscription } from '@apollo/client';
-import { GameCategory, GameMode, LobbyModels, LobbyOverview } from '../models/Lobby';
+import { GameCategory, GameMode, Lobby, LobbyModels, LobbyOverview } from '../models/Lobby';
 import { ChaoticOrbit } from '@uiball/loaders';
 import LoaderCenterer from '../components/loader';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,7 @@ const GET_LOBBIES = gql`
     getLobbies {
       id
       name
+      status
       gameCategory
       gameMode
       players {
@@ -29,6 +30,7 @@ const LOBBIES_SUBSCRIPTION = gql`
     lobbyList {
       id
       name
+      status
       gameCategory
       gameMode
       players {
@@ -51,20 +53,23 @@ const Home = () => {
     dispatch({ type: 'modal/toggle', payload: 'lobbyConfirmation' });
   };
 
+  const mapLobbies = (l: Lobby) => {
+    return (
+      {
+        id: l.id,
+        name: l.name,
+        status: l.status,
+        mode: Object.values(GameMode)[Object.keys(GameMode).indexOf(l.gameMode)],
+        category: Object.values(GameCategory)[Object.keys(GameCategory).indexOf(l.gameCategory)],
+        players: l.players.length + '/' + l.size
+      }
+    );
+  };
+
   useQuery<LobbyModels>(GET_LOBBIES, {
     skip: !token,
     onCompleted(data) {
-      setLobbies(data.getLobbies.map(l => {
-        return (
-          {
-            id: l.id,
-            name: l.name,
-            mode: Object.values(GameMode)[Object.keys(GameMode).indexOf(l.gameMode)],
-            category: Object.values(GameCategory)[Object.keys(GameCategory).indexOf(l.gameCategory)],
-            players: l.players.length + '/' + l.size
-          }
-        );
-      }));
+      setLobbies(data.getLobbies.map(l => mapLobbies(l)));
     }
   });
 
@@ -73,17 +78,7 @@ const Home = () => {
   });
   useEffect(() => {
     if (!subscribeLobbiesData.loading && subscribeLobbiesData.data?.lobbyList) {
-      setLobbies(subscribeLobbiesData.data.lobbyList.map(l => {
-        return (
-          {
-            id: l.id,
-            name: l.name,
-            mode: Object.values(GameMode)[Object.keys(GameMode).indexOf(l.gameMode)],
-            category: Object.values(GameCategory)[Object.keys(GameCategory).indexOf(l.gameCategory)],
-            players: l.players.length + '/' + l.size
-          }
-        );
-      }));
+      setLobbies(subscribeLobbiesData.data.lobbyList.map(l => mapLobbies(l)));
     }
   }, [subscribeLobbiesData]);
 
@@ -131,13 +126,18 @@ const Home = () => {
               {
                 field: 'category',
                 headerName: 'Category',
-                width: 100,
+                width: 80,
               },
               {
                 field: 'players',
                 headerName: 'Players',
-                width: 100,
+                width: 80,
               },
+              {
+                field: 'status',
+                headerName: 'Status',
+                width: 80,
+              }
             ]}
             rows={lobbies}
           />
