@@ -96,9 +96,9 @@ const LobbyConfirmation = () => {
             onChange={(event, newAlignment) => {
               if (newAlignment != null) {
                 setGameCategory(newAlignment);
-                if (newAlignment == GameCategory.COOP && size > (GameCategoryMaxSize.get(newAlignment) as number)) {
+                /*if (newAlignment == GameCategory.COOP && size > (GameCategoryMaxSize.get(newAlignment) as number)) {
                   setSize(4);
-                }
+                }*/
               }
             }}
             size='large'

@@ -66,8 +66,8 @@ const GameRoundConclusion = () => {
             Target word: {targetWord}
           </Typography>
           <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center'}}>
-            Time taken: {Math.floor(timeTaken / 60)
-              + ':' + (timeTaken % 60).toFixed(0)}
+            Total time taken: {Math.floor(timeTaken / 60)
+            + ((timeTaken % 60).toString().length == 1 ? ':0' : ':') + (timeTaken % 60)}
           </Typography>
           <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center'}}>
             Score: {score}

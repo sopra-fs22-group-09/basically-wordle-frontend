@@ -81,7 +81,7 @@ const GameConclusion = () => {
           </Typography>
           <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center'}}>
             Total time taken: {Math.floor(timeTaken / 60)
-            + ':' + (timeTaken % 60).toFixed(0)}
+            + ((timeTaken % 60).toString().length == 1 ? ':0' : ':') + (timeTaken % 60)}
           </Typography>
           <Typography variant={'body1'} sx={{fontSize: '24px', textAlign: 'center'}}>
             Rounds played: {roundsTaken}
