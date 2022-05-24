@@ -1,20 +1,20 @@
 import * as React from 'react';
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Box, LinearProgress, Snackbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { DotWave, Orbit } from '@uiball/loaders';
 import { GameMode, LobbyStatus } from '../models/Lobby';
 import { gql, useMutation, useSubscription } from '@apollo/client';
-import { GameRoundModel, GameStatus, LetterState, OpponentGameRoundModel, } from '../models/Game';
+import { GameRoundModel, GameStatus, LetterState, OpponentGameRoundModel } from '../models/Game';
 import LoaderCenterer from '../components/loader';
 import { useAppDispatch } from '../redux/hooks';
 
 interface GameInformation {
   gameMode: GameMode;
-  gameStatus?: GameStatus
-  roundTime: number
-  setStatus: (status: LobbyStatus) => void
-  startGame: () => void
-  maxRounds: number
+  gameStatus?: GameStatus;
+  roundTime: number;
+  setStatus: (status: LobbyStatus) => void;
+  startGame: () => void;
+  maxRounds: number;
 }
 
 const SUBMIT_GUESS = gql`
@@ -65,10 +65,13 @@ const Game = (gameInfo: GameInformation) => {
   const [letterState, setLetterState] = useState<LetterState[][]>([[]]);
   const [shake, setShake] = useState(false);
 
-  const toggleModal = useCallback((conclusionType: string) => {
-    dispatch({type: 'modal/setState', payload: {isOpen: false}});
-    dispatch({ type: 'modal/toggle', payload: conclusionType });
-  }, [dispatch]);
+  const toggleModal = useCallback(
+    (conclusionType: string) => {
+      dispatch({ type: 'modal/setState', payload: { isOpen: false } });
+      dispatch({ type: 'modal/toggle', payload: conclusionType });
+    },
+    [dispatch]
+  );
 
   const clearGameScreen = useCallback(() => {
     setCurrentRound(currentRound + 1);
@@ -85,14 +88,20 @@ const Game = (gameInfo: GameInformation) => {
     setLetterState([[]]);
     setShake(false);
 
-    dispatch({type: 'modal/setState', payload: {isOpen: false}});
+    dispatch({ type: 'modal/setState', payload: { isOpen: false } });
   }, [currentRound, dispatch]);
+
+  const didStartGame = useRef(false);
 
   //Sync
   useEffect(() => {
-    if (gameInfo.gameStatus == GameStatus.SYNCING || gameInfo.gameStatus == GameStatus.NEW) gameInfo.startGame();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);  // Please don't touch!!
+    if (didStartGame.current === false) {
+      if (gameInfo.gameStatus == GameStatus.SYNCING || gameInfo.gameStatus == GameStatus.NEW) {
+        didStartGame.current = true;
+        gameInfo.startGame();
+      }
+    }
+  }, [gameInfo]);
 
   //Timer
   useEffect(() => {
@@ -118,13 +127,13 @@ const Game = (gameInfo: GameInformation) => {
       }, 5000);
       return () => clearTimeout(timeout);
     } else {
-      dispatch({type: 'modal/setState', payload: {isOpen: false}});
+      dispatch({ type: 'modal/setState', payload: { isOpen: false } });
     }
   }, [clearGameScreen, delayNewRound, dispatch, gameInfo.gameMode, gameInfo.gameStatus, toggleModal]);
 
-  const [submitGuess, {loading}] = useMutation<GameRoundModel>(SUBMIT_GUESS, {
+  const [submitGuess, { loading }] = useMutation<GameRoundModel>(SUBMIT_GUESS, {
     variables: {
-      word: currentlyTypingWord
+      word: currentlyTypingWord,
     },
     async onCompleted(data) {
       if (data?.submitGuess) {
@@ -145,14 +154,15 @@ const Game = (gameInfo: GameInformation) => {
             if (row[i] === LetterState.CORRECTPOSITION && !letterOnCorrectPosition.includes(letter)) {
               corr += letter;
               inWord = inWord.replaceAll(letter, '');
-            } else if (row[i] === LetterState.INWORD && !inWord.includes(letter) && !corr.includes(letter)) inWord += letter;
+            } else if (row[i] === LetterState.INWORD && !inWord.includes(letter) && !corr.includes(letter))
+              inWord += letter;
             else if (row[i] === LetterState.WRONG && !wrong.includes(letter)) wrong += letter;
           }
           setLetterOnCorrectPosition(corr);
           setLetterInWord(inWord);
           setLetterNotInWord(wrong);
           setCurrentlyTypingWord('');
-          setAmountGuesses(amountGuesses < 6 ? amountGuesses + 1: amountGuesses);
+          setAmountGuesses(amountGuesses < 6 ? amountGuesses + 1 : amountGuesses);
           if (data.submitGuess.guessed || amountGuesses >= 5) {
             if (gameInfo.gameMode == GameMode.WORDSPP) {
               setTimer(timer + 0.96);
@@ -164,72 +174,128 @@ const Game = (gameInfo: GameInformation) => {
           }
         } else setShake(true);
       }
-    }
+    },
   });
 
   const opponentGameRoundData = useSubscription<OpponentGameRoundModel>(OPPONENT_GAME_ROUND, {
-    skip: gameInfo.gameStatus == GameStatus.NEW || gameInfo.gameStatus == GameStatus.SYNCING
+    skip: gameInfo.gameStatus == GameStatus.NEW || gameInfo.gameStatus == GameStatus.SYNCING,
   });
 
-  const onChar = (value: string) => {if (!loading && currentlyTypingWord.length < 5 && amountGuesses < 6) setCurrentlyTypingWord(currentlyTypingWord + value);};
-  const onDelete = () => {if (!loading && currentlyTypingWord.length > 0 && amountGuesses < 6) setCurrentlyTypingWord(currentlyTypingWord.substring(0, currentlyTypingWord.length - 1));};
-  const onEnter = () => {!loading && currentlyTypingWord.length === 5 && amountGuesses < 6 ? submitGuess() : setShake(true);};
+  const onChar = (value: string) => {
+    if (!loading && currentlyTypingWord.length < 5 && amountGuesses < 6)
+      setCurrentlyTypingWord(currentlyTypingWord + value);
+  };
+  const onDelete = () => {
+    if (!loading && currentlyTypingWord.length > 0 && amountGuesses < 6)
+      setCurrentlyTypingWord(currentlyTypingWord.substring(0, currentlyTypingWord.length - 1));
+  };
+  const onEnter = () => {
+    !loading && currentlyTypingWord.length === 5 && amountGuesses < 6 ? submitGuess() : setShake(true);
+  };
 
-  return (
-    gameInfo.gameStatus == GameStatus.SYNCING ? <LoaderCenterer><DotWave size={50} speed={1} color='#eee' /></LoaderCenterer> :
-      <Box sx={{width: smallScreen ? '100%' : '90%', mx:'auto', textAlign: 'center'}}>
-        {gameInfo.gameMode != GameMode.CLASSIC && 
-            <Box sx={{display: 'inline-block', width: smallScreen ? '90%' : '100%', mt: '20px', mb: '15px'}}>
-              <Typography variant="h3" sx={{fontSize: '24px', float: smallScreen ? 'none' : 'left'}}>Round: {currentRound}</Typography>
-              <Box sx={{width: smallScreen ? '100%' : '70%', float: smallScreen ? 'none' : 'right', mt: smallScreen ? '15px' : 'auto'}}>
-                <Typography variant="h3" sx={{fontSize: '24px' }}>Time: {gameInfo.roundTime - Math.floor(timer)} seconds</Typography>
-                <LinearProgress variant="determinate" value={timer / gameInfo.roundTime * 100} sx={{width: '100%', height: '10px', borderRadius: '15px'}} />
-              </Box>
-            </Box>
-        }
-        <Box sx={{width: (gameInfo.gameStatus == GameStatus.WAITING || smallScreen) ? '100%' : '50%', mx: 'auto', mt: '20px', textAlign: 'center', display: 'inline-block'}}>
-          <Snackbar anchorOrigin={{ horizontal: 'center', vertical: 'top' }} open={shake} autoHideDuration={2000} onClose={() =>setShake(false)}>
-            <Alert variant="filled" severity="error">Invalid word</Alert>
-          </Snackbar>
-          <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
-            <Grid
-              currentRow={amountGuesses}
-              allGuesses={guessHistory}
-              currentWord={currentlyTypingWord}
-              allLetterStates={letterState}
-              shake={shake}
+  return gameInfo.gameStatus == GameStatus.SYNCING ? (
+    <LoaderCenterer>
+      <DotWave size={50} speed={1} color="#eee" />
+    </LoaderCenterer>
+  ) : (
+    <Box sx={{ width: smallScreen ? '100%' : '90%', mx: 'auto', textAlign: 'center' }}>
+      {gameInfo.gameMode != GameMode.CLASSIC && (
+        <Box sx={{ display: 'inline-block', width: smallScreen ? '90%' : '100%', mt: '20px', mb: '15px' }}>
+          <Typography variant="h3" sx={{ fontSize: '24px', float: smallScreen ? 'none' : 'left' }}>
+            Round: {currentRound}
+          </Typography>
+          <Box
+            sx={{
+              width: smallScreen ? '100%' : '70%',
+              float: smallScreen ? 'none' : 'right',
+              mt: smallScreen ? '15px' : 'auto',
+            }}
+          >
+            <Typography variant="h3" sx={{ fontSize: '24px' }}>
+              Time: {gameInfo.roundTime - Math.floor(timer)} seconds
+            </Typography>
+            <LinearProgress
+              variant="determinate"
+              value={(timer / gameInfo.roundTime) * 100}
+              sx={{ width: '100%', height: '10px', borderRadius: '15px' }}
             />
-          </Suspense>
-          {gameInfo.gameStatus == GameStatus.GUESSING &&
-        <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main}/></LoaderCenterer>}>
-          <Keyboard
-            onChar={onChar}
-            onDelete={onDelete}
-            onEnter={onEnter}
-            letterOnCorrectPosition={letterOnCorrectPosition}
-            letterInWord={letterInWord}
-            letterNotInWord={letterNotInWord}
+          </Box>
+        </Box>
+      )}
+      <Box
+        sx={{
+          width: gameInfo.gameStatus == GameStatus.WAITING || smallScreen ? '100%' : '50%',
+          mx: 'auto',
+          mt: '20px',
+          textAlign: 'center',
+          display: 'inline-block',
+        }}
+      >
+        <Snackbar
+          anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
+          open={shake}
+          autoHideDuration={2000}
+          onClose={() => setShake(false)}
+        >
+          <Alert variant="filled" severity="error">
+            Invalid word
+          </Alert>
+        </Snackbar>
+        <Suspense
+          fallback={
+            <LoaderCenterer>
+              <Orbit size={35} color={theme.additional.UiBallLoader.colors.main} />
+            </LoaderCenterer>
+          }
+        >
+          <Grid
+            currentRow={amountGuesses}
+            allGuesses={guessHistory}
+            currentWord={currentlyTypingWord}
+            allLetterStates={letterState}
+            shake={shake}
           />
         </Suspense>
-          }
-        </Box>
-        {opponentGameRoundData.data &&
-          <Box sx={{
-            width: (gameInfo.gameStatus == GameStatus.WAITING || smallScreen) ? '100%' : '40%',
-            mt: gameInfo.gameStatus == GameStatus.WAITING ? '35px' : 'auto',
-            mr: (gameInfo.gameStatus == GameStatus.WAITING || smallScreen) ? 'auto' : '5%',
-            float: 'right',
-            textAlign: 'center'
-          }}>
-            {opponentGameRoundData.data.opponentGameRound.map((round, i) => (
-              <Box key={round.player.name+i} sx={{display: 'inline-block', mb: '5%', mx: '2.5%',}}>
-                <Typography variant={'h2'} sx={{fontSize: '24px', textAlign: 'center'}}>{round.player.name} - Round {round.currentRound + 1}</Typography>
-                <Grid allLetterStates={round.letterStates} allGuesses={['', '', '', '', '', '']}/>
-              </Box>
-            ))}
-          </Box>
-        }
+        {gameInfo.gameStatus == GameStatus.GUESSING && (
+          <Suspense
+            fallback={
+              <LoaderCenterer>
+                <Orbit size={35} color={theme.additional.UiBallLoader.colors.main} />
+              </LoaderCenterer>
+            }
+          >
+            <Keyboard
+              onChar={onChar}
+              onDelete={onDelete}
+              onEnter={onEnter}
+              letterOnCorrectPosition={letterOnCorrectPosition}
+              letterInWord={letterInWord}
+              letterNotInWord={letterNotInWord}
+            />
+          </Suspense>
+        )}
       </Box>
+      {opponentGameRoundData.data && (
+        <Box
+          sx={{
+            width: gameInfo.gameStatus == GameStatus.WAITING || smallScreen ? '100%' : '40%',
+            mt: gameInfo.gameStatus == GameStatus.WAITING ? '35px' : 'auto',
+            mr: gameInfo.gameStatus == GameStatus.WAITING || smallScreen ? 'auto' : '5%',
+            float: 'right',
+            textAlign: 'center',
+          }}
+        >
+          {opponentGameRoundData.data.opponentGameRound.map((round, i) => (
+            <Box key={round.player.name + i} sx={{ display: 'inline-block', mb: '5%', mx: '2.5%' }}>
+              <Typography variant={'h2'} sx={{ fontSize: '24px', textAlign: 'center' }}>
+                {round.player.name} - Round {round.currentRound + 1}
+              </Typography>
+              <Grid allLetterStates={round.letterStates} allGuesses={['', '', '', '', '', '']} />
+            </Box>
+          ))}
+        </Box>
+      )}
+    </Box>
   );
 };
 
