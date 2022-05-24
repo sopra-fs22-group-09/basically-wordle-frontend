@@ -81,7 +81,7 @@ const TokenEntry = () => {
         <Avatar sx={{ m: 'auto', bgcolor: 'primary.main' }}><LockOutlinedIcon /></Avatar>
         <Typography variant="h1" sx={{fontSize: '32px', mt: '10px'}}>Password Reset</Typography>
         {error && <Alert sx={{ mt: '10px' }} variant="filled" severity="error">{error.message}</Alert>}
-        {!data && !loading ?
+        {data && !loading ?
           <>
             <Alert sx={{ mt: '10px' }} variant="filled" severity="info">You have set a new password successfully!</Alert>
             <Button type="submit" fullWidth variant="contained" sx={{mt: '20px'}} onClick={() => navigate('/')}>Back to login page</Button>

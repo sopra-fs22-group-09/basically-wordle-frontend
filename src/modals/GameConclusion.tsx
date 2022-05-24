@@ -76,7 +76,7 @@ const GameConclusion = () => {
         }}
       >
         <Typography variant='h1' sx={{fontSize: '42px'}}>Game finished!</Typography>
-        <Typography variant={'body1'} sx={{fontSize: '24px', mt:5}}>Last target word: {targetWord}</Typography>
+        <Typography variant={'body1'} sx={{fontSize: '24px', mt: '30px'}}>Last target word: {targetWord}</Typography>
         <Typography variant={'body1'} sx={{fontSize: '24px'}}>Total time taken: {Math.floor(timeTaken / 60) + ':' + (timeTaken % 60).toFixed(0)}</Typography>
         <Typography variant={'body1'} sx={{fontSize: '24px'}}>Rounds played: {roundsTaken}</Typography>
         <Typography variant={'body1'} sx={{fontSize: '24px'}}>Score: {score}</Typography>

@@ -46,9 +46,9 @@ const Game = (gameInfo: GameInformation) => {
   const Keyboard = lazy(() => import('../components/keyboard/keyboard'));
 
   const theme = useTheme();
+  const smallScreen = !useMediaQuery(theme.breakpoints.up('mobile')); //screen smaller than defined size
   const dispatch = useAppDispatch();
   const gamestat = useRef(gameInfo.gameStatus); // To be able to access gamestatus within setTimeout
-  const smallScreen = !useMediaQuery(theme.breakpoints.up('mobile')); //screen smaller than defined size
 
   const [currentRound, setCurrentRound] = useState(1);
   const [delayNewRound, setDelayNewRound] = useState(false);
@@ -183,14 +183,7 @@ const Game = (gameInfo: GameInformation) => {
 
   return (
     gameInfo.gameStatus == GameStatus.SYNCING ? <LoaderCenterer><DotWave size={50} speed={1} color='#eee' /></LoaderCenterer> :
-      <Box
-        sx={{
-          width: smallScreen ? '100%' : '90%',
-          mx:'auto',
-          mt: '2.5%',
-          textAlign: 'center'
-        }}
-      >
+      <Box sx={{width: smallScreen ? '100%' : '90%', mx:'auto', mt: '2.5%', textAlign: 'center'}}>
         {gameInfo.gameMode != GameMode.CLASSIC && 
             <Box sx={{display: 'inline-block', width: smallScreen ? '90%' : '100%', mb: '15px'}}>
               <Typography variant="h3" sx={{fontSize: '24px', float: smallScreen ? 'none' : 'left'}}>Round: {currentRound}</Typography>

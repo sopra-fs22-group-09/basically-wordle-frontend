@@ -25,6 +25,7 @@ interface Route {
 const Home = lazy(() => import('../pages/home'));
 const Profile = lazy(() => import('../pages/profile'));
 const Tutorial = lazy(() => import('../pages/tutorial'));
+const About = lazy(() => import('../pages/about'));
 //const Game = lazy(() => import('../pages/game'));
 const Lobby = lazy(() => import('../components/lobby'));
 
@@ -54,7 +55,7 @@ export const routes: Array<Route> = [
     key: 'profile-route',
     title: 'Profile',
     path: '/profile',
-    enabled: true,
+    enabled: false,
     component: Profile
   },
   {
@@ -63,6 +64,13 @@ export const routes: Array<Route> = [
     path: '/tutorial',
     enabled: true,
     component: Tutorial
+  },
+  {
+    key: 'about-route',
+    title: 'About',
+    path: '/about',
+    enabled: true,
+    component: About
   },
   {
     key: 'login-route',
