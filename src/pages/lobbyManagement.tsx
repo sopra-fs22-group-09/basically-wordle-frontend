@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Autocomplete,
@@ -34,7 +33,7 @@ import {
 } from '../models/Lobby';
 import { Player } from '../models/Player';
 import { gql, useMutation } from '@apollo/client';
-import { ChaoticOrbit, Orbit } from '@uiball/loaders';
+import { ChaoticOrbit } from '@uiball/loaders';
 import LoaderCenterer from '../components/loader';
 import { GameStatus } from '../models/Game';
 import { MutationAddFriendArgs, User } from '../models/User';
@@ -196,11 +195,9 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
         {showQrCode &&
           <Paper sx={{width: smallScreen ? '100%' : '49%', mt: smallScreen ? 'auto' : '20px', textAlign: 'center', float: smallScreen ? 'none' : 'right', p: '15px'}}>
             <Button onClick={(event) => {event.currentTarget.blur(); setBigQrCode(true);}}>
-              <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
-                <img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href + '&size=300x300&ecc=H&margin=5'}
-                  alt="Invite link" title="Click to see the QR Code in fullscreen mode" style={{borderRadius: '5px'}}
-                />
-              </Suspense>
+              <img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href + '&size=300x300&ecc=H&margin=5'}
+                alt="Invite link" title="Click to see the QR Code in fullscreen mode" style={{borderRadius: '5px'}}
+              />
             </Button>
             <Dialog open={bigQrCode} maxWidth={false} onClose={() => setBigQrCode(false)}>
               <img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href + '&size=' + Math.min(window.innerHeight, window.innerWidth, 1000) + 'x' + Math.min(window.innerHeight, window.innerWidth, 1000) + '&ecc=H&margin=10'}
