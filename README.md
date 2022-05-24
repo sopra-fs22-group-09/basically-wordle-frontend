@@ -32,7 +32,7 @@ The overall React entry point is the [index.tsx](./src/index.tsx) file which mou
 
 # Launch & Deployment
 
-The client requires the server (backend) to run at http://localhost:8080 in order to serve app content. The frontend will the be available at http://localhost:3000.  
+The client requires the server (backend) to run at http://localhost:8080 in order to serve app content. The frontend will then be available at http://localhost:3000.  
 You can deploy a new frontend release just by committing to a new branch, and then opening and merging a PR into the `master` branch.
 
 ## Available Scripts
@@ -72,7 +72,7 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-# Illustrations!
+# Illustrations
 
 ![Illustration01](./screenshots/illustration01.png)
 
