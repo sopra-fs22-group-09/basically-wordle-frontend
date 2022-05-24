@@ -40,8 +40,8 @@ const Header = () => {
     <AppBar position="fixed" open={open}>
       <Toolbar>
         {!open &&
-          <IconButton onClick={toggleDrawer} sx={{ml: muiFix ? '-8px' : '-16px'}}>
-            <Avatar sx={{ outline: 'white solid 5px' }}><FaceIcon /></Avatar>
+          <IconButton onClick={toggleDrawer} sx={{border: 'white solid 5px', ml: muiFix ? '-7px' : '-15px', p: '0px'}}>
+            <Avatar><FaceIcon /></Avatar>
           </IconButton>}
         <NavigationBar />
       </Toolbar>

@@ -42,16 +42,13 @@ const LOBBIES_SUBSCRIPTION = gql`
 `;
 
 const Home = () => {
-
   const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const token = localStorage.getItem('token');
   const [lobbies, setLobbies] = React.useState<LobbyOverview[]>();
 
-  const toggleModal = () => {
-    dispatch({ type: 'modal/toggle', payload: 'lobbyConfirmation' });
-  };
+  const toggleModal = () => dispatch({ type: 'modal/toggle', payload: 'lobbyConfirmation' });
 
   const mapLobbies = (l: Lobby) => {
     return (
@@ -73,78 +70,55 @@ const Home = () => {
     }
   });
 
-  const subscribeLobbiesData = useSubscription<LobbyModels>(LOBBIES_SUBSCRIPTION, {
-    skip: !token
-  });
+  const subscribeLobbiesData = useSubscription<LobbyModels>(LOBBIES_SUBSCRIPTION, {skip: !token});
   useEffect(() => {
-    if (!subscribeLobbiesData.loading && subscribeLobbiesData.data?.lobbyList) {
-      setLobbies(subscribeLobbiesData.data.lobbyList.map(l => mapLobbies(l)));
-    }
+    if (!subscribeLobbiesData.loading && subscribeLobbiesData.data?.lobbyList) setLobbies(subscribeLobbiesData.data.lobbyList.map(l => mapLobbies(l)));
   }, [subscribeLobbiesData]);
 
   // noinspection RequiredAttributes
   return (
-    <Box sx={{
-      width:'90%',
-      mx:'auto',
-      mt:'2.5%',
-    }}>
-      <Button
-        variant="contained"
-        onClick={toggleModal}
-        sx={{
-          display: 'block', // Margin does not apply without this line
-          mx: 'auto',
-          mb: '2.5%'
-        }}
-      >
-        Create New Lobby
-      </Button>
-      {
-        lobbies ? (
-          <DataGrid autoHeight disableSelectionOnClick
-            sx={{
-              '&.MuiDataGrid-root.MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus': { outline:'none' },
-              '.MuiDataGrid-virtualScrollerContent' : {overflowX: 'hidden'}
-            }}
-            onRowClick={((params, event) => {
-              event.defaultMuiPrevented = true;
-              navigate('/lobby/' + params.id);
-            })}
-            columns={[
-              {
-                field: 'name',
-                headerName: 'Lobby',
-                flex: 1,
-                minWidth: 200,
-              },
-              {
-                field: 'mode',
-                headerName: 'Mode',
-                width: 100,
-              },
-              {
-                field: 'category',
-                headerName: 'Category',
-                width: 80,
-              },
-              {
-                field: 'players',
-                headerName: 'Players',
-                width: 80,
-              },
-              {
-                field: 'status',
-                headerName: 'Status',
-                width: 80,
-              }
-            ]}
-            rows={lobbies}
-          />
-        ) : (
-          <LoaderCenterer><ChaoticOrbit size={50} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>
-        )
-      }
+    <Box sx={{width: '90%', mx:'auto', mb: '20px', textAlign: 'center'}}>
+      <Button variant="contained" onClick={toggleModal} sx={{mt: '20px', mb: '20px'}}>Create New Lobby</Button>
+      {lobbies ?
+        <DataGrid autoHeight disableSelectionOnClick
+          sx={{
+            '&.MuiDataGrid-root.MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus': { outline:'none' },
+            '.MuiDataGrid-virtualScrollerContent' : {overflowX: 'hidden'}
+          }}
+          onRowClick={((params, event) => {
+            event.defaultMuiPrevented = true;
+            navigate('/lobby/' + params.id);
+          })}
+          columns={[
+            {
+              field: 'name',
+              headerName: 'Lobby',
+              flex: 1,
+              minWidth: 150,
+            },
+            {
+              field: 'mode',
+              headerName: 'Mode',
+              width: 90,
+            },
+            {
+              field: 'status',
+              headerName: 'Status',
+              width: 80,
+            },
+            {
+              field: 'players',
+              headerName: 'Players',
+              width: 65,
+            },
+            {
+              field: 'category',
+              headerName: 'Category',
+              width: 75,
+            },
+          ]}
+          rows={lobbies}
+        /> : <LoaderCenterer><ChaoticOrbit size={50} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}
     </Box>
   );
 };

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Autocomplete,
@@ -33,7 +34,7 @@ import {
 } from '../models/Lobby';
 import { Player } from '../models/Player';
 import { gql, useMutation } from '@apollo/client';
-import { ChaoticOrbit } from '@uiball/loaders';
+import { ChaoticOrbit, Orbit } from '@uiball/loaders';
 import LoaderCenterer from '../components/loader';
 import { GameStatus } from '../models/Game';
 import { MutationAddFriendArgs, User } from '../models/User';
@@ -120,15 +121,10 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
 
   return (
     !lobbyInfo.name ? <LoaderCenterer><ChaoticOrbit size={50} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer> :
-      <Box sx={{
-        width: '90%',
-        mx: 'auto',
-        mt: '2.5%',
-        textAlign: 'center',
-      }}>
-        <Typography variant="h1" sx={{ fontSize: '48px', mb: '25px'}}>{lobbyInfo.name} | {lobbyInfo.gameCategory}</Typography>
+      <Box sx={{width: '90%', mx: 'auto', textAlign: 'center'}}>
+        <Typography variant="h1" fontSize="48px" sx={{ mt: '20px', mb: '25px'}}>{lobbyInfo.name} | {lobbyInfo.gameCategory}</Typography>
         <Paper sx={{ width: smallScreen ? '100%' : '49%', float: smallScreen ? 'none' : 'left', minHeight: '400px', py: '15px'}}> {/*TODO*/}
-          <Typography variant="h2" sx={{fontSize: '24px'}}>Settings</Typography>
+          <Typography variant="h2" fontSize="24px">Settings</Typography>
           <FormControl sx={{ minWidth: 150, width: '90%', mt: '30px' }}>
             <InputLabel>Game Mode</InputLabel>
             <Select
@@ -142,7 +138,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
           </FormControl>
           {lobbyInfo.gameRounds >= 1 && lobbyInfo.maxTime != 0 && (
             <Box sx={{ m: 'auto', mt: '25px', width: '90%' }}>
-              <Typography variant="h3" sx={{fontSize: '21px'}}>Rounds: {lobbyInfo.gameRounds}</Typography>
+              <Typography variant="h3" fontSize="21px">Rounds: {lobbyInfo.gameRounds}</Typography>
               <Slider step={1} min={1} max={lobbyInfo.maxRounds} valueLabelDisplay="auto" value={lobbyInfo.gameRounds} disabled={userId != lobbyInfo.ownerId}
                 onChange={(event, newRounds) => {
                   lobbyInfo.setGameRounds(newRounds as number);
@@ -153,7 +149,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
           )}
           {lobbyInfo.roundTime >= 60 && (
             <Box sx={{ m: 'auto', mt: '25px', width: '90%' }}>
-              <Typography variant="h3" sx={{fontSize: '21px'}}>Time: {lobbyInfo.roundTime} seconds</Typography>
+              <Typography variant="h3" fontSize="21px">Time: {lobbyInfo.roundTime} seconds</Typography>
               <Slider step={10} min={60} max={lobbyInfo.maxTime} valueLabelDisplay="auto" value={lobbyInfo.roundTime} disabled={userId != lobbyInfo.ownerId}
                 onChange={(event, newTime) => {
                   lobbyInfo.setRoundTime(newTime as number);
@@ -185,10 +181,9 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
           />
         </Paper>
         <Paper sx={{ width: smallScreen ? '100%' : '49%', float: smallScreen ? 'none' : 'right', minHeight: '400px', mt: smallScreen ? '20px' : 'auto', py: '15px' }}>
-          <Typography variant="h2" sx={{fontSize: '24px'}}>Players (max {lobbyInfo.size})</Typography>
+          <Typography variant="h2" fontSize="24px">Players (max {lobbyInfo.size})</Typography>
           <List>
             {lobbyInfo.players?.map((player) => (
-              // loading ? <Skeleton animation="wave" variant="text" sx={{ ml: '15px' }} width={120} /> : //TODO Everytime lobby settings are changed skeleton is visible, do we really want this? Feel free to delete this line. Don't froget to have a look at line 89
               <ListItem key={player.id}>
                 <ListItemText primary={player.name} sx={{color: userId == player.id ? theme.palette.primary.light : ''}} />
                 {/* FIXME: Non-friends only! */}
@@ -201,13 +196,15 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
         {showQrCode &&
           <Paper sx={{width: smallScreen ? '100%' : '49%', mt: smallScreen ? 'auto' : '20px', textAlign: 'center', float: smallScreen ? 'none' : 'right', p: '15px'}}>
             <Button onClick={(event) => {event.currentTarget.blur(); setBigQrCode(true);}}>
-              <img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href + '&size=300x300&ecc=H&margin=5'}
-                alt="Invite link" title="Click to open in fullscreen" style={{borderRadius: '5px'}}
-              />
+              <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
+                <img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href + '&size=300x300&ecc=H&margin=5'}
+                  alt="Invite link" title="Click to see the QR Code in fullscreen mode" style={{borderRadius: '5px'}}
+                />
+              </Suspense>
             </Button>
             <Dialog open={bigQrCode} maxWidth={false} onClose={() => setBigQrCode(false)}>
               <img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href + '&size=' + Math.min(window.innerHeight, window.innerWidth, 1000) + 'x' + Math.min(window.innerHeight, window.innerWidth, 1000) + '&ecc=H&margin=10'}
-                alt="Invite link" title="Click to open in fullscreen" style={{borderRadius: '10px'}}
+                alt="Invite link" title="Click somewhere else to close the fullscreen mode" style={{borderRadius: '10px'}}
               />
             </Dialog>
           </Paper>

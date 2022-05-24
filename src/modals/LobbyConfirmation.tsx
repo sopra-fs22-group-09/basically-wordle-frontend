@@ -84,7 +84,6 @@ const LobbyConfirmation = () => {
 
   return (
     <Modal open={open} onClose={toggleModal}>
-
       <Box
         sx={{
           position: 'fixed',

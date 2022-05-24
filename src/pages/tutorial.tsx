@@ -70,16 +70,8 @@ const Tutorial = () => {
   };
   
   return (
-    <Box
-      sx={{
-        width: '95%',
-        maxWidth: '700px',
-        mx:'auto',
-        mt: '2.5%',
-        textAlign: 'center'
-      }}
-    >
-      <Typography variant="h1" fontSize={smallScreen ? '60px' : '72px'}>Tutorial</Typography>
+    <Box sx={{width: smallScreen ? '100%' : '90%', maxWidth: '700px', mx:'auto', textAlign: 'center'}}>
+      <Typography variant="h1" fontSize="48px" sx={{mt: '20px'}}>Tutorial</Typography>
       {(!loading && error) && <Alert sx={{ mt: 3, minWidth: 1, maxWidth: 1 }} variant="filled" severity="error">{error.message}</Alert>}
       <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
         <Grid
@@ -95,19 +87,19 @@ const Tutorial = () => {
           letterNotInWord={letterNotInWord[count]}
         />
       </Suspense>
-      <Typography sx={{minHeight: smallScreen ? '96px' : '48px'}} variant="body1">{text[count]}</Typography>
+      <Typography sx={{minHeight: smallScreen ? '96px' : '48px', width: smallScreen ? '90%' : '100%', mx: 'auto', textAlign: 'center'}} variant="body1">{text[count]}</Typography>
 
       <Button
         onClick={() => setCount(count > 0 ? count - 1 : 0)}
         variant="contained"
-        sx={{width: smallScreen ? '100%' : '33%', mt: smallScreen ? '30px' : '50px', float: smallScreen ? 'none' : 'left'}}
+        sx={{width: smallScreen ? '90%' : '33%', mt: smallScreen ? '30px' : '50px', float: smallScreen ? 'none' : 'left'}}
         disabled={count <= 0}
       >
             Back
       </Button>
       <Typography
         sx={{
-          width: smallScreen ? '100%' : '33%',
+          width: smallScreen ? '90%' : '33%',
           height: '36.5px',
           mt: smallScreen ? '15px' : '50px',
           pt: '6px',
@@ -120,7 +112,7 @@ const Tutorial = () => {
       <Button
         onClick={handleSubmit}
         variant="contained"
-        sx={{width: smallScreen ? '100%' : '33%', mt: smallScreen ? '15px' : '50px', float: smallScreen ? 'none' : 'right'}}
+        sx={{width: smallScreen ? '90%' : '33%', mt: smallScreen ? '15px' : '50px', float: smallScreen ? 'none' : 'right'}}
       >
         {count < maxCount ? 'Next' : 'Let\'s play!'}
       </Button>

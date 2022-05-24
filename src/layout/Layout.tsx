@@ -103,7 +103,7 @@ const Layout = ({ children }: LayoutProps) => {
           transform: 'translate(0, 75px)',
           overflowY: 'scroll',
           overflowX: 'hidden',
-          '&::-webkit-scrollbar': {display: 'none' },
+          '&::-webkit-scrollbar': {display: 'none'},
           scrollbarWidth: 'none',
           backgroundColor: (theme) =>
             theme.palette.mode === 'light'

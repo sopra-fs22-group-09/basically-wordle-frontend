@@ -75,12 +75,12 @@ const GameConclusion = () => {
           textAlign: 'center'
         }}
       >
-        <Typography variant="h1" sx={{fontSize: '42px'}}>Game finished!</Typography>
-        <Typography variant="body1" sx={{fontSize: '24px', mt: '30px'}}>Last target word: {targetWord}</Typography>
-        <Typography variant="body1" sx={{fontSize: '24px'}}>Total time taken: {Math.floor(timeTaken / 60) + ((timeTaken % 60).toString().length == 1 ? ':0' : ':') + (timeTaken % 60)}</Typography>
-        <Typography variant="body1" sx={{fontSize: '24px'}}>Rounds played: {roundsTaken}</Typography>
-        <Typography variant="body1" sx={{fontSize: '24px'}}>Score: {score}</Typography>
-        <Button variant="contained" sx={{ mt: '30px' }} onClick={() => playAgain()}>Play Again</Button>
+        <Typography variant="h1" fontSize="42px">Game finished!</Typography>
+        <Typography variant="body1" fontSize="24px" sx={{mt: '30px'}}>Last target word: {targetWord}</Typography>
+        <Typography variant="body1" fontSize="24px">Total time taken: {Math.floor(timeTaken / 60) + ((timeTaken % 60).toString().length == 1 ? ':0' : ':') + (timeTaken % 60)}</Typography>
+        <Typography variant="body1" fontSize="24px">Rounds played: {roundsTaken}</Typography>
+        <Typography variant="body1" fontSize="24px">Score: {score}</Typography>
+        <Button variant="contained" sx={{mt: '30px'}} onClick={() => playAgain()}>Play Again</Button>
       </Box>
     </Modal>
   );

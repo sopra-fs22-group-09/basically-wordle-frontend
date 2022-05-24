@@ -87,7 +87,7 @@ const Friends = () => {
         </>
       ) : (
         <>
-          <ListItemAvatar><Avatar sx={{ outline: 'white solid 5px' }}><FaceIcon /></Avatar></ListItemAvatar>
+          <ListItemAvatar sx={{border: 'white solid 5px', borderRadius: '50%', minWidth: '0', ml: '-7px', mr: '12px'}}><Avatar ><FaceIcon /></Avatar></ListItemAvatar>
           {/* TODO: Show own real status */}
           <ListItemText primary={localStorage.getItem('userName')} secondary="Online" />
         </>
@@ -96,16 +96,15 @@ const Friends = () => {
   );
 
   return (
-    <List sx={{mt: '-9px', height: '100vh', overflowY: 'scroll', overflowX: 'hidden', '&::-webkit-scrollbar': { display: 'none' }, scrollbarWidth: 'none'}}>
+    <List sx={{mt: '-8px', height: '100vh', overflowY: 'scroll', overflowX: 'hidden', '&::-webkit-scrollbar': { display: 'none' }, scrollbarWidth: 'none'}}>
       {myProfile}
-      <Divider variant="inset" component="li" />
       {/* I don't get the sorting */}
       {data?.allFriends
         .flatMap((f) => (f ? [f] : []))
         .sort((f1, _) => (f1.status == UserStatus.ONLINE ? 1 : f1.status == UserStatus.AWAY ? 0 : -1))
         .map((f, i) => (
           <React.Fragment key={i}>
-            <ListItem>
+            <ListItem sx={{pl: '9px'}}>
               {loading ? (
                 <>
                   <Skeleton animation="pulse" variant="circular" width={40} height={40} />
@@ -113,18 +112,21 @@ const Friends = () => {
                 </>
               ) : (
                 <>
-                  <ListItemAvatar>
+                  <ListItemAvatar
+                    sx={{
+                      border:
+                        f.status == UserStatus.ONLINE
+                          ? 'green solid 5px'
+                          : f.status == UserStatus.AWAY
+                            ? 'orange solid 5px'
+                            : f.status == UserStatus.INGAME || f.status == UserStatus.CREATING_LOBBY
+                              ? 'red solid 5px'
+                              : '',
+                      borderRadius: '50%', minWidth: '0', ml: '', mr: '12px'
+                    }}
+                  >
                     <Avatar
-                      sx={{
-                        outline:
-                          f.status == UserStatus.ONLINE
-                            ? 'green solid 5px'
-                            : f.status == UserStatus.AWAY
-                              ? 'orange solid 5px'
-                              : f.status == UserStatus.INGAME || f.status == UserStatus.CREATING_LOBBY
-                                ? 'red solid 5px'
-                                : '',
-                      }}
+
                     >
                       <PersonIcon />
                     </Avatar>

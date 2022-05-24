@@ -58,11 +58,11 @@ const GameRoundConclusion = () => {
           textAlign: 'center'
         }}
       >
-        <Typography variant="h1" sx={{fontSize: '42px'}}>The round has finished!</Typography>
-        <Typography variant="h2" sx={{fontSize: '24px', mt: '20px'}}>Waiting for the next round...</Typography>
-        <Typography variant="body1" sx={{fontSize: '24px', mt: '30px'}}>Target word: {targetWord}</Typography>
-        <Typography variant="body1" sx={{fontSize: '24px'}}>Total time taken: {Math.floor(timeTaken / 60) + ((timeTaken % 60).toString().length == 1 ? ':0' : ':') + (timeTaken % 60)}</Typography>
-        <Typography variant="body1" sx={{fontSize: '24px'}}>Score: {score}</Typography>
+        <Typography variant="h1" fontSize="42px">The round has finished!</Typography>
+        <Typography variant="h2" fontSize="24px" sx={{mt: '20px'}}>Waiting for the next round...</Typography>
+        <Typography variant="body1" fontSize="24px" sx={{mt: '30px'}}>Target word: {targetWord}</Typography>
+        <Typography variant="body1" fontSize="24px">Total time taken: {Math.floor(timeTaken / 60) + ((timeTaken % 60).toString().length == 1 ? ':0' : ':') + (timeTaken % 60)}</Typography>
+        <Typography variant="body1" fontSize="24px">Score: {score}</Typography>
       </Box>
     </Modal>
   );

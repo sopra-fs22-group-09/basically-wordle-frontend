@@ -20,7 +20,7 @@ const LOGOUT_USER = gql`
 `;
 
 export const NavigationBar = () => {
-  const [tab, setTab] = useState(window.location.pathname === '/tutorial' ? 1 : window.location.pathname === '/about' ? 2 : 0);
+  const [tab, setTab] = useState(window.location.pathname === '/tutorial' ? 1 : window.location.pathname === '/about' ? 2 : window.location.pathname.includes('/lobby/') ? -1 : 0);
   const [logoutUser] = useMutation<LogoutType>(LOGOUT_USER);
   const token = localStorage.getItem('token');
   const client = useApolloClient();
