@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Box, Modal, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useAppSelector } from '../redux/hooks';
 import { gql, useLazyQuery } from '@apollo/client';
 import { GameStatsModel } from '../models/Game';
 import { useEffect, useState } from 'react';
+import ModalTemplate from '../components/modal';
 
 const CONCLUDE_ROUND = gql`
   query concludeGame {
@@ -16,8 +17,6 @@ const CONCLUDE_ROUND = gql`
 `;
 
 const GameRoundConclusion = () => {
-  const theme = useTheme();
-  const smallScreen = !useMediaQuery(theme.breakpoints.up('mobile')); //screen smaller than defined size
   const [targetWord, setTargetWord] = useState('');
   const [timeTaken, setTimeTaken] = useState(0);
   const [score, setScore] = useState(0);
@@ -40,31 +39,13 @@ const GameRoundConclusion = () => {
   }, [concludeRound, open]);
 
   return(
-    <Modal open={open}>
-      <Box
-        sx={{
-          position: 'fixed',
-          width: '90vw',
-          maxWidth: '650px',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          px: smallScreen ? '20px' : '50px',
-          py: smallScreen ? '30px' : '50px',
-          bgcolor: 'rgba(0, 0, 0, 0.75)',
-          boxShadow: '0 0 20px -7px rgba(0, 0, 0, 0.2)',
-          border: '1px solid white',
-          borderRadius: '15px',
-          textAlign: 'center'
-        }}
-      >
-        <Typography variant="h1" fontSize="42px">The round has finished!</Typography>
-        <Typography variant="h2" fontSize="24px" sx={{mt: '20px'}}>Waiting for the next round...</Typography>
-        <Typography variant="body1" fontSize="24px" sx={{mt: '30px'}}>Target word: {targetWord}</Typography>
-        <Typography variant="body1" fontSize="24px">Total time taken: {Math.floor(timeTaken / 60) + ((timeTaken % 60).toString().length == 1 ? ':0' : ':') + (timeTaken % 60)}</Typography>
-        <Typography variant="body1" fontSize="24px">Score: {score}</Typography>
-      </Box>
-    </Modal>
+    <ModalTemplate maxWidth="650px" name="gameRoundConclusion">
+      <Typography variant="h1" fontSize="42px">The round has finished!</Typography>
+      <Typography variant="h2" fontSize="24px" sx={{mt: '20px'}}>Waiting for the next round...</Typography>
+      <Typography variant="body1" fontSize="24px" sx={{mt: '30px'}}>Target word: {targetWord}</Typography>
+      <Typography variant="body1" fontSize="24px">Total time taken: {Math.floor(timeTaken / 60) + ((timeTaken % 60).toString().length == 1 ? ':0' : ':') + (timeTaken % 60)}</Typography>
+      <Typography variant="body1" fontSize="24px">Score: {score}</Typography>
+    </ModalTemplate>
   );
 };
 
