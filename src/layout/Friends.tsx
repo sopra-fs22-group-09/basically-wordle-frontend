@@ -79,7 +79,7 @@ const Friends = () => {
   };
 
   const myProfile = (
-    <ListItem sx={{position: 'sticky', top: '0', backgroundColor: 'primary.dark', zIndex: 1, height: '75px'}}>
+    <ListItem sx={{ position: 'sticky', top: '0', backgroundColor: 'primary.dark', zIndex: 1, height: '75px' }}>
       {loading ? (
         <>
           <Skeleton animation="pulse" variant="circular" width={40} height={40} />
@@ -87,7 +87,13 @@ const Friends = () => {
         </>
       ) : (
         <>
-          <ListItemAvatar sx={{border: 'white solid 5px', borderRadius: '50%', minWidth: '0', ml: '-7px', mr: '12px'}}><Avatar ><FaceIcon /></Avatar></ListItemAvatar>
+          <ListItemAvatar
+            sx={{ border: 'white solid 5px', borderRadius: '50%', minWidth: '0', ml: '-7px', mr: '12px' }}
+          >
+            <Avatar>
+              <FaceIcon />
+            </Avatar>
+          </ListItemAvatar>
           {/* TODO: Show own real status */}
           <ListItemText primary={localStorage.getItem('userName')} secondary="Online" />
         </>
@@ -96,7 +102,16 @@ const Friends = () => {
   );
 
   return (
-    <List sx={{mt: '-8px', height: '100vh', overflowY: 'scroll', overflowX: 'hidden', '&::-webkit-scrollbar': { display: 'none' }, scrollbarWidth: 'none'}}>
+    <List
+      sx={{
+        mt: '-8px',
+        height: '100vh',
+        overflowY: 'scroll',
+        overflowX: 'hidden',
+        '&::-webkit-scrollbar': { display: 'none' },
+        scrollbarWidth: 'none',
+      }}
+    >
       {myProfile}
       {/* I don't get the sorting */}
       {data?.allFriends
@@ -104,7 +119,7 @@ const Friends = () => {
         .sort((f1, _) => (f1.status == UserStatus.ONLINE ? 1 : f1.status == UserStatus.AWAY ? 0 : -1))
         .map((f, i) => (
           <React.Fragment key={i}>
-            <ListItem sx={{pl: '9px'}}>
+            <ListItem sx={{ pl: '9px' }}>
               {loading ? (
                 <>
                   <Skeleton animation="pulse" variant="circular" width={40} height={40} />
@@ -122,12 +137,13 @@ const Friends = () => {
                             : f.status == UserStatus.INGAME || f.status == UserStatus.CREATING_LOBBY
                               ? 'red solid 5px'
                               : '',
-                      borderRadius: '50%', minWidth: '0', ml: '', mr: '12px'
+                      borderRadius: '50%',
+                      minWidth: '0',
+                      ml: '',
+                      mr: '12px',
                     }}
                   >
-                    <Avatar
-
-                    >
+                    <Avatar>
                       <PersonIcon />
                     </Avatar>
                   </ListItemAvatar>
