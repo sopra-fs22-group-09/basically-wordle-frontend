@@ -1,8 +1,19 @@
 import * as React from 'react';
 import {User} from '../models/User';
 import {gql, useMutation} from '@apollo/client';
-import {useAppDispatch, useAppSelector} from '../redux/hooks';
-import {Alert, Avatar, Box, Button, Grid, Link, Modal, TextField, Typography} from '@mui/material';
+import { useAppSelector } from '../redux/hooks';
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  Link,
+  Modal,
+  TextField,
+  Typography,
+  useMediaQuery,
+  useTheme
+} from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { LoadingOverlay } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
@@ -29,17 +40,11 @@ const RESET_USER = gql`
 `;
 
 const Reset = () => {
-
+  const theme = useTheme();
+  const smallScreen = !useMediaQuery(theme.breakpoints.up('mobile')); //screen smaller than defined size
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'reset');
-  // eslint-disable-next-line unused-imports/no-unused-vars
   const [resetUser, { data, loading, error }] = useMutation<ResetUser, MutationResetArgs>(RESET_USER);
-
-  const handleClose = () => {
-    navigate('/');
-    dispatch({ type: 'modal/setState', payload: { isOpen: false } });
-  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -48,84 +53,48 @@ const Reset = () => {
       variables: {
         input: {
           email: formData.get('email') }
-      },
-      onCompleted(){
-        //navigate('/reset/confirmation');
       }
     });
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-    >
+    <Modal open={open} >
       <Box
         sx={{
-          display: 'flex',
-          position: 'absolute',
-          width: '60%',
-          height: '60%',
+          position: 'fixed',
+          width: '90vw',
+          maxWidth: '600px',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          bgcolor: 'black',
-          boxShadow: 24,
+          px: smallScreen ? '20px' : '50px',
+          py: smallScreen ? '30px' : '50px',
+          bgcolor: 'rgba(0, 0, 0, 0.75)',
+          boxShadow: '0 0 20px -7px rgba(0, 0, 0, 0.2)',
+          border: '1px solid white',
+          borderRadius: '15px',
+          textAlign: 'center'
         }}
       >
-        <Box sx={{ width:'80%', height:'80%', m:'auto', textAlign:'center' }}>
-          <Avatar sx={{ m: 'auto', bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Reset password
-          </Typography>
-          {(data && !loading) &&
-              <Alert sx={{ mt: 3, minWidth: 1, maxWidth: 1 }} variant="filled" severity="info">
-                  Check your Email for a password reset link!
-              </Alert>}
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  type="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                />
-              </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Request password reset
-            </Button>
-            <LoadingOverlay
-              style={{ borderRadius: '4px' }}
-              loaderProps={{ size: 'lg', variant: 'dots' }}
-              overlayColor="#2C2E33"
-              visible={loading}
-            />
-            <Grid container justifyContent="">
-              <Grid item xs>
-                <Link href='/login' variant="body2">
-                  Remember your password?
-                </Link>
-              </Grid>
-              <Grid item xs>
-                <Link href='/register' variant="body2">
-                  Don&apos;t have an account? Sign Up
-                </Link>
-              </Grid>
-            </Grid>
-          </Box>
-        </Box>
+        <LoadingOverlay style={{ borderRadius: '4px' }} loaderProps={{ size: 'lg', variant: 'dots' }} overlayColor="#2C2E33" visible={loading}/>
+        <Avatar sx={{ m: 'auto', bgcolor: 'primary.main' }}><LockOutlinedIcon /></Avatar>
+        <Typography variant="h1" sx={{fontSize: '32px', mt: '10px'}}>Password Reset</Typography>
+        {error && <Alert sx={{ mt: '10px' }} variant="filled" severity="error">{error.message}</Alert>}
+        {data && !loading ?
+          <>
+            <Alert sx={{ mt: '10px' }} variant="filled" severity="info">Check your Email for a password reset link!</Alert>
+            <Button type="submit" fullWidth variant="contained" sx={{mt: '20px'}} onClick={() => navigate('/')}>Back to login page</Button>
+          </>:
+          <>
+            <Box component="form" onSubmit={handleSubmit} sx={{mt: '20px'}}>
+              <TextField required fullWidth id="email" type="email" label="Email Address" name="email" autoComplete="email" />
+              <Button type="submit" fullWidth variant="contained" sx={{mt: '20px'}}>Request password reset</Button>
+            </Box>
+            <Box sx={{mt: '20px'}}>
+              <Link href="/" variant="body1" sx={{float: smallScreen ? 'none' : 'left'}}>You have an account? Sign In</Link>
+              <Link href='/register' variant="body1" sx={{display: 'block', float: smallScreen ? 'none' : 'right', mt: smallScreen ? '20px' : 'auto'}}>Don&apos;t have an account? Sign Up</Link>
+            </Box>
+          </>}
       </Box>
     </Modal>
   );

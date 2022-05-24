@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { Alert, Box, LinearProgress, Snackbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { DotWave, Orbit } from '@uiball/loaders';
 import { GameMode, LobbyStatus } from '../models/Lobby';
@@ -46,9 +46,8 @@ const Game = (gameInfo: GameInformation) => {
   const Keyboard = lazy(() => import('../components/keyboard/keyboard'));
 
   const theme = useTheme();
-  const dispatch = useAppDispatch();
-  const gamestat = useRef(gameInfo.gameStatus); // To be able to access gamestatus within setTimeout
   const smallScreen = !useMediaQuery(theme.breakpoints.up('mobile')); //screen smaller than defined size
+  const dispatch = useAppDispatch();
 
   const [currentRound, setCurrentRound] = useState(1);
   const [delayNewRound, setDelayNewRound] = useState(false);
@@ -71,7 +70,7 @@ const Game = (gameInfo: GameInformation) => {
     dispatch({ type: 'modal/toggle', payload: conclusionType });
   }, [dispatch]);
 
-  const clearGameScreen = () => {
+  const clearGameScreen =  useCallback(() => {
     setCurrentRound(currentRound + 1);
 
     // For keyboard
@@ -87,7 +86,7 @@ const Game = (gameInfo: GameInformation) => {
     setShake(false);
 
     dispatch({type: 'modal/setState', payload: {isOpen: false}});
-  };
+  }, [currentRound, dispatch]);
 
   //Sync
   useEffect(() => {
@@ -102,12 +101,10 @@ const Game = (gameInfo: GameInformation) => {
       if (gameInfo.gameMode != GameMode.CLASSIC && timer < gameInfo.roundTime) setTimer(timer + 1);
     }, 985);
     return () => clearTimeout(timeout);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timer, currentRound, gameInfo.gameMode, gameInfo.maxRounds, gameInfo.roundTime, toggleModal, gameInfo.gameStatus]);
 
   //GameStatus Update
   useEffect(() => {
-    gamestat.current = gameInfo.gameStatus;
     if (gameInfo.gameStatus == GameStatus.WAITING) {
       setDelayNewRound(true);
       toggleModal('gameRoundConclusion');
@@ -123,8 +120,7 @@ const Game = (gameInfo: GameInformation) => {
     } else {
       dispatch({type: 'modal/setState', payload: {isOpen: false}});
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameInfo.gameStatus]);
+  }, [gameInfo.gameStatus, clearGameScreen, delayNewRound, dispatch, gameInfo.gameMode, toggleModal]);
 
   const [submitGuess, {loading}] = useMutation<GameRoundModel>(SUBMIT_GUESS, {
     variables: {
@@ -181,16 +177,9 @@ const Game = (gameInfo: GameInformation) => {
 
   return (
     gameInfo.gameStatus == GameStatus.SYNCING ? <LoaderCenterer><DotWave size={50} speed={1} color='#eee' /></LoaderCenterer> :
-      <Box
-        sx={{
-          width: smallScreen ? '100%' : '90%',
-          mx:'auto',
-          mt: '2.5%',
-          textAlign: 'center'
-        }}
-      >
+      <Box sx={{width: smallScreen ? '100%' : '90%', mx:'auto', textAlign: 'center'}}>
         {gameInfo.gameMode != GameMode.CLASSIC && 
-            <Box sx={{display: 'inline-block', width: smallScreen ? '90%' : '100%', mb: '15px'}}>
+            <Box sx={{display: 'inline-block', width: smallScreen ? '90%' : '100%', mt: '20px', mb: '15px'}}>
               <Typography variant="h3" sx={{fontSize: '24px', float: smallScreen ? 'none' : 'left'}}>Round: {currentRound}</Typography>
               <Box sx={{width: smallScreen ? '100%' : '70%', float: smallScreen ? 'none' : 'right', mt: smallScreen ? '15px' : 'auto'}}>
                 <Typography variant="h3" sx={{fontSize: '24px' }}>Time: {gameInfo.roundTime - Math.floor(timer)} seconds</Typography>
@@ -198,15 +187,7 @@ const Game = (gameInfo: GameInformation) => {
               </Box>
             </Box>
         }
-        <Box
-          sx={{
-            width: (gameInfo.gameStatus == GameStatus.WAITING || smallScreen) ? '100%' : '50%',
-            mx: 'auto',
-            mt: '2.5%',
-            textAlign: 'center',
-            display: 'inline-block'
-          }}
-        >
+        <Box sx={{width: (gameInfo.gameStatus == GameStatus.WAITING || smallScreen) ? '100%' : '50%', mx: 'auto', mt: '20px', textAlign: 'center', display: 'inline-block'}}>
           <Snackbar anchorOrigin={{ horizontal: 'center', vertical: 'top' }} open={shake} autoHideDuration={2000} onClose={() =>setShake(false)}>
             <Alert variant="filled" severity="error">Invalid word</Alert>
           </Snackbar>

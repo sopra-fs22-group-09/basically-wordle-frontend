@@ -91,7 +91,7 @@ const Layout = ({ children }: LayoutProps) => {
       <Suspense fallback={<Skeleton variant="rectangular"><MuiAppBar /></Skeleton>}>
         <Header />
       </Suspense>
-      {(!smallScreen || open) && <Suspense fallback={<Skeleton variant="rectangular" width="240px"><MuiDrawer /></Skeleton>}>
+      {(!smallScreen || open) && <Suspense fallback={<Skeleton variant="rectangular"><MuiDrawer /></Skeleton>}>
         <FriendsList />
       </Suspense>}
       <Box
@@ -103,7 +103,7 @@ const Layout = ({ children }: LayoutProps) => {
           transform: 'translate(0, 75px)',
           overflowY: 'scroll',
           overflowX: 'hidden',
-          '&::-webkit-scrollbar': {display: 'none' },
+          '&::-webkit-scrollbar': {display: 'none'},
           scrollbarWidth: 'none',
           backgroundColor: (theme) =>
             theme.palette.mode === 'light'
