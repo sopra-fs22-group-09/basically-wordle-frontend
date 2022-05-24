@@ -70,7 +70,7 @@ const Game = (gameInfo: GameInformation) => {
     dispatch({ type: 'modal/toggle', payload: conclusionType });
   }, [dispatch]);
 
-  const clearGameScreen =  useCallback(() => {
+  const clearGameScreen = () => {
     setCurrentRound(currentRound + 1);
 
     // For keyboard
@@ -86,7 +86,7 @@ const Game = (gameInfo: GameInformation) => {
     setShake(false);
 
     dispatch({type: 'modal/setState', payload: {isOpen: false}});
-  }, [currentRound, dispatch]);
+  };
 
   //Sync
   useEffect(() => {
@@ -101,7 +101,7 @@ const Game = (gameInfo: GameInformation) => {
       if (gameInfo.gameMode != GameMode.CLASSIC && timer < gameInfo.roundTime) setTimer(timer + 1);
     }, 985);
     return () => clearTimeout(timeout);
-  }, [timer, currentRound, gameInfo.gameMode, gameInfo.maxRounds, gameInfo.roundTime, toggleModal, gameInfo.gameStatus]);
+  }, [timer, gameInfo.gameMode, gameInfo.roundTime, gameInfo.gameStatus]);
 
   //GameStatus Update
   useEffect(() => {
@@ -120,7 +120,8 @@ const Game = (gameInfo: GameInformation) => {
     } else {
       dispatch({type: 'modal/setState', payload: {isOpen: false}});
     }
-  }, [gameInfo.gameStatus, clearGameScreen, delayNewRound, dispatch, gameInfo.gameMode, toggleModal]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameInfo.gameStatus]);
 
   const [submitGuess, {loading}] = useMutation<GameRoundModel>(SUBMIT_GUESS, {
     variables: {
@@ -155,7 +156,7 @@ const Game = (gameInfo: GameInformation) => {
           setAmountGuesses(amountGuesses < 6 ? amountGuesses + 1: amountGuesses);
           if (data.submitGuess.guessed || amountGuesses >= 5) {
             if (gameInfo.gameMode == GameMode.WORDSPP) {
-              setTimer(timer + 0.95);
+              setTimer(timer + 0.96);
               toggleModal('gameRoundConclusion');
               setTimeout(() => {
                 clearGameScreen();
