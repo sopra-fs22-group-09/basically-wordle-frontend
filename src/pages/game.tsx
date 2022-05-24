@@ -70,7 +70,7 @@ const Game = (gameInfo: GameInformation) => {
     dispatch({ type: 'modal/toggle', payload: conclusionType });
   }, [dispatch]);
 
-  const clearGameScreen = () => {
+  const clearGameScreen = useCallback(() => {
     setCurrentRound(currentRound + 1);
 
     // For keyboard
@@ -86,7 +86,7 @@ const Game = (gameInfo: GameInformation) => {
     setShake(false);
 
     dispatch({type: 'modal/setState', payload: {isOpen: false}});
-  };
+  }, [currentRound, dispatch]);
 
   //Sync
   useEffect(() => {
@@ -120,8 +120,7 @@ const Game = (gameInfo: GameInformation) => {
     } else {
       dispatch({type: 'modal/setState', payload: {isOpen: false}});
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameInfo.gameStatus]);
+  }, [clearGameScreen, delayNewRound, dispatch, gameInfo.gameMode, gameInfo.gameStatus, toggleModal]);
 
   const [submitGuess, {loading}] = useMutation<GameRoundModel>(SUBMIT_GUESS, {
     variables: {
