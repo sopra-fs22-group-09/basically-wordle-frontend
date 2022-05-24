@@ -86,7 +86,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
   const [bigQrCode, setBigQrCode] = useState(false);
   const [userId] = useLocalStorage({ key: 'userId' });
 
-  const [changeLobby/*, { loading }*/] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
+  const [changeLobby] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
   const [addFriend] = useMutation<MutationAddFriendArgs>(ADD_FRIEND);
   const changeLobbySettings = async (gameMode: GameMode, amountRounds: number, roundTime: number) => {
     await changeLobby({
@@ -126,7 +126,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
         mt: '2.5%',
         textAlign: 'center',
       }}>
-        <Typography variant="h1" sx={{ fontSize: '48px', mb: '25px'}}>{lobbyInfo.name} | {lobbyInfo.gameCategory} [{lobbyInfo.size}]</Typography>
+        <Typography variant="h1" sx={{ fontSize: '48px', mb: '25px'}}>{lobbyInfo.name} | {lobbyInfo.gameCategory}</Typography>
         <Paper sx={{ width: smallScreen ? '100%' : '49%', float: smallScreen ? 'none' : 'left', minHeight: '400px', py: '15px'}}> {/*TODO*/}
           <Typography variant="h2" sx={{fontSize: '24px'}}>Settings</Typography>
           <FormControl sx={{ minWidth: 150, width: '90%', mt: '30px' }}>
@@ -140,7 +140,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               {Object.values(GameMode).map((mode) => <MenuItem key={mode} value={mode} disabled={lobbyInfo.gameCategory != GameCategorization.get(mode)}>{mode}</MenuItem>)}
             </Select>
           </FormControl>
-          {lobbyInfo.gameRounds > 1 && (
+          {lobbyInfo.gameRounds >= 1 && lobbyInfo.maxTime != 0 && (
             <Box sx={{ m: 'auto', mt: '25px', width: '90%' }}>
               <Typography variant="h3" sx={{fontSize: '21px'}}>Rounds: {lobbyInfo.gameRounds}</Typography>
               <Slider step={1} min={1} max={lobbyInfo.maxRounds} valueLabelDisplay="auto" value={lobbyInfo.gameRounds} disabled={userId != lobbyInfo.ownerId}
@@ -151,7 +151,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               />
             </Box>
           )}
-          {lobbyInfo.roundTime > 60 && (
+          {lobbyInfo.roundTime >= 60 && (
             <Box sx={{ m: 'auto', mt: '25px', width: '90%' }}>
               <Typography variant="h3" sx={{fontSize: '21px'}}>Time: {lobbyInfo.roundTime} seconds</Typography>
               <Slider step={10} min={60} max={lobbyInfo.maxTime} valueLabelDisplay="auto" value={lobbyInfo.roundTime} disabled={userId != lobbyInfo.ownerId}
@@ -185,7 +185,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
           />
         </Paper>
         <Paper sx={{ width: smallScreen ? '100%' : '49%', float: smallScreen ? 'none' : 'right', minHeight: '400px', mt: smallScreen ? '20px' : 'auto', py: '15px' }}>
-          <Typography variant="h2" sx={{fontSize: '24px'}}>Players</Typography>
+          <Typography variant="h2" sx={{fontSize: '24px'}}>Players (max {lobbyInfo.size})</Typography>
           <List>
             {lobbyInfo.players?.map((player) => (
               // loading ? <Skeleton animation="wave" variant="text" sx={{ ml: '15px' }} width={120} /> : //TODO Everytime lobby settings are changed skeleton is visible, do we really want this? Feel free to delete this line. Don't froget to have a look at line 89

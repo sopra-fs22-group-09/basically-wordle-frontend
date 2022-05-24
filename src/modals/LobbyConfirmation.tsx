@@ -103,13 +103,8 @@ const LobbyConfirmation = () => {
         }}
       >
         <LoadingOverlay style={{ borderRadius: '4px' }} loaderProps={{ size: 'lg', variant: 'dots' }} overlayColor="#2C2E33" visible={loading}/>
-        <ToggleButtonGroup color='primary' value={gameCategory} exclusive size='large' sx={{display: 'block'}}
-          onChange={(event, newAlignment) => {
-            if (newAlignment != null) {
-              setGameCategory(newAlignment);
-              if (newAlignment == GameCategory.COOP && size > (GameCategoryMaxSize.get(newAlignment) as number)) setSize(4);
-            }
-          }}>
+        <ToggleButtonGroup color="primary" value={gameCategory} exclusive size="large" sx={{display: 'block'}}
+          onChange={(event, newAlignment) => {if (newAlignment != null) setGameCategory(newAlignment); /*if (newAlignment == GameCategory.COOP && size > (GameCategoryMaxSize.get(newAlignment) as number)) setSize(4);*/}}>
           {(Object.values(GameCategory)).map(category => <ToggleButton key={category} value={category}>{category}</ToggleButton>)}
         </ToggleButtonGroup>
         <TextField variant='outlined' sx={{width: '100%', mt: '40px'}} inputProps={{ minLength: 3, maxLength: 50 }} label='Lobby Name' value={name} onChange={(event) => setName(event.target.value)}/>

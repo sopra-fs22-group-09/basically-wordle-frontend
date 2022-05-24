@@ -72,7 +72,6 @@ const Game = (gameInfo: GameInformation) => {
   }, [dispatch]);
 
   const clearGameScreen = () => {
-    setTimer(0);
     setCurrentRound(currentRound + 1);
 
     // For keyboard
@@ -86,35 +85,27 @@ const Game = (gameInfo: GameInformation) => {
     setGuessHistory(['', '', '', '', '', '']);
     setLetterState([[]]);
     setShake(false);
+
+    dispatch({type: 'modal/setState', payload: {isOpen: false}});
   };
 
-  const finishRound = () => {
-    if (gamestat.current == GameStatus.FINISHED) toggleModal('gameConclusion');
-    else {
-      toggleModal('gameRoundConclusion');
-      setTimeout(() => {
-        if (gamestat.current == GameStatus.GUESSING) {
-          clearGameScreen();
-          dispatch({type: 'modal/setState', payload: {isOpen: false}});
-        }
-      }, 5000);
-    }
-  };
-
+  //Sync
   useEffect(() => {
     if (gameInfo.gameStatus == GameStatus.SYNCING || gameInfo.gameStatus == GameStatus.NEW) gameInfo.startGame();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);  // Please don't touch!!
 
   //Timer
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (timer < gameInfo.roundTime) setTimer(timer + 1);
-      else if (gameInfo.gameMode != GameMode.CLASSIC) toggleModal(currentRound < gameInfo.maxRounds ? 'gameRoundConclusion' : 'gameConclusion');
-    }, 1000);
+      if (gameInfo.gameStatus == GameStatus.FINISHED) return;
+      if (gameInfo.gameMode != GameMode.CLASSIC && timer < gameInfo.roundTime) setTimer(timer + 1);
+    }, 985);
     return () => clearTimeout(timeout);
-  }, [timer, currentRound, gameInfo.gameMode, gameInfo.maxRounds, gameInfo.roundTime, toggleModal]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timer, currentRound, gameInfo.gameMode, gameInfo.maxRounds, gameInfo.roundTime, toggleModal, gameInfo.gameStatus]);
 
+  //GameStatus Update
   useEffect(() => {
     gamestat.current = gameInfo.gameStatus;
     if (gameInfo.gameStatus == GameStatus.WAITING) {
@@ -123,10 +114,10 @@ const Game = (gameInfo: GameInformation) => {
     } else if (gameInfo.gameStatus == GameStatus.FINISHED) {
       toggleModal('gameConclusion');
     } else if (gameInfo.gameStatus == GameStatus.GUESSING && delayNewRound) {
+      if (gameInfo.gameMode == GameMode.SONICFAST) setTimer(0);
       const timeout = setTimeout(() => {
         setDelayNewRound(false);
         clearGameScreen();
-        dispatch({type: 'modal/setState', payload: {isOpen: false}});
       }, 5000);
       return () => clearTimeout(timeout);
     } else {
@@ -141,7 +132,6 @@ const Game = (gameInfo: GameInformation) => {
     },
     async onCompleted(data) {
       if (data?.submitGuess) {
-
         if (data.submitGuess.words[amountGuesses] == currentlyTypingWord) {
           setCurrentRound(data.submitGuess.currentRound + 1);
 
@@ -167,7 +157,15 @@ const Game = (gameInfo: GameInformation) => {
           setLetterNotInWord(wrong);
           setCurrentlyTypingWord('');
           setAmountGuesses(amountGuesses < 6 ? amountGuesses + 1: amountGuesses);
-          if (data.submitGuess.guessed || amountGuesses >= 5) finishRound();
+          if (data.submitGuess.guessed || amountGuesses >= 5) {
+            if (gameInfo.gameMode == GameMode.WORDSPP) {
+              setTimer(timer + 0.95);
+              toggleModal('gameRoundConclusion');
+              setTimeout(() => {
+                clearGameScreen();
+              }, 5000);
+            }
+          }
         } else setShake(true);
       }
     }
