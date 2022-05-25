@@ -47,12 +47,14 @@ interface LobbyInformation {
   ownerId: string;
   gameCategory: GameCategory;
   gameMode: GameMode;
+  categories: string[];
   gameStatus: GameStatus;
   gameRounds: number;
   roundTime: number;
   maxRounds: number;
   maxTime: number;
   players: Player[];
+  setCategories: (categories: string[]) => void;
   setGameRounds: (rounds: number) => void;
   setRoundTime: (time: number) => void;
   startGame: () => void;
@@ -84,19 +86,16 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
   const [showQrCode, setShowQrCode] = useState(false);
   const [bigQrCode, setBigQrCode] = useState(false);
   const [userId] = useLocalStorage({ key: 'userId' });
-  // Word category selection
-  const fixedOptions = [WordCategories[0]];
-  const [value, setValue] = React.useState(fixedOptions);
 
   const [changeLobby] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
-  const [addFriend] = useMutation<MutationAddFriendArgs>(ADD_FRIEND);
-  const changeLobbySettings = async (gameMode: GameMode, amountRounds: number, roundTime: number) => {
+  const changeLobbySettings = async (gameMode: GameMode, amountRounds: number, roundTime: number, categories: string[]) => {
     await changeLobby({
       variables: {
         input: {
           gameMode: Object.keys(GameMode)[Object.values(GameMode).indexOf(gameMode)] as GameMode,
           amountRounds: amountRounds,
           roundTime: roundTime,
+          categories: categories
         },
       },
     });
@@ -109,6 +108,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
     })?.username;
   };
 
+  const [addFriend] = useMutation<MutationAddFriendArgs>(ADD_FRIEND);
   const sendFriendRequest = (userId: string) => {
     addFriend({
       variables: {
@@ -132,7 +132,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               value={lobbyInfo.gameMode}
               label="Game Mode"
               disabled={userId != lobbyInfo.ownerId}
-              onChange={(event) => changeLobbySettings(event.target.value as GameMode, lobbyInfo.gameRounds, lobbyInfo.roundTime)}
+              onChange={(event) => changeLobbySettings(event.target.value as GameMode, lobbyInfo.gameRounds, lobbyInfo.roundTime, lobbyInfo.categories)}
             >
               {Object.values(GameMode).map((mode) => (lobbyInfo.gameCategory == GameCategorization.get(mode) && <MenuItem key={mode} value={mode}>{mode}</MenuItem>))}
             </Select>
@@ -143,7 +143,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               <Slider step={1} min={1} max={lobbyInfo.maxRounds} valueLabelDisplay="auto" value={lobbyInfo.gameRounds} disabled={userId != lobbyInfo.ownerId}
                 onChange={(event, newRounds) => {
                   lobbyInfo.setGameRounds(newRounds as number);
-                  stateDebounceLobbyChange(lobbyInfo.gameMode, newRounds as number, lobbyInfo.roundTime);
+                  stateDebounceLobbyChange(lobbyInfo.gameMode, newRounds as number, lobbyInfo.roundTime, lobbyInfo.categories);
                 }}
               />
             </Box>
@@ -154,7 +154,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               <Slider step={10} min={60} max={lobbyInfo.maxTime} valueLabelDisplay="auto" value={lobbyInfo.roundTime} disabled={userId != lobbyInfo.ownerId}
                 onChange={(event, newTime) => {
                   lobbyInfo.setRoundTime(newTime as number);
-                  stateDebounceLobbyChange(lobbyInfo.gameMode, lobbyInfo.gameRounds, newTime as number);
+                  stateDebounceLobbyChange(lobbyInfo.gameMode, lobbyInfo.gameRounds, newTime as number, lobbyInfo.categories);
                 }}
               />
             </Box>
@@ -163,25 +163,21 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
           <Autocomplete //TODO: HOW TO GATHER THE CATEGORIES AND SEND THEM TO THE SERVER?
             multiple
             options={WordCategories}
-            value={value}
+            value={lobbyInfo.categories}
             onChange={(event, newValue) => {
-              setValue([
-                ...fixedOptions,
-                ...newValue.filter((option) => fixedOptions.indexOf(option) === -1),
-              ]);
+              changeLobbySettings(lobbyInfo.gameMode, lobbyInfo.gameRounds, lobbyInfo.roundTime, newValue as string[]);
             }}
-            getOptionLabel={(option) => option.category}
+            getOptionLabel={(option) => option}
             sx={{ m: 'auto', mt: '25px', width: '90%' }}
             renderTags={(tagValue, getTagProps) =>
               tagValue.map((option, index) => (
                 <Chip
-                  label={option.category}
+                  label={option}
                   {...getTagProps({ index })}
-                  disabled={fixedOptions.indexOf(option) !== -1}
-                  key={option.category + index}
+                  key={option + index}
                 />
               ))}
-            renderInput={(params) => <TextField {...params} placeholder="Word Set" />}
+            renderInput={(params) => <TextField {...params} placeholder="Word Categories (Empty for Default)" />}
           />
         </Paper>
         <Paper sx={{ width: smallScreen ? '100%' : '49%', float: smallScreen ? 'none' : 'right', minHeight: '400px', mt: smallScreen ? '20px' : 'auto', py: '15px' }}>

@@ -29,6 +29,7 @@ export type Lobby = {
   name: Scalars['String'];
   gameCategory: GameCategory;
   gameMode: GameMode;
+  categories: Array<string>;
   game: Game;
   players: Array<Player>;
 };
@@ -59,6 +60,7 @@ export type GameSettingsInput = {
   gameMode: GameMode;
   amountRounds: Scalars['Int'];
   roundTime: Scalars['Int'];
+  categories: string[];
 };
 
 export type LobbyInviteInput = {
@@ -112,11 +114,17 @@ export const GameCategoryMaxSize = new Map<GameCategory, number>([
   //[GameCategory.COOP, 4]
 ]);
 
-//TODO: Get default categories ??
+/*//TODO: Get default categories ??
 export const WordCategories = [
   { category: 'Default' },
   { category: 'Extended' },
   { category: 'Most Common' }
+];*/
+
+export const WordCategories = [
+  'Default',
+  'Extended',
+  'Most Common'
 ];
 
 export type LobbyInvite = {

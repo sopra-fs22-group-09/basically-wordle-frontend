@@ -31,6 +31,7 @@ const JOIN_LOBBY = gql`
       status
       gameCategory
       gameMode
+      categories
       game {
         amountRounds
         roundTime
@@ -53,6 +54,7 @@ const LOBBY_SUBSCRIPTION = gql`
       }
       status
       gameMode
+      categories
       game {
         amountRounds
         roundTime
@@ -95,6 +97,7 @@ const Lobby = () => {
   const [debouncedLobbyStatus] = useDebouncedValue(lobbyStatus, 500, { leading: true });
   const [gameStatus, setGameStatus] = React.useState<GameStatus>(GameStatus.NEW);
   const [gameMode, setGameMode] = React.useState<GameMode>(GameMode.WORDSPP);
+  const [categories, setCategories] = React.useState<string[]>([]);
   const [gameRounds, setGameRounds] = React.useState(0);
   const [roundTime, setRoundTime] = React.useState(0);
   const [maxRounds, setMaxRounds] = React.useState(1);
@@ -120,6 +123,7 @@ const Lobby = () => {
           setOwnerId(r.data.joinLobbyById.owner.id);
           setLobbyStatus(r.data.joinLobbyById.status);
           setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(r.data.joinLobbyById.gameMode)]);
+          setCategories(r.data.joinLobbyById.categories);
           setGameRounds(r.data.joinLobbyById.game.amountRounds);
           setRoundTime(r.data.joinLobbyById.game.roundTime);
           setMaxRounds(r.data.joinLobbyById.game.maxRounds);
@@ -144,6 +148,7 @@ const Lobby = () => {
       setOwnerId(subscribeLobbyData.data.lobby.owner.id);
       //setLobbyStatus(subscribeLobbyData.data.lobby.status);
       setGameMode(Object.values(GameMode)[Object.keys(GameMode).indexOf(subscribeLobbyData.data.lobby.gameMode)]);
+      setCategories(subscribeLobbyData.data.lobby.categories);
       setGameRounds(subscribeLobbyData.data.lobby.game.amountRounds);
       setRoundTime(subscribeLobbyData.data.lobby.game.roundTime);
       setMaxRounds(subscribeLobbyData.data.lobby.game.maxRounds);
@@ -205,12 +210,14 @@ const Lobby = () => {
             : GameCategory.PVP
         }
         gameMode={gameMode}
+        categories={categories}
         gameStatus={gameStatus}
         gameRounds={gameRounds}
         roundTime={roundTime}
         maxRounds={maxRounds}
         maxTime={maxTime}
         players={players}
+        setCategories={setCategories}
         setGameRounds={setGameRounds}
         setRoundTime={setRoundTime}
         startGame={startGame}
