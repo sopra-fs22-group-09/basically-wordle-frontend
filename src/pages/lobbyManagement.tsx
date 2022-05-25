@@ -4,7 +4,6 @@ import {
   Autocomplete,
   Box,
   Button,
-  Checkbox,
   debounce,
   FormControl,
   InputLabel,
@@ -19,10 +18,8 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  Dialog,
+  Dialog, Chip,
 } from '@mui/material';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import {
   GameCategorization,
   GameCategory,
@@ -85,6 +82,9 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
   const [showQrCode, setShowQrCode] = useState(false);
   const [bigQrCode, setBigQrCode] = useState(false);
   const [userId] = useLocalStorage({ key: 'userId' });
+  // Word category selection
+  const fixedOptions = [WordCategories[0]];
+  const [value, setValue] = React.useState(fixedOptions);
 
   const [changeLobby] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
   const [addFriend] = useMutation<MutationAddFriendArgs>(ADD_FRIEND);
@@ -132,7 +132,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               disabled={userId != lobbyInfo.ownerId}
               onChange={(event) => changeLobbySettings(event.target.value as GameMode, lobbyInfo.gameRounds, lobbyInfo.roundTime)}
             >
-              {Object.values(GameMode).map((mode) => <MenuItem key={mode} value={mode} disabled={lobbyInfo.gameCategory != GameCategorization.get(mode)}>{mode}</MenuItem>)}
+              {Object.values(GameMode).map((mode) => (lobbyInfo.gameCategory == GameCategorization.get(mode) && <MenuItem key={mode} value={mode}>{mode}</MenuItem>))}
             </Select>
           </FormControl>
           {lobbyInfo.gameRounds >= 1 && lobbyInfo.maxTime != 0 && (
@@ -160,23 +160,26 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
           {/*TODO @jemaie would be nice if you could figure this out*/}
           <Autocomplete //TODO: HOW TO GATHER THE CATEGORIES AND SEND THEM TO THE SERVER?
             multiple
-            readOnly={true}
-            disableCloseOnSelect
             options={WordCategories}
+            value={value}
+            onChange={(event, newValue) => {
+              setValue([
+                ...fixedOptions,
+                ...newValue.filter((option) => fixedOptions.indexOf(option) === -1),
+              ]);
+            }}
             getOptionLabel={(option) => option.category}
             sx={{ m: 'auto', mt: '25px', width: '90%' }}
-            renderOption={(props, option, { selected }) => (
-              <li {...props}>
-                <Checkbox
-                  icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
-                  checkedIcon={<CheckBoxIcon fontSize="small" />}
-                  style={{ marginRight: 8 }}
-                  checked={selected}
+            renderTags={(tagValue, getTagProps) =>
+              tagValue.map((option, index) => (
+                <Chip
+                  label={option.category}
+                  {...getTagProps({ index })}
+                  disabled={fixedOptions.indexOf(option) !== -1}
+                  key={option.category + index}
                 />
-                {option.category}
-              </li>
-            )}
-            renderInput={(params) => <TextField {...params} placeholder="Word Categories (Disabled)" />}
+              ))}
+            renderInput={(params) => <TextField {...params} placeholder="Word Set" />}
           />
         </Paper>
         <Paper sx={{ width: smallScreen ? '100%' : '49%', float: smallScreen ? 'none' : 'right', minHeight: '400px', mt: smallScreen ? '20px' : 'auto', py: '15px' }}>
@@ -196,7 +199,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
           <Paper sx={{width: smallScreen ? '100%' : '49%', mt: smallScreen ? 'auto' : '20px', textAlign: 'center', float: smallScreen ? 'none' : 'right', p: '15px'}}>
             <Button onClick={(event) => {event.currentTarget.blur(); setBigQrCode(true);}}>
               <img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href + '&size=300x300&ecc=H&margin=5'}
-                alt="Invite link" title="Click to see the QR Code in fullscreen mode" style={{borderRadius: '5px'}}
+                alt="Invite link" title="Click to see the QR Code in fullscreen mode" style={{borderRadius: '5px', width: '100%'}}
               />
             </Button>
             <Dialog open={bigQrCode} maxWidth={false} onClose={() => setBigQrCode(false)}>
@@ -207,24 +210,24 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
           </Paper>
         }
         <Paper sx={{mx: 'auto', p: '15px', textAlign: 'center',
-          width: smallScreen ? '100%' : '49%',
+          width: smallScreen || !showQrCode ? '100%' : '49%',
           mt: showQrCode || !smallScreen ? '20px' : 'auto',
           float: smallScreen ? 'none' : 'left'
         }}>
           <TextField type="text" defaultValue={window.location.href} InputProps={{readOnly: true}} sx={{fontSize: '18px',
-            width: smallScreen ? '100%' : '55%',
+            width: smallScreen ? '100%' : !showQrCode ? '70%' : '55%',
             float: smallScreen ? 'none' : 'left'
           }}/>
           <Box sx={{
             float: smallScreen ? 'none' : 'right',
-            width: smallScreen ? '100%' : '45%',
+            width: smallScreen ? '100%' : !showQrCode ? '30%' : '45%',
             textAlign: smallScreen ? 'center' : 'right'
           }}>
             <Button variant="contained" onClick={() => setShowQrCode(!showQrCode)}
               sx={{
                 width: smallScreen ? 'auto' : '48%',
                 minWidth: smallScreen ? '132px' : '0',
-                maxWidth: '150px',
+                maxWidth: '250px',
                 height: smallScreen ? 'auto' : '56px',
                 ml: smallScreen ? '10px' : 'auto',
                 mr: smallScreen ? '10px' : '0.5%',
@@ -236,7 +239,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               sx={{
                 width: smallScreen ? 'auto' : '48%',
                 minWidth: smallScreen ? '132px' : '0',
-                maxWidth: '150px',
+                maxWidth: '250px',
                 height: smallScreen ? 'auto' : '56px',
                 ml: smallScreen ? '10px' : '0.5%',
                 mr: smallScreen ? '10px' : 'auto',

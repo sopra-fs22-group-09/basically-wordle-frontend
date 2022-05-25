@@ -16,6 +16,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { LoadingOverlay } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import ModalTemplate from '../components/modal';
+import { useAppDispatch } from '../redux/hooks';
 
 export type ResetInput = {
   email: FormDataEntryValue | null;
@@ -42,6 +43,7 @@ const Reset = () => {
   const theme = useTheme();
   const smallScreen = !useMediaQuery(theme.breakpoints.up('mobile')); //screen smaller than defined size
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [resetUser, { data, loading, error }] = useMutation<ResetUser, MutationResetArgs>(RESET_USER);
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -63,7 +65,7 @@ const Reset = () => {
       {data && !loading ?
         <>
           <Alert sx={{ mt: '10px' }} variant="filled" severity="info">Check your Email for a password reset link!</Alert>
-          <Button type="submit" fullWidth variant="contained" sx={{mt: '20px'}} onClick={() => navigate('/')}>Back to login page</Button>
+          <Button type="submit" fullWidth variant="contained" sx={{mt: '20px'}} onClick={() => {dispatch({type: 'modal/setState', payload: {isOpen: false}}); navigate('/');}}>Back to login page</Button>
         </>:
         <>
           <Box component="form" onSubmit={handleSubmit} sx={{mt: '20px'}}>

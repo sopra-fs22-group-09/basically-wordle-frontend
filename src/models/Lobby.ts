@@ -114,10 +114,9 @@ export const GameCategoryMaxSize = new Map<GameCategory, number>([
 
 //TODO: Get default categories ??
 export const WordCategories = [
-  { category: 'dogs' },
-  { category: 'cats' },
-  { category: 'cows' },
-  { category: 'dunno' }
+  { category: 'Default' },
+  { category: 'Extended' },
+  { category: 'Most Common' }
 ];
 
 export type LobbyInvite = {

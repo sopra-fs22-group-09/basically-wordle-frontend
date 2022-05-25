@@ -66,6 +66,7 @@ const Login = () => {
       }
     }).then(async () => {
       dispatch({type: 'modal/setState', payload: {isOpen: false}});
+      if (!smallScreen) dispatch({ type: 'drawer/setState' , payload: {isOpen: true}});
       navigate('/');
     });
   };

@@ -24,6 +24,7 @@ const ModalTemplate = ({
           position: 'fixed',
           width: '90vw',
           maxWidth: {maxWidth},
+          maxHeight: '100vh',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
@@ -33,7 +34,11 @@ const ModalTemplate = ({
           boxShadow: '0 0 20px -7px rgba(0, 0, 0, 0.2)',
           border: '1px solid white',
           borderRadius: '15px',
-          textAlign: 'center'
+          textAlign: 'center',
+          overflowY: 'auto',
+          overflowX: 'auto',
+          '&::-webkit-scrollbar': {display: 'none'},
+          scrollbarWidth: 'none'
         }}
       >
         {children}

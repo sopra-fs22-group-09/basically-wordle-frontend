@@ -14,6 +14,7 @@ import {useNavigate} from 'react-router-dom';
 import { LoadingOverlay } from '@mantine/core';
 import PasswordStrength from '../components/passwordStrengthMeter';
 import ModalTemplate from '../components/modal';
+import { useAppDispatch } from '../redux/hooks';
 
 export type ResetTokenInput = {
   resetToken: FormDataEntryValue | null;
@@ -37,6 +38,7 @@ const RESET_USER_TOKEN = gql`
 
 const TokenEntry = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [resetUser, {data, loading, error}] = useMutation<User, MutationResetWithTokenArgs>(RESET_USER_TOKEN);
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -60,7 +62,7 @@ const TokenEntry = () => {
       {data && !loading ?
         <>
           <Alert sx={{ mt: '10px' }} variant="filled" severity="info">You have set a new password successfully!</Alert>
-          <Button type="submit" fullWidth variant="contained" sx={{mt: '20px'}} onClick={() => navigate('/')}>Back to login page</Button>
+          <Button type="submit" fullWidth variant="contained" sx={{mt: '20px'}} onClick={() => {dispatch({type: 'modal/setState', payload: {isOpen: false}}); navigate('/');}}>Back to login page</Button>
         </>:
         <Box component="form" onSubmit={handleSubmit} sx={{mt: '20px'}}>
           <TextField required fullWidth id="resetToken" label="Reset Code" name="resetToken" defaultValue={window.location.pathname.replace('/reset/tokenEntry', '').replace('/', '')}/>
