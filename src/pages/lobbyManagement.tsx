@@ -260,7 +260,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
           <Button variant="contained" sx={{ mx: '10px', mt: '20px' }} onClick={() => navigate('/')}>Leave Lobby</Button>
           <Button
             variant="contained"
-            sx={{ minWidth: smallScreen ? '132px' : 'auto', mx: '10px', mt: '20px'}}
+            sx={{ minWidth: smallScreen ? '132px' : 'auto', mx: '10px', mt: '20px' }}
             disabled={userId != lobbyInfo.ownerId || lobbyInfo.gameStatus == GameStatus.SYNCING || (lobbyInfo.players.length < 2 && lobbyInfo.gameCategory != GameCategory.SOLO)}
             onClick={() => lobbyInfo.startGame()}
           >
