@@ -6,7 +6,5 @@ module.exports = {
   rules: {
     'no-console': 'error',
     '@typescript-eslint/no-use-before-define': 'error',
-    'unused-imports/no-unused-imports': 'error',
-    'unused-imports/no-unused-vars': 'error',
   }
 };

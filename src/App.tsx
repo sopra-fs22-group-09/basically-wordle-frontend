@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { createTheme, CssBaseline, ThemeProvider, Typography } from '@mui/material';
+import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 import { routes as appRoutes } from './routes';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Guard from './routes/Guard';
 import { lazy, Suspense } from 'react';
 import { Orbit } from '@uiball/loaders';
 import LoaderCenterer from './components/loader';
-import { Footer } from '@mantine/core';
 
 function App() {
   // define theme
@@ -89,9 +88,6 @@ function App() {
                 </Suspense>
               </Layout>
             </Suspense>
-            <Footer sx={{position: 'fixed', backgroundColor: 'rgba(50, 50, 50, 0.8)', textAlign: 'center', border: 'none', boxShadow: '0 -4px 8px 0 rgb(0 0 0 / 40%), 0 -6px 20px 0 rgb(0 0 0 / 50%)'}} height={'25px'}>
-              <Typography>Build: {process.env.REACT_APP_GIT_REV} ({process.env.NODE_ENV})</Typography>
-            </Footer>
           </Guard>
         </Suspense>
       </Router>
