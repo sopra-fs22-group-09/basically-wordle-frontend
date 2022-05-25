@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, Chip, Modal, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Button, Chip, Typography } from '@mui/material';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { GameStatsModel } from '../models/Game';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
@@ -60,24 +60,24 @@ const GameConclusion = () => {
     <ModalTemplate maxWidth="500px" name="gameConclusion">
       <Typography variant="h1" fontSize="42px">
           Game finished!
-        </Typography>
-        <Typography variant="body1" fontSize="24px" sx={{ mt: '30px' }}>
+      </Typography>
+      <Typography variant="body1" fontSize="24px" sx={{ mt: '30px' }}>
           Last target word: {targetWord}
-        </Typography>
-        <Typography variant="body1" fontSize="24px">
+      </Typography>
+      <Typography variant="body1" fontSize="24px">
           Total time taken:{' '}
-          {Math.floor(timeTaken / 60) + ((timeTaken % 60).toString().length == 1 ? ':0' : ':') + (timeTaken % 60)}
-        </Typography>
-        <Typography variant="body1" fontSize="24px">
+        {Math.floor(timeTaken / 60) + ((timeTaken % 60).toString().length == 1 ? ':0' : ':') + (timeTaken % 60)}
+      </Typography>
+      <Typography variant="body1" fontSize="24px">
           Rounds played: {roundsTaken}
-        </Typography>
-        <Typography variant="body1" fontSize="24px">
+      </Typography>
+      <Typography variant="body1" fontSize="24px">
           Score:{' '}
-          <Chip color="warning" icon={<ArrowDropUpRounded />} size='small' label={score} />
-        </Typography>
-        <Button variant="contained" sx={{ mt: '30px' }} onClick={() => playAgain()}>
+        <Chip color="warning" icon={<ArrowDropUpRounded />} size='small' label={score} />
+      </Typography>
+      <Button variant="contained" sx={{ mt: '30px' }} onClick={() => playAgain()}>
           Play Again
-        </Button>
+      </Button>
     </ModalTemplate>
   );
 };

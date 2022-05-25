@@ -189,7 +189,9 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
           <List>
             {lobbyInfo.players?.map((player) => (
               <ListItem key={player.id}>
-                <Chip color={player.id == lobbyInfo.ownerId ? 'error' : player.id == userId ? 'primary' : isFriend(player.id) ? 'success' : 'default'} avatar={<Avatar>{player.name.charAt(0).toUpperCase()}</Avatar>} label={player.name + (player.id == userId ? ' (me)' : '')} />
+                <Chip
+                  color={player.id == lobbyInfo.ownerId ? 'error' : player.id == userId ? 'primary' : isFriend(player.id) ? 'success' : 'default'}
+                  avatar={<Avatar>{player.name.charAt(0).toUpperCase()}</Avatar>} label={<Typography variant="body1" sx={{fontSize: '13px', fontWeight: player.id == userId ? 'bolder' : 'normal'}}>{player.name + (player.id == userId ? ' (me)' : '')}</Typography>} />
                 {/* FIXME: Non-friends only! */}
                 {userId != player.id && !isFriend(player.id) && <Button onClick={() => sendFriendRequest(player.id)}>Add Friend</Button>}
               </ListItem>
