@@ -21,7 +21,7 @@ function App() {
           correctPosition: '#00b300',
           inWord: 'orange',
           notInWord: 'black',
-          notUsed: '#808080',
+          notUsed: '#404040',
         }
       }
     },
