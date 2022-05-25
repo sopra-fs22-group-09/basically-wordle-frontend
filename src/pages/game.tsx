@@ -200,7 +200,7 @@ const Game = (gameInfo: GameInformation) => {
   ) : (
     <Box sx={{ width: smallScreen ? '100%' : '90%', mx: 'auto', textAlign: 'center' }}>
       {gameInfo.gameMode != GameMode.CLASSIC && (
-        <Box sx={{ display: 'inline-block', width: smallScreen ? '90%' : '100%', mt: '20px', mb: '15px' }}>
+        <Box sx={{ display: 'inline-block', width: smallScreen ? '90%' : '100%', mt: '18px', mb: '15px' }}>
           <Typography variant="h3" sx={{ fontSize: '24px', float: smallScreen ? 'none' : 'left' }}>
             Round: {currentRound}
           </Typography>
@@ -279,7 +279,7 @@ const Game = (gameInfo: GameInformation) => {
         <Box
           sx={{
             width: gameInfo.gameStatus == GameStatus.WAITING || smallScreen ? '100%' : '40%',
-            mt: gameInfo.gameStatus == GameStatus.WAITING ? '35px' : 'auto',
+            mt: gameInfo.gameStatus == GameStatus.WAITING ? '35px' : smallScreen ? '50px' : 'auto',
             mr: gameInfo.gameStatus == GameStatus.WAITING || smallScreen ? 'auto' : '5%',
             float: 'right',
             textAlign: 'center',

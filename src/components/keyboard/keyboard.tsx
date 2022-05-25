@@ -50,7 +50,7 @@ const Keyboard = ({
   }, [onEnter, onDelete, onChar]);
 
   return (
-    <Box sx={{maxWidth: '700px', mt: '2%', mb: '5%', mx: 'auto'}}>
+    <Box sx={{maxWidth: '700px', mt: '2%', mx: 'auto'}}>
       <Box>
         {['Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P'].map((key) => (
           <Key value={key} key={key} onClick={onClick} style={{ backgroundColor: `${getColorForLetter(key)}`}}/>

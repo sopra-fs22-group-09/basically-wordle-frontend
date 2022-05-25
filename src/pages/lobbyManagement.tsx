@@ -124,7 +124,8 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
     !lobbyInfo.name ? <LoaderCenterer><ChaoticOrbit size={50} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer> :
       <Box sx={{width: '90%', mx: 'auto', textAlign: 'center'}}>
         <Typography variant="h1" fontSize="48px" sx={{ mt: '20px', mb: '25px'}}>{lobbyInfo.name} | {lobbyInfo.gameCategory}</Typography>
-        <Paper sx={{ width: smallScreen ? '100%' : '49%', float: smallScreen ? 'none' : 'left', minHeight: '400px', py: '15px'}}> {/*TODO*/}
+        <Paper sx={{ width: smallScreen ? '100%' : '49%', float: smallScreen ? 'none' : 'left',
+          minHeight: lobbyInfo.gameCategory == GameCategory.SOLO ? '303px' : lobbyInfo.gameMode == GameMode.SONICFAST ? '505px' : '404px', py: '15px'}}>
           <Typography variant="h2" fontSize="24px">Settings</Typography>
           <FormControl sx={{ minWidth: 150, width: '90%', mt: '30px' }}>
             <InputLabel>Game Mode</InputLabel>
@@ -159,8 +160,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               />
             </Box>
           )}
-          {/*TODO @jemaie would be nice if you could figure this out*/}
-          <Autocomplete //TODO: HOW TO GATHER THE CATEGORIES AND SEND THEM TO THE SERVER?
+          <Autocomplete
             multiple
             options={WordCategories}
             value={lobbyInfo.categories}
@@ -177,17 +177,20 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
                   key={option + index}
                 />
               ))}
-            renderInput={(params) => <TextField {...params} placeholder="Word Categories (Empty for Default)" />}
+            renderInput={({inputProps, ...params}) => <TextField {...params} inputProps={{...inputProps, readOnly: true}} placeholder="Word Categories (Empty for Default)" />}
           />
         </Paper>
-        <Paper sx={{ width: smallScreen ? '100%' : '49%', float: smallScreen ? 'none' : 'right', minHeight: '400px', mt: smallScreen ? '20px' : 'auto', py: '15px' }}>
+        <Paper sx={{ width: smallScreen ? '100%' : '49%', float: smallScreen ? 'none' : 'right',
+          minHeight: lobbyInfo.gameCategory == GameCategory.SOLO ? '303px' : lobbyInfo.gameMode == GameMode.SONICFAST ? '505px' : '404px',
+          mt: smallScreen ? '20px' : 'auto', py: '15px' }}>
           <Typography variant="h2" fontSize="24px">Players (max {lobbyInfo.size})</Typography>
           <List>
             {lobbyInfo.players?.map((player) => (
               <ListItem key={player.id}>
                 <Chip
                   color={player.id == lobbyInfo.ownerId ? 'error' : player.id == userId ? 'primary' : isFriend(player.id) ? 'success' : 'default'}
-                  avatar={<Avatar>{player.name.charAt(0).toUpperCase()}</Avatar>} label={<Typography variant="body1" sx={{fontSize: '13px', fontWeight: player.id == userId ? 'bolder' : 'normal'}}>{player.name + (player.id == userId ? ' (me)' : '')}</Typography>} />
+                  avatar={<Avatar>{player.name.charAt(0).toUpperCase()}</Avatar>} label={<Typography variant="body1"
+                    sx={{fontSize: '13px', fontWeight: player.id == userId ? 'bolder' : 'normal'}}>{player.name + (player.id == userId ? ' (me)' : '')}</Typography>} />
                 {/* FIXME: Non-friends only! */}
                 {userId != player.id && !isFriend(player.id) && <Button onClick={() => sendFriendRequest(player.id)}>Add Friend</Button>}
               </ListItem>
@@ -203,8 +206,10 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               />
             </Button>
             <Dialog open={bigQrCode} maxWidth={false} onClose={() => setBigQrCode(false)}>
-              <img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href + '&size=' + Math.min(window.innerHeight - 64, window.innerWidth - 64, 1000) + 'x' + Math.min(window.innerHeight - 64, window.innerWidth - 64, 1000) + '&ecc=H&margin=10'}
-                alt="Invite link" title="Click somewhere else to close the fullscreen mode" style={{borderRadius: '10px'}}
+              <img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href +
+                '&size=' + Math.min(window.innerHeight - 64, window.innerWidth - 64, 1000) + 'x' + Math.min(window.innerHeight - 64, window.innerWidth - 64, 1000) +
+                '&ecc=H&margin=10'}
+              alt="Invite link" title="Click somewhere else to close the fullscreen mode" style={{borderRadius: '10px'}}
               />
             </Dialog>
           </Paper>

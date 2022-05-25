@@ -94,7 +94,6 @@ const Friends = () => {
               <FaceIcon />
             </Avatar>
           </ListItemAvatar>
-          {/* TODO: Show own real status */}
           {localStorage.getItem('userName') && <ListItemText primary={localStorage.getItem('userName')} secondary="Online" />}
         </>
       )}

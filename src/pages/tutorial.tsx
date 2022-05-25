@@ -70,7 +70,7 @@ const Tutorial = () => {
   };
   
   return (
-    <Box sx={{width: smallScreen ? '100%' : '90%', maxWidth: '700px', mx:'auto', textAlign: 'center'}}>
+    <Box sx={{width: smallScreen ? '100%' : '90%', maxWidth: '700px', mx: 'auto', textAlign: 'center'}}>
       <Typography variant="h1" fontSize="48px" sx={{mt: '20px'}}>Tutorial</Typography>
       {(!loading && error) && <Alert sx={{ mt: 3, minWidth: 1, maxWidth: 1 }} variant="filled" severity="error">{error.message}</Alert>}
       <Suspense fallback={<LoaderCenterer><Orbit size={35} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer>}>
@@ -87,36 +87,37 @@ const Tutorial = () => {
           letterNotInWord={letterNotInWord[count]}
         />
       </Suspense>
-      <Typography sx={{minHeight: smallScreen ? '96px' : '48px', width: smallScreen ? '90%' : '100%', mx: 'auto', textAlign: 'center'}} variant="body1">{text[count]}</Typography>
-
-      <Button
-        onClick={() => setCount(count > 0 ? count - 1 : 0)}
-        variant="contained"
-        sx={{width: smallScreen ? '90%' : '33%', mt: smallScreen ? '30px' : '50px', float: smallScreen ? 'none' : 'left'}}
-        disabled={count <= 0}
-      >
-            Back
-      </Button>
-      <Typography
-        sx={{
-          width: smallScreen ? '90%' : '33%',
-          height: '36.5px',
-          mt: smallScreen ? '15px' : '50px',
-          mx: 'auto',
-          pt: '6px',
-          float: smallScreen ? 'none' : 'left'
-        }}
-        variant="body1"
-      >
-        {count + 1} / {maxCount + 1}
-      </Typography>
-      <Button
-        onClick={handleSubmit}
-        variant="contained"
-        sx={{width: smallScreen ? '90%' : '33%', mt: smallScreen ? '15px' : '50px', float: smallScreen ? 'none' : 'right'}}
-      >
-        {count < maxCount ? 'Next' : 'Let\'s play!'}
-      </Button>
+      <Typography sx={{minHeight: smallScreen ? '96px' : '48px', width: smallScreen ? '90%' : '100%', mx: 'auto', mt: '20px', textAlign: 'center'}} variant="body1">{text[count]}</Typography>
+      <Box sx={{mt: smallScreen ? '30px' : '50px', height: smallScreen ? '100%' : '36.5px' }} >
+        <Button
+          onClick={() => setCount(count > 0 ? count - 1 : 0)}
+          variant="contained"
+          sx={{width: smallScreen ? '90%' : '33%', height: '100%', float: smallScreen ? 'none' : 'left'}}
+          disabled={count <= 0}
+        >
+        Back
+        </Button>
+        <Typography
+          sx={{
+            width: smallScreen ? '90%' : '33%',
+            height: '100%',
+            minHeight: '36.5px',
+            mx: 'auto',
+            pt: '6.25px',
+            float: smallScreen ? 'none' : 'left'
+          }}
+          variant="body1"
+        >
+          {count + 1} / {maxCount + 1}
+        </Typography>
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          sx={{width: smallScreen ? '90%' : '33%', height: '100%', float: smallScreen ? 'none' : 'right'}}
+        >
+          {count < maxCount ? 'Next' : 'Let\'s play!'}
+        </Button>
+      </Box>
     </Box>
   );
 };

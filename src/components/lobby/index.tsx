@@ -93,7 +93,6 @@ const Lobby = () => {
   const [joined, setJoined] = React.useState(false);
   const [ownerId, setOwnerId] = React.useState('');
   const [lobbyStatus, setLobbyStatus] = React.useState<LobbyStatus>(LobbyStatus.OPEN);
-  // TODO: Needed? Possibly prevents lobbyStatus stuttering
   const [debouncedLobbyStatus] = useDebouncedValue(lobbyStatus, 500, { leading: true });
   const [gameStatus, setGameStatus] = React.useState<GameStatus>(GameStatus.NEW);
   const [gameMode, setGameMode] = React.useState<GameMode>(GameMode.WORDSPP);
@@ -190,7 +189,7 @@ const Lobby = () => {
     };
   }, [gameStatusData, startGame, ownerId, userId, dispatch]);
 
-  return debouncedLobbyStatus != LobbyStatus.INGAME ? ( // FIXME: If the lobby screen won't appear you have to use loading here instead of called.
+  return debouncedLobbyStatus != LobbyStatus.INGAME ? (
     <Suspense
       fallback={
         <LoaderCenterer>
