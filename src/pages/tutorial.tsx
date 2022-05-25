@@ -102,6 +102,7 @@ const Tutorial = () => {
           width: smallScreen ? '90%' : '33%',
           height: '36.5px',
           mt: smallScreen ? '15px' : '50px',
+          mx: 'auto',
           pt: '6px',
           float: smallScreen ? 'none' : 'left'
         }}

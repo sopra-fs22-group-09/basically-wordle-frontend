@@ -1,10 +1,14 @@
 import * as React from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Autocomplete,
+  Avatar,
   Box,
   Button,
+  Chip,
   debounce,
+  Dialog,
   FormControl,
   InputLabel,
   List,
@@ -18,9 +22,6 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  Dialog,
-  Chip,
-  Avatar,
 } from '@mui/material';
 import {
   GameCategorization,
@@ -39,7 +40,6 @@ import { MutationAddFriendArgs, User } from '../models/User';
 import { useLocalStorage } from '@mantine/hooks';
 import api from '../services/api';
 import { READ_USERNAME } from '../utils/utils';
-import { useState } from 'react';
 
 interface LobbyInformation {
   name: string;
@@ -199,7 +199,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
           </List>
         </Paper>
         <br style={{clear: 'both'}} />
-        {showQrCode &&
+        {showQrCode && lobbyInfo.gameCategory != GameCategory.SOLO &&
           <Paper sx={{width: smallScreen ? '100%' : '49%', mt: smallScreen ? 'auto' : '20px', textAlign: 'center', float: smallScreen ? 'none' : 'right', p: '15px'}}>
             <Button onClick={(event) => {event.currentTarget.blur(); setBigQrCode(true);}}>
               <img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href + '&size=300x300&ecc=H&margin=5'}
@@ -207,55 +207,60 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               />
             </Button>
             <Dialog open={bigQrCode} maxWidth={false} onClose={() => setBigQrCode(false)}>
-              <img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href + '&size=' + Math.min(window.innerHeight, window.innerWidth, 1000) + 'x' + Math.min(window.innerHeight, window.innerWidth, 1000) + '&ecc=H&margin=10'}
+              <img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href + '&size=' + Math.min(window.innerHeight - 64, window.innerWidth - 64, 1000) + 'x' + Math.min(window.innerHeight - 64, window.innerWidth - 64, 1000) + '&ecc=H&margin=10'}
                 alt="Invite link" title="Click somewhere else to close the fullscreen mode" style={{borderRadius: '10px'}}
               />
             </Dialog>
           </Paper>
         }
-        <Paper sx={{mx: 'auto', p: '15px', textAlign: 'center',
+        <Paper sx={{mx: 'auto', p: '15px', pt:  lobbyInfo.gameCategory == GameCategory.SOLO ? '0' : '', textAlign: 'center',
           width: smallScreen || !showQrCode ? '100%' : '49%',
           mt: showQrCode || !smallScreen ? '20px' : 'auto',
           float: smallScreen ? 'none' : 'left'
         }}>
-          <TextField type="text" defaultValue={window.location.href} InputProps={{readOnly: true}} sx={{fontSize: '18px',
-            width: smallScreen ? '100%' : !showQrCode ? '70%' : '55%',
-            float: smallScreen ? 'none' : 'left'
-          }}/>
-          <Box sx={{
-            float: smallScreen ? 'none' : 'right',
-            width: smallScreen ? '100%' : !showQrCode ? '30%' : '45%',
-            textAlign: smallScreen ? 'center' : 'right'
-          }}>
-            <Button variant="contained" onClick={() => setShowQrCode(!showQrCode)}
-              sx={{
-                width: smallScreen ? 'auto' : '48%',
-                minWidth: smallScreen ? '132px' : '0',
-                maxWidth: '250px',
-                height: smallScreen ? 'auto' : '56px',
-                ml: smallScreen ? '10px' : 'auto',
-                mr: smallScreen ? '10px' : '0.5%',
-                mt: smallScreen ? '20px' : 'auto'
+          {lobbyInfo.gameCategory != GameCategory.SOLO &&
+            <>
+              <TextField type="text" defaultValue={window.location.href} InputProps={{readOnly: true}} sx={{fontSize: '18px',
+                width: smallScreen ? '100%' : !showQrCode ? '70%' : '55%',
+                float: smallScreen ? 'none' : 'left'
+              }}/>
+              <Box sx={{
+                float: smallScreen ? 'none' : 'right',
+                width: smallScreen ? '100%' : !showQrCode ? '30%' : '45%',
+                textAlign: smallScreen ? 'center' : 'right'
               }}>
-              QR Code
-            </Button>
-            <Tooltip title="Copied to clipboard!" open={copied} leaveDelay={1500} onClose={() => setCopied(false)}
-              sx={{
-                width: smallScreen ? 'auto' : '48%',
-                minWidth: smallScreen ? '132px' : '0',
-                maxWidth: '250px',
-                height: smallScreen ? 'auto' : '56px',
-                ml: smallScreen ? '10px' : '0.5%',
-                mr: smallScreen ? '10px' : 'auto',
-                mt: smallScreen ? '20px' : 'auto'
-              }}>
-              <Button variant="contained" onClick={() => navigator.clipboard.writeText(window.location.href).then(() => setCopied(true))}>Copy</Button>
-            </Tooltip>
-          </Box>
+                <Button variant="contained" onClick={() => setShowQrCode(!showQrCode)}
+                  sx={{
+                    width: smallScreen ? 'auto' : '48%',
+                    minWidth: smallScreen ? '132px' : '0',
+                    maxWidth: '250px',
+                    height: smallScreen ? 'auto' : '56px',
+                    ml: smallScreen ? '10px' : 'auto',
+                    mr: smallScreen ? '10px' : '0.5%',
+                    mt: smallScreen ? '20px' : 'auto'
+                  }}>
+                    QR Code
+                </Button>
+                <Tooltip title="Copied to clipboard!" open={copied} leaveDelay={1500} onClose={() => setCopied(false)}
+                  sx={{
+                    width: smallScreen ? 'auto' : '48%',
+                    minWidth: smallScreen ? '132px' : '0',
+                    maxWidth: '250px',
+                    height: smallScreen ? 'auto' : '56px',
+                    ml: smallScreen ? '10px' : '0.5%',
+                    mr: smallScreen ? '10px' : 'auto',
+                    mt: smallScreen ? '20px' : 'auto'
+                  }}>
+                  <Button variant="contained"
+                    onClick={() => navigator.clipboard.writeText(window.location.href).then(() => setCopied(true))}>Copy</Button>
+                </Tooltip>
+              </Box>
+            </>
+          }
           <Button variant="contained" sx={{ mx: '10px', mt: '20px' }} onClick={() => navigate('/')}>Leave Lobby</Button>
           <Button
             variant="contained"
-            sx={{ minWidth: smallScreen ? '132px' : 'auto', mx: '10px', mt: '20px' }}
+            sx={{ minWidth: smallScreen ? '132px' : 'auto', mx: '10px', mt: '20px'}}
             disabled={userId != lobbyInfo.ownerId || lobbyInfo.gameStatus == GameStatus.SYNCING || (lobbyInfo.players.length < 2 && lobbyInfo.gameCategory != GameCategory.SOLO)}
             onClick={() => lobbyInfo.startGame()}
           >
