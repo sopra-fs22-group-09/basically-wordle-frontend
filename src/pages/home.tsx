@@ -47,7 +47,6 @@ const Home = () => {
   const dispatch = useAppDispatch();
   const token = localStorage.getItem('token');
   const [lobbies, setLobbies] = React.useState<LobbyOverview[]>();
-
   const toggleModal = () => dispatch({ type: 'modal/toggle', payload: 'lobbyConfirmation' });
 
   const mapLobbies = (l: Lobby) => {
@@ -81,10 +80,7 @@ const Home = () => {
       <Button variant="contained" onClick={toggleModal} sx={{mt: '20px', mb: '20px'}}>Create New Lobby</Button>
       {lobbies ?
         <DataGrid autoHeight disableSelectionOnClick
-          sx={{
-            '&.MuiDataGrid-root.MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus': { outline:'none' },
-            '.MuiDataGrid-virtualScrollerContent' : {overflowX: 'hidden'}
-          }}
+          sx={{'&.MuiDataGrid-root.MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus': { outline:'none' }}}
           onRowClick={((params, event) => {
             event.defaultMuiPrevented = true;
             navigate('/lobby/' + params.id);

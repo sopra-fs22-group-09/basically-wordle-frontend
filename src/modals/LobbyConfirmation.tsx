@@ -2,20 +2,18 @@ import * as React from 'react';
 import {
   Box,
   Button,
-  Modal,
   Slider,
   TextField,
   ToggleButton,
   ToggleButtonGroup, Typography,
-  useMediaQuery,
-  useTheme
 } from '@mui/material';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch } from '../redux/hooks';
 import { GameCategory, GameCategoryMaxSize, Lobby } from '../models/Lobby';
 import { gql, useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { LoadingOverlay } from '@mantine/core';
 import { useEffect } from 'react';
+import ModalTemplate from '../components/modal';
 
 export type LobbyInput = {
   size: number;
@@ -43,14 +41,10 @@ const LOBBY_CREATION = gql`
 `;
 
 const LobbyConfirmation = () => {
-
-  const theme = useTheme();
-  const smallScreen = !useMediaQuery(theme.breakpoints.up('mobile')); //screen smaller than defined size
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const username = localStorage.getItem('userName');
 
-  const open = useAppSelector(state => state.modal.isOpen && state.modal.modalWindow == 'lobbyConfirmation');
   const [size, setSize] = React.useState(2);
   const [name, setName] = React.useState('');
   const [gameCategory, setGameCategory] = React.useState(Object.values(GameCategory)[0]);
@@ -83,42 +77,24 @@ const LobbyConfirmation = () => {
   };
 
   return (
-    <Modal open={open} onClose={toggleModal}>
-      <Box
-        sx={{
-          position: 'fixed',
-          width: '90vw',
-          maxWidth: '420px',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          px: smallScreen ? '20px' : '50px',
-          py: smallScreen ? '30px' : '50px',
-          bgcolor: 'rgba(0, 0, 0, 0.75)',
-          boxShadow: '0 0 20px -7px rgba(0, 0, 0, 0.2)',
-          border: '1px solid white',
-          borderRadius: '15px',
-          textAlign: 'center'
-        }}
-      >
-        <LoadingOverlay style={{ borderRadius: '4px' }} loaderProps={{ size: 'lg', variant: 'dots' }} overlayColor="#2C2E33" visible={loading}/>
-        <ToggleButtonGroup color="primary" value={gameCategory} exclusive size="large" sx={{display: 'block'}}
-          onChange={(event, newAlignment) => {if (newAlignment != null) setGameCategory(newAlignment); /*if (newAlignment == GameCategory.COOP && size > (GameCategoryMaxSize.get(newAlignment) as number)) setSize(4);*/}}>
-          {(Object.values(GameCategory)).map(category => <ToggleButton key={category} value={category}>{category}</ToggleButton>)}
-        </ToggleButtonGroup>
-        <TextField variant='outlined' sx={{width: '100%', mt: '40px'}} inputProps={{ minLength: 3, maxLength: 50 }} label='Lobby Name' value={name} onChange={(event) => setName(event.target.value)}/>
-        {gameCategory != GameCategory.SOLO &&
-        <Box sx={{mt: '30px'}}>
-          <Typography variant="body1" >Lobby Size: {size}</Typography>
-          <Slider step={1} min={2} max={GameCategoryMaxSize.get(gameCategory)} valueLabelDisplay='auto' value={size} onChange={(_, newSize) => setSize(newSize as number)}/>
-        </Box>
-        }
-        <Box sx={{mt: '30px'}}>
-          <Button variant="contained" sx={{ mr: '1%' }} onClick={toggleModal}>Cancel</Button>
-          <Button variant="contained" sx={{ ml: '1%' }} onClick={() => handleLobbyConfirmation(size, name, gameCategory)}>Confirm</Button>
-        </Box>
+    <ModalTemplate maxWidth="420px" name="lobbyConfirmation">
+      <LoadingOverlay style={{ borderRadius: '4px' }} loaderProps={{ size: 'lg', variant: 'dots' }} overlayColor="#2C2E33" visible={loading}/>
+      <ToggleButtonGroup color="primary" value={gameCategory} exclusive size="large" sx={{display: 'block'}}
+        onChange={(event, newAlignment) => {if (newAlignment != null) setGameCategory(newAlignment); /*if (newAlignment == GameCategory.COOP && size > (GameCategoryMaxSize.get(newAlignment) as number)) setSize(4);*/}}>
+        {(Object.values(GameCategory)).map(category => <ToggleButton key={category} value={category}>{category}</ToggleButton>)}
+      </ToggleButtonGroup>
+      <TextField variant='outlined' sx={{width: '100%', mt: '40px'}} inputProps={{ minLength: 3, maxLength: 50 }} label='Lobby Name' value={name} onChange={(event) => setName(event.target.value)}/>
+      {gameCategory != GameCategory.SOLO &&
+            <Box sx={{mt: '30px'}}>
+              <Typography variant="body1" >Lobby Size: {size}</Typography>
+              <Slider step={1} min={2} max={GameCategoryMaxSize.get(gameCategory)} valueLabelDisplay='auto' value={size} onChange={(_, newSize) => setSize(newSize as number)}/>
+            </Box>
+      }
+      <Box sx={{mt: '30px'}}>
+        <Button variant="contained" sx={{ mr: '1%' }} onClick={toggleModal}>Cancel</Button>
+        <Button variant="contained" sx={{ ml: '1%' }} onClick={() => handleLobbyConfirmation(size, name, gameCategory)}>Confirm</Button>
       </Box>
-    </Modal>
+    </ModalTemplate>
   );
 };
 
