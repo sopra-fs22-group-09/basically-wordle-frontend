@@ -23,7 +23,7 @@ const Grid = ({
 }: GridProps) => {
   return (
     <Box sx={{minWidth: '200px', maxWidth: '312px', m: 'auto', ...style}}>
-      {allGuesses?.map((word, i) => (
+      {allGuesses?.map((_, i) => (
         <Row
           key={i}
           word={currentRow === i ? currentWord : allGuesses[i]}

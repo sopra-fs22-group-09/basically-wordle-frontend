@@ -47,12 +47,14 @@ interface LobbyInformation {
   ownerId: string;
   gameCategory: GameCategory;
   gameMode: GameMode;
+  categories: string[];
   gameStatus: GameStatus;
   gameRounds: number;
   roundTime: number;
   maxRounds: number;
   maxTime: number;
   players: Player[];
+  setCategories: (categories: string[]) => void;
   setGameRounds: (rounds: number) => void;
   setRoundTime: (time: number) => void;
   startGame: () => void;
@@ -84,19 +86,16 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
   const [showQrCode, setShowQrCode] = useState(false);
   const [bigQrCode, setBigQrCode] = useState(false);
   const [userId] = useLocalStorage({ key: 'userId' });
-  // Word category selection
-  const fixedOptions = [WordCategories[0]];
-  const [value, setValue] = React.useState(fixedOptions);
 
   const [changeLobby] = useMutation<LobbyModels, MutationUpdateLobbySettingsArgs>(CHANGE_LOBBY);
-  const [addFriend] = useMutation<MutationAddFriendArgs>(ADD_FRIEND);
-  const changeLobbySettings = async (gameMode: GameMode, amountRounds: number, roundTime: number) => {
+  const changeLobbySettings = async (gameMode: GameMode, amountRounds: number, roundTime: number, categories: string[]) => {
     await changeLobby({
       variables: {
         input: {
           gameMode: Object.keys(GameMode)[Object.values(GameMode).indexOf(gameMode)] as GameMode,
           amountRounds: amountRounds,
           roundTime: roundTime,
+          categories: categories
         },
       },
     });
@@ -109,6 +108,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
     })?.username;
   };
 
+  const [addFriend] = useMutation<MutationAddFriendArgs>(ADD_FRIEND);
   const sendFriendRequest = (userId: string) => {
     addFriend({
       variables: {
@@ -124,7 +124,8 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
     !lobbyInfo.name ? <LoaderCenterer><ChaoticOrbit size={50} color={theme.additional.UiBallLoader.colors.main} /></LoaderCenterer> :
       <Box sx={{width: '90%', mx: 'auto', textAlign: 'center'}}>
         <Typography variant="h1" fontSize="48px" sx={{ mt: '20px', mb: '25px'}}>{lobbyInfo.name} | {lobbyInfo.gameCategory}</Typography>
-        <Paper sx={{ width: smallScreen ? '100%' : '49%', float: smallScreen ? 'none' : 'left', minHeight: '400px', py: '15px'}}> {/*TODO*/}
+        <Paper sx={{ width: smallScreen ? '100%' : '49%', float: smallScreen ? 'none' : 'left',
+          minHeight: lobbyInfo.gameCategory == GameCategory.SOLO ? '303px' : lobbyInfo.gameMode == GameMode.SONICFAST ? '505px' : '404px', py: '15px'}}>
           <Typography variant="h2" fontSize="24px">Settings</Typography>
           <FormControl sx={{ minWidth: 150, width: '90%', mt: '30px' }}>
             <InputLabel>Game Mode</InputLabel>
@@ -132,7 +133,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               value={lobbyInfo.gameMode}
               label="Game Mode"
               disabled={userId != lobbyInfo.ownerId}
-              onChange={(event) => changeLobbySettings(event.target.value as GameMode, lobbyInfo.gameRounds, lobbyInfo.roundTime)}
+              onChange={(event) => changeLobbySettings(event.target.value as GameMode, lobbyInfo.gameRounds, lobbyInfo.roundTime, lobbyInfo.categories)}
             >
               {Object.values(GameMode).map((mode) => (lobbyInfo.gameCategory == GameCategorization.get(mode) && <MenuItem key={mode} value={mode}>{mode}</MenuItem>))}
             </Select>
@@ -143,7 +144,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               <Slider step={1} min={1} max={lobbyInfo.maxRounds} valueLabelDisplay="auto" value={lobbyInfo.gameRounds} disabled={userId != lobbyInfo.ownerId}
                 onChange={(event, newRounds) => {
                   lobbyInfo.setGameRounds(newRounds as number);
-                  stateDebounceLobbyChange(lobbyInfo.gameMode, newRounds as number, lobbyInfo.roundTime);
+                  stateDebounceLobbyChange(lobbyInfo.gameMode, newRounds as number, lobbyInfo.roundTime, lobbyInfo.categories);
                 }}
               />
             </Box>
@@ -154,44 +155,42 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               <Slider step={10} min={60} max={lobbyInfo.maxTime} valueLabelDisplay="auto" value={lobbyInfo.roundTime} disabled={userId != lobbyInfo.ownerId}
                 onChange={(event, newTime) => {
                   lobbyInfo.setRoundTime(newTime as number);
-                  stateDebounceLobbyChange(lobbyInfo.gameMode, lobbyInfo.gameRounds, newTime as number);
+                  stateDebounceLobbyChange(lobbyInfo.gameMode, lobbyInfo.gameRounds, newTime as number, lobbyInfo.categories);
                 }}
               />
             </Box>
           )}
-          {/*TODO @jemaie would be nice if you could figure this out*/}
-          <Autocomplete //TODO: HOW TO GATHER THE CATEGORIES AND SEND THEM TO THE SERVER?
+          <Autocomplete
             multiple
             options={WordCategories}
-            value={value}
+            value={lobbyInfo.categories}
             onChange={(event, newValue) => {
-              setValue([
-                ...fixedOptions,
-                ...newValue.filter((option) => fixedOptions.indexOf(option) === -1),
-              ]);
+              changeLobbySettings(lobbyInfo.gameMode, lobbyInfo.gameRounds, lobbyInfo.roundTime, newValue as string[]);
             }}
-            getOptionLabel={(option) => option.category}
+            getOptionLabel={(option) => option}
             sx={{ m: 'auto', mt: '25px', width: '90%' }}
             renderTags={(tagValue, getTagProps) =>
               tagValue.map((option, index) => (
                 <Chip
-                  label={option.category}
+                  label={option}
                   {...getTagProps({ index })}
-                  disabled={fixedOptions.indexOf(option) !== -1}
-                  key={option.category + index}
+                  key={option + index}
                 />
               ))}
-            renderInput={(params) => <TextField {...params} placeholder="Word Set" />}
+            renderInput={({inputProps, ...params}) => <TextField {...params} inputProps={{...inputProps, readOnly: true}} placeholder="Word Categories (Empty for Default)" />}
           />
         </Paper>
-        <Paper sx={{ width: smallScreen ? '100%' : '49%', float: smallScreen ? 'none' : 'right', minHeight: '400px', mt: smallScreen ? '20px' : 'auto', py: '15px' }}>
+        <Paper sx={{ width: smallScreen ? '100%' : '49%', float: smallScreen ? 'none' : 'right',
+          minHeight: lobbyInfo.gameCategory == GameCategory.SOLO ? '303px' : lobbyInfo.gameMode == GameMode.SONICFAST ? '505px' : '404px',
+          mt: smallScreen ? '20px' : 'auto', py: '15px' }}>
           <Typography variant="h2" fontSize="24px">Players (max {lobbyInfo.size})</Typography>
           <List>
             {lobbyInfo.players?.map((player) => (
               <ListItem key={player.id}>
                 <Chip
                   color={player.id == lobbyInfo.ownerId ? 'error' : player.id == userId ? 'primary' : isFriend(player.id) ? 'success' : 'default'}
-                  avatar={<Avatar>{player.name.charAt(0).toUpperCase()}</Avatar>} label={<Typography variant="body1" sx={{fontSize: '13px', fontWeight: player.id == userId ? 'bolder' : 'normal'}}>{player.name + (player.id == userId ? ' (me)' : '')}</Typography>} />
+                  avatar={<Avatar>{player.name.charAt(0).toUpperCase()}</Avatar>} label={<Typography variant="body1"
+                    sx={{fontSize: '13px', fontWeight: player.id == userId ? 'bolder' : 'normal'}}>{player.name + (player.id == userId ? ' (me)' : '')}</Typography>} />
                 {/* FIXME: Non-friends only! */}
                 {userId != player.id && !isFriend(player.id) && <Button onClick={() => sendFriendRequest(player.id)}>Add Friend</Button>}
               </ListItem>
@@ -207,8 +206,10 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               />
             </Button>
             <Dialog open={bigQrCode} maxWidth={false} onClose={() => setBigQrCode(false)}>
-              <img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href + '&size=' + Math.min(window.innerHeight - 64, window.innerWidth - 64, 1000) + 'x' + Math.min(window.innerHeight - 64, window.innerWidth - 64, 1000) + '&ecc=H&margin=10'}
-                alt="Invite link" title="Click somewhere else to close the fullscreen mode" style={{borderRadius: '10px'}}
+              <img src={'https://api.qrserver.com/v1/create-qr-code/?data=' + window.location.href +
+                '&size=' + Math.min(window.innerHeight - 64, window.innerWidth - 64, 1000) + 'x' + Math.min(window.innerHeight - 64, window.innerWidth - 64, 1000) +
+                '&ecc=H&margin=10'}
+              alt="Invite link" title="Click somewhere else to close the fullscreen mode" style={{borderRadius: '10px'}}
               />
             </Dialog>
           </Paper>
