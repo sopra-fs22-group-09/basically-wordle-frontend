@@ -9,8 +9,8 @@ import {
   InputLabel,
   List,
   ListItem,
-  ListItemText,
-  MenuItem, Paper,
+  MenuItem,
+  Paper,
   Select,
   Slider,
   TextField,
@@ -18,7 +18,9 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  Dialog, Chip,
+  Dialog,
+  Chip,
+  Avatar,
 } from '@mui/material';
 import {
   GameCategorization,
@@ -187,7 +189,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
           <List>
             {lobbyInfo.players?.map((player) => (
               <ListItem key={player.id}>
-                <ListItemText primary={player.name} sx={{color: userId == player.id ? theme.palette.primary.light : ''}} />
+                <Chip color={player.id == lobbyInfo.ownerId ? 'error' : player.id == userId ? 'primary' : isFriend(player.id) ? 'success' : 'default'} avatar={<Avatar>{player.name.charAt(0).toUpperCase()}</Avatar>} label={player.name + (player.id == userId ? ' (me)' : '')} />
                 {/* FIXME: Non-friends only! */}
                 {userId != player.id && !isFriend(player.id) && <Button onClick={() => sendFriendRequest(player.id)}>Add Friend</Button>}
               </ListItem>

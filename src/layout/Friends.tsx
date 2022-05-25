@@ -79,7 +79,7 @@ const Friends = () => {
   };
 
   const myProfile = (
-    <ListItem sx={{position: 'sticky', top: '0', backgroundColor: 'primary.dark', zIndex: 1, height: '75px'}}>
+    <ListItem sx={{ position: 'sticky', top: '0', backgroundColor: 'primary.dark', zIndex: 1, height: '75px' }}>
       {loading ? (
         <>
           <Skeleton animation="pulse" variant="circular" width={40} height={40} />
@@ -87,7 +87,13 @@ const Friends = () => {
         </>
       ) : (
         <>
-          <ListItemAvatar sx={{border: 'white solid 5px', borderRadius: '50%', minWidth: '0', ml: '-7px', mr: '12px'}}><Avatar ><FaceIcon /></Avatar></ListItemAvatar>
+          <ListItemAvatar
+            sx={{ border: 'white solid 5px', borderRadius: '50%', minWidth: '0', ml: '-7px', mr: '12px' }}
+          >
+            <Avatar>
+              <FaceIcon />
+            </Avatar>
+          </ListItemAvatar>
           {/* TODO: Show own real status */}
           {localStorage.getItem('userName') && <ListItemText primary={localStorage.getItem('userName')} secondary="Online" />}
         </>
@@ -104,7 +110,7 @@ const Friends = () => {
         .sort((f1, _) => (f1.status == UserStatus.ONLINE ? 1 : f1.status == UserStatus.AWAY ? 0 : -1))
         .map((f, i) => (
           <React.Fragment key={i}>
-            <ListItem sx={{pl: '9px'}}>
+            <ListItem sx={{ pl: '9px' }}>
               {loading ? (
                 <>
                   <Skeleton animation="pulse" variant="circular" width={40} height={40} />
@@ -125,9 +131,7 @@ const Friends = () => {
                       borderRadius: '50%', minWidth: '0', mr: '12px'
                     }}
                   >
-                    <Avatar
-
-                    >
+                    <Avatar>
                       <PersonIcon />
                     </Avatar>
                   </ListItemAvatar>
