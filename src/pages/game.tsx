@@ -24,7 +24,7 @@ const SUBMIT_GUESS = gql`
       words
       letterStates
       currentRound
-      guessed
+      finished
     }
   }
 `;
@@ -95,7 +95,7 @@ const Game = (gameInfo: GameInformation) => {
 
   //Sync
   useEffect(() => {
-    if (didStartGame.current === false) {
+    if (!didStartGame.current) {
       if (gameInfo.gameStatus == GameStatus.SYNCING || gameInfo.gameStatus == GameStatus.NEW) {
         didStartGame.current = true;
         gameInfo.startGame();
@@ -163,9 +163,9 @@ const Game = (gameInfo: GameInformation) => {
           setLetterNotInWord(wrong);
           setCurrentlyTypingWord('');
           setAmountGuesses(amountGuesses < 6 ? amountGuesses + 1 : amountGuesses);
-          if (data.submitGuess.guessed || amountGuesses >= 5) {
+          if (data.submitGuess.finished) {
             if (gameInfo.gameMode == GameMode.WORDSPP) {
-              setTimer(timer + 0.96);
+              setTimer(timer + 0.99);
               toggleModal('gameRoundConclusion');
               setTimeout(() => {
                 clearGameScreen();

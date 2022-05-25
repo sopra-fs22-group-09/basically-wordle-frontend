@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { useEffect, useState } from 'react';
 import ModalTemplate from '../components/modal';
 import ArrowDropUpRounded from '@mui/icons-material/ArrowDropUpRounded';
+import { Player } from '../models/Player';
 
 const CONCLUDE_GAME = gql`
   query concludeGame {
@@ -14,6 +15,10 @@ const CONCLUDE_GAME = gql`
       timeTaken
       roundsTaken
       score
+      ranking {
+          id
+          name
+        }
     }
   }
 `;
@@ -30,6 +35,7 @@ const GameConclusion = () => {
   const [timeTaken, setTimeTaken] = useState(0);
   const [roundsTaken, setRoundsTaken] = useState(0);
   const [score, setScore] = useState(0);
+  const [ranking, setRanking] = useState<Player[]>([]);
   const open = useAppSelector((state) => state.modal.isOpen && state.modal.modalWindow == 'gameConclusion');
 
   const [concludeGame] = useLazyQuery<GameStatsModel>(CONCLUDE_GAME, {
@@ -44,6 +50,7 @@ const GameConclusion = () => {
           setTargetWord(r.data.concludeGame.targetWord);
           setRoundsTaken(r.data.concludeGame.roundsTaken);
           setScore(r.data.concludeGame.score);
+          setRanking(r.data.concludeGame.ranking);
         }
       });
     }
@@ -55,7 +62,7 @@ const GameConclusion = () => {
     dispatch({ type: 'modal/setState', payload: { isOpen: false } });
     reInitLobby();
   };
-  
+
   return(
     <ModalTemplate maxWidth="500px" name="gameConclusion">
       <Typography variant="h1" fontSize="42px">
@@ -75,6 +82,21 @@ const GameConclusion = () => {
           Score:{' '}
         <Chip color="warning" icon={<ArrowDropUpRounded />} size='small' label={score} />
       </Typography>
+      <Typography variant="h2" fontSize="24px">
+        Ranking:
+      </Typography>
+      {ranking?.map((player, index) => (
+        <Typography key={player.id} sx={{ mt: '5px' }}>
+          {(index + 1) + '. '}
+          <Chip
+            sx={{ ml: '5px' }}
+            color={ index == 0 ? 'warning' : 'default' }
+            label={player.name}
+          />
+        </Typography>
+
+      ))}
+
       <Button variant="contained" sx={{ mt: '30px' }} onClick={() => playAgain()}>
           Play Again
       </Button>
