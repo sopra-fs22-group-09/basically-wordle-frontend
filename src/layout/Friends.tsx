@@ -95,23 +95,14 @@ const Friends = () => {
             </Avatar>
           </ListItemAvatar>
           {/* TODO: Show own real status */}
-          <ListItemText primary={localStorage.getItem('userName')} secondary="Online" />
+          {localStorage.getItem('userName') && <ListItemText primary={localStorage.getItem('userName')} secondary="Online" />}
         </>
       )}
     </ListItem>
   );
 
   return (
-    <List
-      sx={{
-        mt: '-8px',
-        height: '100vh',
-        overflowY: 'scroll',
-        overflowX: 'hidden',
-        '&::-webkit-scrollbar': { display: 'none' },
-        scrollbarWidth: 'none',
-      }}
-    >
+    <List sx={{mt: '-8px', height: '100vh', overflowY: 'auto', overflowX: 'hidden', '&::-webkit-scrollbar': { display: 'none' }, scrollbarWidth: 'none'}}>
       {myProfile}
       {/* I don't get the sorting */}
       {data?.allFriends
@@ -136,11 +127,8 @@ const Friends = () => {
                             ? 'orange solid 5px'
                             : f.status == UserStatus.INGAME || f.status == UserStatus.CREATING_LOBBY
                               ? 'red solid 5px'
-                              : '',
-                      borderRadius: '50%',
-                      minWidth: '0',
-                      ml: '',
-                      mr: '12px',
+                              : 'transparent solid 5px',
+                      borderRadius: '50%', minWidth: '0', mr: '12px'
                     }}
                   >
                     <Avatar>

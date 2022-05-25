@@ -6,7 +6,7 @@ export interface DrawerState {
 }
 
 const initialState: DrawerState = {
-  isOpen: true,
+  isOpen: !!localStorage.getItem('userName'),
 };
 
 export const drawerSlice = createSlice({

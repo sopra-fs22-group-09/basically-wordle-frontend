@@ -101,8 +101,8 @@ const Layout = ({ children }: LayoutProps) => {
           height: 'calc(100% - 75px)',
           pb: '30px',
           transform: 'translate(0, 75px)',
-          overflowY: 'scroll',
-          overflowX: 'hidden',
+          overflowY: 'auto',
+          overflowX: 'auto',
           '&::-webkit-scrollbar': {display: 'none'},
           scrollbarWidth: 'none',
           backgroundColor: (theme) =>

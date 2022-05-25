@@ -17,6 +17,7 @@ import { ChaoticOrbit, DotWave } from '@uiball/loaders';
 import { useTheme } from '@mui/material';
 import LoaderCenterer from '../loader';
 import { useAppDispatch } from '../../redux/hooks';
+import { store } from '../../redux/store';
 
 const JOIN_LOBBY = gql`
   mutation joinLobby($id: ID!) {
@@ -175,6 +176,7 @@ const Lobby = () => {
           (gameStatusData.data?.gameStatus == GameStatus.GUESSING && isSubscribed)
         ) {
           setLobbyStatus(LobbyStatus.INGAME);
+          if (store.getState().drawer.isOpen) dispatch({type: 'drawer/toggle'}); // Does not work with setState...?
         }
       }
     })();

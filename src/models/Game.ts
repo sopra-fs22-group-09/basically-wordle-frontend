@@ -1,11 +1,6 @@
 import { Scalars } from './index';
 import { Player } from './Player';
 
-//currently unused
-export interface GameModel {
-  startGame: Game
-}
-
 export interface GameRoundModel {
   submitGuess: GameRound
 }
@@ -35,7 +30,7 @@ export type GameRound = {
   player: Player;
   currentRound: Scalars['Int'];
   targetWord: Scalars['String'];
-  guessed: Scalars['Boolean'];
+  finished: Scalars['Boolean'];
   words: Array<Scalars['String']>;
   letterStates: Array<Array<LetterState>>;
 };
@@ -46,7 +41,7 @@ export type GameStats = {
   roundsTaken: Scalars['Int'];
   timeTaken: number;
   score: Scalars['Int'];
-  rank: Scalars['Int'];
+  ranking: Array<Player>;
 };
 
 export enum GameStatus {

@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { Box, Button, Chip, Modal, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Button, Chip, Typography } from '@mui/material';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { GameStatsModel } from '../models/Game';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { useEffect, useState } from 'react';
+import ModalTemplate from '../components/modal';
 import ArrowDropUpRounded from '@mui/icons-material/ArrowDropUpRounded';
+import { Player } from '../models/Player';
 
 const CONCLUDE_GAME = gql`
   query concludeGame {
@@ -13,6 +15,10 @@ const CONCLUDE_GAME = gql`
       timeTaken
       roundsTaken
       score
+      ranking {
+          id
+          name
+        }
     }
   }
 `;
@@ -24,13 +30,12 @@ const REINITIALIZE_LOBBY = gql`
 `;
 
 const GameConclusion = () => {
-  const theme = useTheme();
-  const smallScreen = !useMediaQuery(theme.breakpoints.up('mobile')); //screen smaller than defined size
   const dispatch = useAppDispatch();
   const [targetWord, setTargetWord] = useState('');
   const [timeTaken, setTimeTaken] = useState(0);
   const [roundsTaken, setRoundsTaken] = useState(0);
   const [score, setScore] = useState(0);
+  const [ranking, setRanking] = useState<Player[]>([]);
   const open = useAppSelector((state) => state.modal.isOpen && state.modal.modalWindow == 'gameConclusion');
 
   const [concludeGame] = useLazyQuery<GameStatsModel>(CONCLUDE_GAME, {
@@ -45,6 +50,7 @@ const GameConclusion = () => {
           setTargetWord(r.data.concludeGame.targetWord);
           setRoundsTaken(r.data.concludeGame.roundsTaken);
           setScore(r.data.concludeGame.score);
+          setRanking(r.data.concludeGame.ranking);
         }
       });
     }
@@ -57,47 +63,44 @@ const GameConclusion = () => {
     reInitLobby();
   };
 
-  return (
-    <Modal open={open}>
-      <Box
-        sx={{
-          position: 'fixed',
-          width: '90vw',
-          maxWidth: '500px',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          px: smallScreen ? '20px' : '50px',
-          py: smallScreen ? '30px' : '50px',
-          bgcolor: 'rgba(0, 0, 0, 0.75)',
-          boxShadow: '0 0 20px -7px rgba(0, 0, 0, 0.2)',
-          border: '1px solid white',
-          borderRadius: '15px',
-          textAlign: 'center',
-        }}
-      >
-        <Typography variant="h1" fontSize="42px">
+  return(
+    <ModalTemplate maxWidth="500px" name="gameConclusion">
+      <Typography variant="h1" fontSize="42px">
           Game finished!
-        </Typography>
-        <Typography variant="body1" fontSize="24px" sx={{ mt: '30px' }}>
+      </Typography>
+      <Typography variant="body1" fontSize="24px" sx={{ mt: '30px' }}>
           Last target word: {targetWord}
-        </Typography>
-        <Typography variant="body1" fontSize="24px">
+      </Typography>
+      <Typography variant="body1" fontSize="24px">
           Total time taken:{' '}
-          {Math.floor(timeTaken / 60) + ((timeTaken % 60).toString().length == 1 ? ':0' : ':') + (timeTaken % 60)}
-        </Typography>
-        <Typography variant="body1" fontSize="24px">
+        {Math.floor(timeTaken / 60) + ((timeTaken % 60).toString().length == 1 ? ':0' : ':') + (timeTaken % 60)}
+      </Typography>
+      <Typography variant="body1" fontSize="24px">
           Rounds played: {roundsTaken}
-        </Typography>
-        <Typography variant="body1" fontSize="24px">
+      </Typography>
+      <Typography variant="body1" fontSize="24px">
           Score:{' '}
-          <Chip color="warning" icon={<ArrowDropUpRounded />} size='small' label={score} />
+        <Chip color="warning" icon={<ArrowDropUpRounded />} size='small' label={score} />
+      </Typography>
+      <Typography variant="h2" fontSize="24px">
+        Ranking:
+      </Typography>
+      {ranking?.map((player, index) => (
+        <Typography key={player.id} sx={{ mt: '5px' }}>
+          {(index + 1) + '. '}
+          <Chip
+            sx={{ ml: '5px' }}
+            color={ index == 0 ? 'warning' : 'default' }
+            label={player.name}
+          />
         </Typography>
-        <Button variant="contained" sx={{ mt: '30px' }} onClick={() => playAgain()}>
+
+      ))}
+
+      <Button variant="contained" sx={{ mt: '30px' }} onClick={() => playAgain()}>
           Play Again
-        </Button>
-      </Box>
-    </Modal>
+      </Button>
+    </ModalTemplate>
   );
 };
 
