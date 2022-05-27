@@ -1,0 +1,44 @@
+{
+  "short_name": "Wordle.",
+  "name": "Basically Wordle.",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#272727",
+  "display": "fullscreen",
+  "theme_color": "#272727",
+  "description": "Basically Wordle. - SoPra 22 Project of Group 09",
+  "shortcuts": [
+    {
+      "name": "Open Lobby Overview",
+      "short_name": "Lobby Overview",
+      "description": "View the list of lobbies and join one to play a game",
+      "url": "/",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }, { "src": "/android-chrome-512x512.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "Open Tutorial",
+      "short_name": "Tutorial",
+      "description": "What is Wordle? Who are we? Why did we develop this app?",
+      "url": "/tutorial",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }, { "src": "/android-chrome-512x512.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "About Basically Wordle.",
+      "short_name": "About",
+      "description": "Watch the tutorial and be ready for your next game.",
+      "url": "/about",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }, { "src": "/android-chrome-512x512.png", "sizes": "512x512" }]
+    }
+  ]
+}
