@@ -85,6 +85,12 @@ export const GameCategorization = new Map<GameMode, GameCategory>([
   [GameMode.CLASSIC, GameCategory.SOLO],
 ]);
 
+export const GameModeDescription = new Map<GameMode, string>([
+  [GameMode.WORDSPP, 'Words++: Each player guesses as many words as possible in the given time. The game is over when the time is up.'],
+  [GameMode.SONICFAST, 'Sonic Fast: The goal is to find the target word of the current round the fastest. When everyone has guessed his word or the time is up, the next round starts.'],
+  [GameMode.CLASSIC, 'Classic: The original. Find the target word within six guesses.'],
+]);
+
 export const GameCategoryMaxSize = new Map<GameCategory, number>([
   [GameCategory.PVP, 6],
   [GameCategory.SOLO, 1],

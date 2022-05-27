@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {
   Autocomplete,
   Avatar,
@@ -26,20 +26,20 @@ import {
 import {
   GameCategorization,
   GameCategory,
-  GameMode,
+  GameMode, GameModeDescription,
   LobbyModels,
   MutationUpdateLobbySettingsArgs,
   WordCategories,
 } from '../models/Lobby';
-import { Player } from '../models/Player';
-import { gql, useMutation } from '@apollo/client';
-import { ChaoticOrbit } from '@uiball/loaders';
+import {Player} from '../models/Player';
+import {gql, useMutation} from '@apollo/client';
+import {ChaoticOrbit} from '@uiball/loaders';
 import LoaderCenterer from '../components/loader';
-import { GameStatus } from '../models/Game';
-import { MutationAddFriendArgs, User } from '../models/User';
-import { useLocalStorage } from '@mantine/hooks';
+import {GameStatus} from '../models/Game';
+import {MutationAddFriendArgs, User} from '../models/User';
+import {useLocalStorage} from '@mantine/hooks';
 import api from '../services/api';
-import { READ_USERNAME } from '../utils/utils';
+import {READ_USERNAME} from '../utils/utils';
 
 interface LobbyInformation {
   name: string;
@@ -135,7 +135,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
               disabled={userId != lobbyInfo.ownerId}
               onChange={(event) => changeLobbySettings(event.target.value as GameMode, lobbyInfo.gameRounds, lobbyInfo.roundTime, lobbyInfo.categories)}
             >
-              {Object.values(GameMode).map((mode) => (lobbyInfo.gameCategory == GameCategorization.get(mode) && <MenuItem key={mode} value={mode}>{mode}</MenuItem>))}
+              {Object.values(GameMode).map((mode) => (lobbyInfo.gameCategory == GameCategorization.get(mode) && <MenuItem key={mode} value={mode}><Tooltip title={<Typography variant="body2">{GameModeDescription.get(mode)}</Typography>}><Box sx={{width: '100%'}}>{mode}</Box></Tooltip></MenuItem>))}
             </Select>
           </FormControl>
           {lobbyInfo.gameRounds >= 1 && lobbyInfo.maxTime != 0 && (
@@ -151,7 +151,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
           )}
           {lobbyInfo.roundTime >= 60 && (
             <Box sx={{ m: 'auto', mt: '25px', width: '90%' }}>
-              <Typography variant="h3" fontSize="21px">Time: {lobbyInfo.roundTime} seconds</Typography>
+              <Typography variant="h3" fontSize="21px">Time{lobbyInfo.gameMode == GameMode.SONICFAST ? ' per Round' : ''}: {lobbyInfo.roundTime} seconds</Typography>
               <Slider step={10} min={60} max={lobbyInfo.maxTime} valueLabelDisplay="auto" value={lobbyInfo.roundTime} disabled={userId != lobbyInfo.ownerId}
                 onChange={(event, newTime) => {
                   lobbyInfo.setRoundTime(newTime as number);
@@ -162,6 +162,7 @@ const LobbyManagement = (lobbyInfo: LobbyInformation) => {
           )}
           <Autocomplete
             multiple
+            readOnly={userId != lobbyInfo.ownerId}
             options={WordCategories}
             value={lobbyInfo.categories}
             onChange={(event, newValue) => {
