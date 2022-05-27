@@ -24,11 +24,11 @@ const About = () => {
       <Typography variant="body1">The application is built using the following technologies and frameworks:</Typography>
       <Box sx={{mx: 'auto', width: '90%', maxWidth: '315px'}}>
         <List sx={{listStyle: 'disc'}}>
-          <ListItem sx={{display: 'list-item'}}>Apollo/GraphQL -&nbsp;<Link href={'https://www.apollographql.com'} title="Apollo/GraphQL" target="_blank" rel="nofollow noopener noreferrer">apollographql.com</Link></ListItem>
-          <ListItem sx={{display: 'list-item'}}>Reactor Core -&nbsp;<Link href={'https://projectreactor.io'} title="Reactor Core" target="_blank" rel="nofollow noopener noreferrer">projectreactor.io</Link></ListItem>
-          <ListItem sx={{display: 'list-item'}}>Dokku -&nbsp;<Link href={'https://dokku.com'} title="Dokku" target="_blank" rel="nofollow noopener noreferrer">dokku.com</Link></ListItem>
-          <ListItem sx={{display: 'list-item'}}>ReactJS -&nbsp;<Link href={'https://reactjs.org'} title="ReactJS" target="_blank" rel="nofollow noopener noreferrer">reactjs.org</Link></ListItem>
-          <ListItem sx={{display: 'list-item'}}>Spring Boot -&nbsp;<Link href={'https://spring.io/projects/spring-boot'} title="Spring Boot" target="_blank" rel="nofollow noopener noreferrer">spring.io</Link></ListItem>
+          <ListItem sx={{display: 'list-item'}}><Typography variant="body1">Apollo/GraphQL -&nbsp;<Link href={'https://www.apollographql.com'} title="Apollo/GraphQL" target="_blank" rel="nofollow noopener noreferrer">apollographql.com</Link></Typography></ListItem>
+          <ListItem sx={{display: 'list-item'}}><Typography variant="body1">Reactor Core -&nbsp;<Link href={'https://projectreactor.io'} title="Reactor Core" target="_blank" rel="nofollow noopener noreferrer">projectreactor.io</Link></Typography></ListItem>
+          <ListItem sx={{display: 'list-item'}}><Typography variant="body1">Dokku -&nbsp;<Link href={'https://dokku.com'} title="Dokku" target="_blank" rel="nofollow noopener noreferrer">dokku.com</Link></Typography></ListItem>
+          <ListItem sx={{display: 'list-item'}}><Typography variant="body1">ReactJS -&nbsp;<Link href={'https://reactjs.org'} title="ReactJS" target="_blank" rel="nofollow noopener noreferrer">reactjs.org</Link></Typography></ListItem>
+          <ListItem sx={{display: 'list-item'}}><Typography variant="body1">Spring Boot -&nbsp;<Link href={'https://spring.io/projects/spring-boot'} title="Spring Boot" target="_blank" rel="nofollow noopener noreferrer">spring.io</Link></Typography></ListItem>
         </List>
       </Box>
     </Box>

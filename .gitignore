@@ -32,6 +32,8 @@ yarn-error.log*
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/codeStyles/
+.idea/inspectionProfiles/
 
 # AWS User-specific
 .idea/**/aws.xml
