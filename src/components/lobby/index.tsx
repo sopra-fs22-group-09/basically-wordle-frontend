@@ -14,7 +14,7 @@ import { gql, useMutation, useSubscription } from '@apollo/client';
 import { GameStatus, GameStatusModel } from '../../models/Game';
 import { useDebouncedValue, useLocalStorage } from '@mantine/hooks';
 import { ChaoticOrbit, DotWave } from '@uiball/loaders';
-import { useTheme } from '@mui/material';
+import { Alert, Snackbar, useTheme } from '@mui/material';
 import LoaderCenterer from '../loader';
 import { useAppDispatch } from '../../redux/hooks';
 import { store } from '../../redux/store';
@@ -90,6 +90,7 @@ const Lobby = () => {
   const LobbyManagement = lazy(() => import('../../pages/lobbyManagement'));
   const Game = lazy(() => import('../../pages/game'));
 
+  const [joinError, setJoinError] = React.useState('');
   const [joined, setJoined] = React.useState(false);
   const [ownerId, setOwnerId] = React.useState('');
   const [lobbyStatus, setLobbyStatus] = React.useState<LobbyStatus>(LobbyStatus.OPEN);
@@ -113,8 +114,7 @@ const Lobby = () => {
           id: params.id as string,
         },
         onError: (error) => {
-          alert(error.message);
-          navigate('/');
+          setJoinError(error.message.split('403 FORBIDDEN ')[1].replaceAll('"', ''));
         },
       }).then((r) => {
         if (r.data?.joinLobbyById && isSubscribed) {
@@ -197,6 +197,20 @@ const Lobby = () => {
         </LoaderCenterer>
       }
     >
+      <Snackbar
+        anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
+        open={joinError.length > 0}
+        autoHideDuration={3000}
+        onClose={() => {
+          setJoinError('');
+          navigate('/');
+          window.location.reload();
+        }}
+      >
+        <Alert variant="filled" severity="error">
+          {joinError}
+        </Alert>
+      </Snackbar>
       <LobbyManagement
         name={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.name : ''}
         size={!joinLobbyData.loading && joinLobbyData.data?.joinLobbyById ? joinLobbyData.data.joinLobbyById.size : 0}

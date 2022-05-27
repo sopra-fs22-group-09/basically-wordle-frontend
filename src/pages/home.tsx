@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useEffect } from 'react';
 import { useAppDispatch } from '../redux/hooks';
 import { DataGrid } from '@mui/x-data-grid';
-import { Box, Button, useTheme } from '@mui/material';
+import { Alert, Box, Button, Snackbar, useTheme } from '@mui/material';
 import { gql, useQuery, useSubscription } from '@apollo/client';
 import { GameCategory, GameMode, Lobby, LobbyModels, LobbyOverview } from '../models/Lobby';
 import { ChaoticOrbit } from '@uiball/loaders';
@@ -47,6 +47,7 @@ const Home = () => {
   const dispatch = useAppDispatch();
   const token = localStorage.getItem('token');
   const [lobbies, setLobbies] = React.useState<LobbyOverview[]>();
+  const [joinError, setJoinError] = React.useState('');
   const toggleModal = () => dispatch({ type: 'modal/toggle', payload: 'lobbyConfirmation' });
 
   const mapLobbies = (l: Lobby) => {
@@ -78,12 +79,24 @@ const Home = () => {
   return (
     <Box sx={{width: '90%', mx:'auto', mb: '20px', textAlign: 'center'}}>
       <Button variant="contained" onClick={toggleModal} sx={{mt: '20px', mb: '20px'}}>Create New Lobby</Button>
+      <Snackbar
+        anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
+        open={joinError.length > 0}
+        autoHideDuration={3000}
+        onClose={() => setJoinError('')}
+      >
+        <Alert variant="filled" severity="error">
+          {joinError}
+        </Alert>
+      </Snackbar>
       {lobbies ?
         <DataGrid autoHeight disableSelectionOnClick
           sx={{'&.MuiDataGrid-root.MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus': { outline:'none' }}}
           onRowClick={((params, event) => {
             event.defaultMuiPrevented = true;
-            navigate('/lobby/' + params.id);
+            if (params.row.status == 'INGAME') setJoinError('Cannot join a lobby that is in game!');
+            else if (params.row.status == 'FULL') setJoinError('Cannot join a full lobby!');
+            else navigate('/lobby/' + params.id);
           })}
           columns={[
             {
