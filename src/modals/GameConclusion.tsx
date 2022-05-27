@@ -76,7 +76,7 @@ const GameConclusion = () => {
         {Math.floor(timeTaken / 60) + ((timeTaken % 60).toString().length == 1 ? ':0' : ':') + (timeTaken % 60)}
       </Typography>
       <Typography variant="body1" fontSize="24px">
-          Rounds played: {roundsTaken}
+          Rounds guessed: {roundsTaken}
       </Typography>
       <Typography variant="body1" fontSize="24px">
           Score:{' '}
