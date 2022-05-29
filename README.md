@@ -1,9 +1,12 @@
-# Basically Wordle. - Frontend
+<h1 align="center">Basically Wordle. - Frontend</h1>
 
-[![Deploy Project](https://github.com/sopra-fs22-group-09/basically-wordle-frontend/actions/workflows/deploy.yml/badge.svg)](https://github.com/sopra-fs22-group-09/basically-wordle-frontend/actions/workflows/deploy.yml)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=sopra-fs22-group-09_basically-wordle-frontend&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=sopra-fs22-group-09_basically-wordle-frontend)
+<p align="center"><img src="./screenshots/logo_transparent.png" width="200px" align="center"></p>
 
-Wordle PvP frontend with React and TypeScript.
+<p align="center">
+  <a href="https://github.com/sopra-fs22-group-09/basically-wordle-frontend/actions/workflows/deploy.yml"><img src="https://github.com/sopra-fs22-group-09/basically-wordle-frontend/actions/workflows/deploy.yml/badge.svg"></a>
+  <a href="https://sonarcloud.io/summary/new_code?id=sopra-fs22-group-09_basically-wordle-frontend"><img src="https://sonarcloud.io/api/project_badges/measure?project=sopra-fs22-group-09_basically-wordle-frontend&metric=vulnerabilities"></a>
+  <p align="center">Wordle PvP frontend with React and TypeScript.</p>
+</p>
 
 # Introduction
 
@@ -74,7 +77,10 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 
 # Illustrations
 
-![Illustration01](./screenshots/illustration01.png)
+<img src="./screenshots/illustration01.png" width="50%">
+<img src="./screenshots/page_game.png">
+<img src="./screenshots/page_home.png">
+<img src="./screenshots/page_lobby.png">
 
 # Roadmap
 
