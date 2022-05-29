@@ -20,7 +20,7 @@ interface GameInformation {
 const SUBMIT_GUESS = gql`
   mutation submitGuess($word: String!) {
     submitGuess(word: $word) {
-      targetWord
+      #targetWord
       words
       letterStates
       currentRound
