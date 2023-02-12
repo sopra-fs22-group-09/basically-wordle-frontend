@@ -7,7 +7,7 @@
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@fontsource/roboto": "^4.5.5",
-    "@graphql-codegen/cli": "^2.6.2",
+    "@graphql-codegen/cli": "^2.16.5",
     "@mantine/core": "^4.2.2",
     "@mantine/hooks": "^4.2.2",
     "@mantine/notifications": "^4.2.2",
